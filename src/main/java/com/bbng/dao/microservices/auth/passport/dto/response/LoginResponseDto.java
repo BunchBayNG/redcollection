@@ -11,7 +11,6 @@ public class LoginResponseDto {
     private String accessToken;
     private String refreshToken;
     private String acctStatus;
-    private String orgStatus;
     private String userId;
     private String organizationId;
     private boolean isEmailVerified;

@@ -5,31 +5,23 @@ import com.bbng.dao.microservices.auth.organization.dto.request.*;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
-import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
-import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
-import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
-import com.bbng.dao.util.fileUpload.services.FileAndImageUploadService;
 import com.bbng.dao.util.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
+
 //    private final KycRepository kycRepository;
 //    private final KycDocRepository kycDocRepository;
-    private final FileAndImageUploadService fileAndImageUploadService;
-    private final EmailVerificationService emailService;
-    private  final UserRepository userRepository;
+//    private final FileAndImageUploadService fileAndImageUploadService;
+//    private final EmailVerificationService emailService;
+//    private  final UserRepository userRepository;
 
     @Override
     public ResponseDto<String> updateBusinessDetails(UpdateOrgDto updateRequestDto) {
@@ -40,7 +32,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationEntity.setOrganizationName(updateRequestDto.getOrganizationName());
         organizationEntity.setContactName(updateRequestDto.getContactName());
         organizationEntity.setContactEmail(updateRequestDto.getContactEmail());
-        organizationEntity.setOrgStatus(updateRequestDto.getStatus());
+        ///organizationEntity.setOrgStatus(updateRequestDto.getStatus().name());
         organizationEntity.setProductPrefix(updateRequestDto.getProductPrefix());
 
          organizationRepository.save(organizationEntity);
@@ -60,8 +52,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 //        OrganizationEntity organizationEntity = organizationRepository.findById(companyDetailsRequestDto.getOrganizationId()).orElseThrow(() -> new ResourceNotFoundException(String.format("Organization with id: %s not found", companyDetailsRequestDto.getOrganizationId())));
 //
 //        organizationEntity.setBusinessLogoUrl(businessLogoUrl == null ? organizationEntity.getBusinessLogoUrl() : fileAndImageUploadService.uploadFile(businessLogoUrl, "images"));
-//        organizationEntity.setorganizationName(companyDetailsRequestDto.getorganizationName() == null ? organizationEntity.getorganizationName()
-//                 : companyDetailsRequestDto.getorganizationName());
+//        organizationEntity.setOrganizationName(companyDetailsRequestDto.getOrganizationName() == null ? organizationEntity.getOrganizationName()
+//                 : companyDetailsRequestDto.getOrganizationName());
 //        organizationEntity.setDescription(companyDetailsRequestDto.getDescription() == null ? organizationEntity.getDescription() :
 //                companyDetailsRequestDto.getDescription());
 //        organizationEntity.setBusinessCategory(String.valueOf(companyDetailsRequestDto.getBusinessCategory() == null ? organizationEntity.getBusinessCategory() :
@@ -128,7 +120,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 //        OrganizationEntity organizationEntity = organizationRepository.findById(identityDto.getOrganizationId()).orElseThrow(() -> new ResourceNotFoundException(String.format("Organization with id: %s not found", identityDto.getOrganizationId())));
 //        log.info("trying to get kyc using organization");
 //        Optional<KycEntity> kycEntity = kycRepository.findByOrganizationId(identityDto.getOrganizationId());
-//        log.info("Kyc entiy {}", kycEntity);
+//        log.info("Kyc entity {}", kycEntity);
 //        if (kycEntity.isEmpty()) {
 //            log.info("KYC Entity is null, building new kyc");
 //            KycEntity kycEntityCreated =
@@ -172,7 +164,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 //            kycEntity.get().setRcVerificationStatus(KycVerificationStatus.UPDATED_AWAITING_REVIEW);
 //            kycEntity.get().setTinVerificationStatus(KycVerificationStatus.UPDATED_AWAITING_REVIEW);
 //
-//            KycDocumentEntity kycDocumentEntity = kycDocRepository.findByKycId(kycEntity.get().getId()).orElseThrow(() -> new ResourceNotFoundException("Kyc document entity does not exist for Organizatio id: "+ identityDto.getOrganizationId()));
+//            KycDocumentEntity kycDocumentEntity = kycDocRepository.findByKycId(kycEntity.get().getId()).orElseThrow(() -> new ResourceNotFoundException("Kyc document entity does not exist for Organization id: "+ identityDto.getOrganizationId()));
 //
 //            kycDocumentEntity.setBusinessLicenseOrPermitUrl(fileAndImageUploadService.uploadFile(identityDto.getBusinessLicenseOrPermitUrl(), "documents"));
 //            kycDocumentEntity.setCertificateOfIncorporationUrl(fileAndImageUploadService.uploadFile(identityDto.getCertificateOfIncorporationUrl(), "documents"));
@@ -187,14 +179,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 //            kycDocumentEntity.setFormsCac7VerificationStatus(KycVerificationStatus.UPDATED_AWAITING_REVIEW);
 //            kycDocumentEntity.setRegisteredAddressVerificationStatus(KycVerificationStatus.UPDATED_AWAITING_REVIEW);
 //
-//            log.info("saving kycDocumnet and KycEntity");
+//            log.info("saving kycDocument and KycEntity");
 //            kycDocRepository.save(kycDocumentEntity);
 //            kycRepository.save(kycEntity.get());
 //        }
 //
 //        log.info("sending email");
 //        UserEntity user = getUserById(organizationEntity.getMerchantAdminId());
-//        emailService.sendKycEmail(user.getEmail(), organizationEntity.getorganizationName());
+//        emailService.sendKycEmail(user.getEmail(), organizationEntity.getOrganizationName());
 //
 //        return ResponseDto.<String>builder()
 //                .statusCode(200)
@@ -204,9 +196,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 //                .build();
 //    }
 
-    private UserEntity getUserById(String merchantAdminId) {
-     return userRepository.findById(merchantAdminId).orElse(null);
-    }
+//    private UserEntity getUserById(String merchantAdminId) {
+//     return userRepository.findById(merchantAdminId).orElse(null);
+//    }
 
 //    @Override
 //    public ResponseDto<String> updateCompanyAccount(CompanyAccountDto accountDto) {

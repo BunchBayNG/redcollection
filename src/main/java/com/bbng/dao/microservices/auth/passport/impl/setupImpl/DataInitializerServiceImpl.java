@@ -8,6 +8,7 @@ import com.bbng.dao.microservices.auth.passport.dto.request.SignUpDto;
 import com.bbng.dao.microservices.auth.passport.entity.PermissionEntity;
 import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.enums.AcctStatus;
 import com.bbng.dao.microservices.auth.passport.enums.UserType;
 import com.bbng.dao.microservices.auth.passport.repository.PermissionRepository;
 import com.bbng.dao.microservices.auth.passport.repository.RoleRepository;
@@ -367,7 +368,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                     .lastName(request.getLastName())
                     .userName(request.getFirstName().toUpperCase() + " " + request.getLastName().toUpperCase())
                     .password(request.getPassword())
-                    .usertype(UserType.SUPER_ADMIN)
+                    .usertype(UserType.SUPER_ADMIN).acctStatus(AcctStatus.ACTIVE)
                     .isEnabled(true)
                     .isInvitedUser(false)
                     .build();

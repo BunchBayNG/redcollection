@@ -2,7 +2,6 @@ package com.bbng.dao.microservices.auth.organization.entity;
 
 
 import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
-import com.bbng.dao.microservices.auth.organization.enums.OrgStatus;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +26,7 @@ public class OrganizationEntity extends BaseEntity {
     private String businessLogoUrl;
     private String merchantAdminId;
     private String productPrefix;
-    private OrgStatus orgStatus;
+    private String orgStatus;
     private String settlementAccountName;
     private String settlementAccountNumber;
     private String settlementBankName;

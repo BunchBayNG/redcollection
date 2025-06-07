@@ -98,9 +98,12 @@ public class UserServiceImpl implements UserService {
             token = jwtService.generateTokenWithClaims(authentication.getName(), claims);
           refreshToken = jwtService.generateRefreshToken(claims, authentication.getName());
 
+          log.info("token {}", token);
+          log.info("refreshToken {}", refreshToken);
+
        } catch (Exception e) {
            log.info("An exception Occurred");
-           throw new ForbiddenException("Email is not verified, Please verify your email");
+           throw new ForbiddenException(e.toString());
        }
 
 
@@ -145,7 +148,6 @@ public class UserServiceImpl implements UserService {
                         .accessToken(token)
                         .refreshToken(refreshToken)
                         .acctStatus(user.getAcctStatus().name())
-                        .orgStatus(org.get().getOrgStatus().name())
                         .userId(user.getId())
                         .organizationId(org.get().getId())
                         .isEmailVerified(user.getIsEnabled())
