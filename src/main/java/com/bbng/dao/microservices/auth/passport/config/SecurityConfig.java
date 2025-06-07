@@ -63,14 +63,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(httpRequests ->
                         httpRequests.
                                 requestMatchers(
-                                        "api/v1/redtech/general-mgt/**",
-                                        "api/v1/redtech/auth/**",
+                                        "/api/v1/redtech/general-mgt/**",
+                                        "/api/v1/redtech/auth/**",
                                         "/api/v1/redtech/email/sendMail",
-                                        "api/v1/redtech/merchant/org-management/update-business-on-signup",
-                                        "api/v1/redtech/merchant/bill-controller/**",
                                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
                                         "/webjars/**",
-                                        "/swagger-ui.html"
+                                        "/swagger-ui.html",
+                                        "/docs"
                                         ).permitAll()
                                 .anyRequest().authenticated());
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
