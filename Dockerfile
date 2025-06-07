@@ -13,4 +13,4 @@ COPY --from=build /target/dao-0.0.1-SNAPSHOT.jar dao.jar
 EXPOSE 8080
 
 # Run the application with the JVM options
-ENTRYPOINT ["java", "$JAVA_OPTS", "-jar", "dao.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar dao.jar"]
