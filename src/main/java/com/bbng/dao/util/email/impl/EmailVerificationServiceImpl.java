@@ -288,25 +288,34 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         if (verificationToken == null) {
             throw new BadRequestException("Invalid verification token");
         }
-        OtpEntity oTPToken = otpRepository.findByOtpAndExpired(verificationToken, false)
+//        OtpEntity oTPToken = otpRepository.findByOtpAndExpired(verificationToken, false)
+//                .orElseThrow(() -> new BadRequestException("Token expired"));
+
+        OtpEntity oTPToken = otpRepository.findByOtp(verificationToken)
                 .orElseThrow(() -> new BadRequestException("Token expired"));
 
-        if (isTokenExpired(oTPToken.getOtp(), oTPToken.getExpirationTime())) {
-            oTPToken.setExpired(true);
-            throw new BadRequestException("Token expired. Resend email");
-        }
+        log.info("OTP Token: {}", oTPToken.getOtp());
+        log.info("OTP Token: {}", oTPToken.getExpirationTime());
+        log.info("OTP Token: {}", oTPToken.getEmail());
 
-        oTPToken.setExpired(true);
-
-        otpRepository.save(oTPToken);
+//        if (isTokenExpired(oTPToken.getOtp(), oTPToken.getExpirationTime())) {
+//            oTPToken.setExpired(true);
+//            throw new BadRequestException("Token expired. Resend email");
+//        }
+//
+//        oTPToken.setExpired(true);
+//        otpRepository.save(oTPToken);
 
         Optional<UserEntity> userEntity = userRepository.findByEmail(oTPToken.getEmail());
-
+//
         if(userEntity.isEmpty()){
             throw new BadRequestException("User not found");
         }
 
         UserEntity user = userEntity.get();
+
+        log.info("User: {}", user.getEmail());
+        log.info("User: {}", user.getEmail());
 //
 //        return ResponseDto.<String>builder()
 //                .statusCode(200)
@@ -316,10 +325,10 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 //                .build();
 
 
-        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId())
-                .orElse(organizationRepository.findByOrganizationId(
-                        orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
-//
+//        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId())
+//                .orElse(organizationRepository.findByOrganizationId(
+//                        orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
+
 //       if (organizationEntity == null){
 //           throw new ForbiddenException("User is not linked with any organization");
 //       }

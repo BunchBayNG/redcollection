@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
                 .revoked(false)
                 .build();
 
-        tokenRepository.save(tokenEntity);
+        var t = tokenRepository.save(tokenEntity);
 
         emailVerificationService.send2faEmail(loginDto.getEmail());
 
@@ -125,11 +125,10 @@ public class UserServiceImpl implements UserService {
                 .message("Login successful, Enter MFA code to verify your account")
                 .data(MfaDto
                         .builder()
-                        .isLogin(true)
+                        .isLogin(true).token(t.getToken())
                         .build())
                 .build();
 
-        //var t = tokenRepository.save(tokenEntity);
 
 //       OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElse(organizationRepository.findByOrganizationId(orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
 //

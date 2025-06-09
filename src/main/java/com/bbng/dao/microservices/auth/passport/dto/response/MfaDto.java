@@ -11,4 +11,5 @@ import lombok.*;
 public class MfaDto {
 
     private boolean isLogin;
+    private String token;
 }

@@ -15,6 +15,7 @@ public interface OTPRepository  extends JpaRepository<OtpEntity, String> {
 
 
     Optional<OtpEntity> findByEmail (String email);
+    Optional<OtpEntity> findByOtp (String otp);
     Optional<OtpEntity> findByOtpAndExpired (String otp,  boolean expired);
 
 }
