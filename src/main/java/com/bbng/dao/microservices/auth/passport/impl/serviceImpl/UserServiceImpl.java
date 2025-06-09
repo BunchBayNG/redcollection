@@ -4,7 +4,6 @@ import com.bbng.dao.microservices.auth.auditlog.Events;
 import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogRequestDto;
 import com.bbng.dao.microservices.auth.auditlog.repository.AuditLogRepository;
 import com.bbng.dao.microservices.auth.auditlog.service.AuditLogService;
-import com.bbng.dao.microservices.auth.organization.entity.OrgStaffEntity;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrgStaffRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
@@ -12,22 +11,22 @@ import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.auth.passport.config.PassportUserDetailsService;
 import com.bbng.dao.microservices.auth.passport.dto.request.ChangePasswordDto;
 import com.bbng.dao.microservices.auth.passport.dto.request.LoginDto;
-import com.bbng.dao.microservices.auth.passport.dto.request.SignUpDto;
 import com.bbng.dao.microservices.auth.passport.dto.response.Authentication;
 import com.bbng.dao.microservices.auth.passport.dto.response.AuthenticationResponseDto;
 import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
+import com.bbng.dao.microservices.auth.passport.dto.response.MfaDto;
 import com.bbng.dao.microservices.auth.passport.entity.PermissionEntity;
 import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
 import com.bbng.dao.microservices.auth.passport.entity.TokenEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.enums.TokenType;
-import com.bbng.dao.microservices.auth.passport.enums.UserType;
 import com.bbng.dao.microservices.auth.passport.repository.RoleRepository;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
 import com.bbng.dao.microservices.auth.passport.service.UserService;
 import com.bbng.dao.util.email.entity.VerificationToken;
 import com.bbng.dao.util.email.repository.VerificationTokenRepository;
+import com.bbng.dao.util.email.service.EmailService;
 import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.exceptions.customExceptions.*;
@@ -35,7 +34,6 @@ import com.bbng.dao.util.response.ResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -82,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseDto<LoginResponseDto> login(LoginDto loginDto) {
+    public ResponseDto<MfaDto> login(LoginDto loginDto) {
         String token ="";
         String refreshToken = "";
         UserEntity user;
@@ -117,42 +115,56 @@ public class UserServiceImpl implements UserService {
                 .revoked(false)
                 .build();
 
-        var t = tokenRepository.save(tokenEntity);
+        tokenRepository.save(tokenEntity);
+
+        emailVerificationService.send2faEmail(loginDto.getEmail());
+
+                return ResponseDto.<MfaDto>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Login successful, Enter MFA code to verify your account")
+                .data(MfaDto
+                        .builder()
+                        .isLogin(true)
+                        .build())
+                .build();
+
+        //var t = tokenRepository.save(tokenEntity);
 
 //       OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElse(organizationRepository.findByOrganizationId(orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
-
+//
 //       if (organizationEntity == null){
 //           throw new ForbiddenException("User is not linked with any organization");
 //       }
-        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());  // current user
-
-
-        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
-                .userId(user.getId())
-                .userName(user.getUserName())
-                .merchantId(null)
-                .merchantName(null)
-                .userType(String.valueOf(user.getUsertype()))
-                .event(Events.LOGIN.name())
-                .dateTimeStamp(Instant.now())
-                .isDeleted(false)
-                .succeeded(true)
-                .build());
-
-        return ResponseDto.<LoginResponseDto>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Login successful")
-                .data(LoginResponseDto
-                        .builder()
-                        .accessToken(token)
-                        .refreshToken(refreshToken)
-                        .acctStatus(user.getAcctStatus().name())
-                        .userId(user.getId())
-                        .organizationId(org.get().getId())
-                        .isEmailVerified(user.getIsEnabled())
-                        .build())
-                .build();
+//        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());  // current user
+//
+//
+//        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+//                .userId(user.getId())
+//                .userName(user.getUserName())
+//                .merchantId(null)
+//                .merchantName(null)
+//                .userType(String.valueOf(user.getUsertype()))
+//                .event(Events.LOGIN.name())
+//                .dateTimeStamp(Instant.now())
+//                .isDeleted(false)
+//                .succeeded(true)
+//                .build());
+//
+//        return ResponseDto.<LoginResponseDto>builder()
+//                .statusCode(200)
+//                .status(true)
+//                .message("Login successful")
+//                .data(LoginResponseDto
+//                        .builder()
+//                        .accessToken(token)
+//                        .refreshToken(refreshToken)
+//                        .acctStatus(user.getAcctStatus().name())
+//                        .userId(user.getId())
+//                        .organizationId(org.get().getId())
+//                        .isEmailVerified(user.getIsEnabled())
+//                        .build())
+//                .build();
     }
 
 

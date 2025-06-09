@@ -1,0 +1,20 @@
+package com.bbng.dao.microservices.auth.passport.repository;
+
+import com.bbng.dao.microservices.auth.passport.entity.OtpEntity;
+import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
+import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface OTPRepository  extends JpaRepository<OtpEntity, String> {
+
+
+    Optional<OtpEntity> findByEmail (String email);
+    Optional<OtpEntity> findByOtpAndExpired (String otp,  boolean expired);
+
+}

@@ -3,6 +3,7 @@ package com.bbng.dao.util.email.service;
 
 
 
+import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
 import com.bbng.dao.util.email.dto.response.EmailResponseDto;
 import com.bbng.dao.util.response.ResponseDto;
 
@@ -12,8 +13,10 @@ import java.time.Instant;
 
 public interface EmailVerificationService {
     EmailResponseDto[] sendVerificationEmail(String toEmail);
+    EmailResponseDto[] send2faEmail(String toEmail);
     EmailResponseDto[] sendForgotPasswordMail(String toEmail);
     ResponseDto<String> verifyEmail(String verificationToken);
+    ResponseDto<LoginResponseDto> verify2faEmail(String verificationToken);
     EmailResponseDto[] sendInvitationEmail(String toEmail, String fromOrganization, String generatedPassword);
 
     EmailResponseDto[] sendWalletTopUpEmail(String toEmail, String transactionId, String organizationName, String userName, String userEmail, String userId, BigDecimal amount);

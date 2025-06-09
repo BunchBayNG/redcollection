@@ -1,10 +1,20 @@
 package com.bbng.dao.util.email.impl;
 
 
+import com.bbng.dao.microservices.auth.auditlog.Events;
+import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogRequestDto;
+import com.bbng.dao.microservices.auth.auditlog.service.AuditLogService;
+import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.organization.repository.OrgStaffRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
+import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
+import com.bbng.dao.microservices.auth.passport.entity.OtpEntity;
+import com.bbng.dao.microservices.auth.passport.entity.TokenEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.repository.OTPRepository;
+import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
 import com.bbng.dao.util.email.dto.request.EmailRequestDTO;
 import com.bbng.dao.util.email.dto.request.MailStructure;
@@ -18,6 +28,7 @@ import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.email.utils.Utils;
 import com.bbng.dao.util.exceptions.customExceptions.BadRequestException;
+import com.bbng.dao.util.exceptions.customExceptions.ForbiddenException;
 import com.bbng.dao.util.fileUpload.entity.HeaderLogoEntity;
 import com.bbng.dao.util.fileUpload.repository.HeaderLogoRepository;
 import com.bbng.dao.util.response.ResponseDto;
@@ -33,6 +44,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.bbng.dao.util.email.utils.Utils.*;
@@ -44,19 +57,15 @@ import static com.bbng.dao.util.email.utils.Utils.*;
 @NoArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
-    @Autowired
     private EmailService emailService;
-    @Autowired
     private VerificationTokenRepository verificationTokenRepository;
-    @Autowired
+
+    private OTPRepository otpRepository;
     private  UserRepository userRepository;
-    @Autowired
     private  OrganizationRepository organizationRepository;
-    @Autowired
     private  JavaMailService javaMailService;
-    @Autowired
     private  SystemConfigRepository systemConfigRepository;
-    @Autowired
+    private OrgStaffRepository orgStaffRepository;
     private HeaderLogoRepository headerLogoRepository;
 
 
@@ -65,6 +74,27 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     @Value("${redtech.url}")
     private String redtechUrl;
+    private TokenRepository tokenRepository;
+    private AuditLogService auditLogService;
+
+    @Autowired
+    public EmailVerificationServiceImpl(EmailService emailService, VerificationTokenRepository verificationTokenRepository,
+                                        OTPRepository otpRepository, UserRepository userRepository, AuditLogService auditLogService,
+                                        OrganizationRepository organizationRepository, JavaMailService javaMailService,
+                                        SystemConfigRepository systemConfigRepository, OrgStaffRepository orgStaffRepository,
+                                        HeaderLogoRepository headerLogoRepository, TokenRepository tokenRepository) {
+        this.emailService = emailService;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.otpRepository = otpRepository;
+        this.userRepository = userRepository;
+        this.organizationRepository = organizationRepository;
+        this.javaMailService = javaMailService;
+        this.systemConfigRepository = systemConfigRepository;
+        this.headerLogoRepository = headerLogoRepository;
+        this.orgStaffRepository = orgStaffRepository;
+        this.tokenRepository = tokenRepository;
+        this.auditLogService = auditLogService;
+    }
 
     @Override
     public EmailResponseDto[] sendVerificationEmail(String toEmail) {
@@ -105,6 +135,58 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         try {
             javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure, null);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
+        } catch (Exception e) {
+            log.info("Error sending mail {}", e.getMessage());
+            return new EmailResponseDto[]{EmailResponseDto.builder()
+                    .email(toEmail)
+                    .status("Error sending verification email.")
+                    .userId(null)
+                    .rejectReason("Email sending error")
+                    .queuedReason(null).build()};
+        }
+
+        return new EmailResponseDto[]{EmailResponseDto.builder()
+                .email(toEmail)
+                .status("Verification Email Sent.")
+                .userId(userEntity.getId())
+                .build()};
+    }
+
+
+    public EmailResponseDto[] send2faEmail(String toEmail) {
+        UserEntity userEntity = userRepository.findByEmail(toEmail)
+                .orElseThrow(() -> new BadRequestException("User with email: " + toEmail + " not found"));
+
+        if (userEntity == null) {
+            return new EmailResponseDto[]{EmailResponseDto.builder()
+                    .email(toEmail)
+                    .status("User does not exist. Verification email not sent.")
+                    .userId(null)
+                    .rejectReason("User does not exist")
+                    .queuedReason(null).build()};
+        }
+
+        OtpEntity userOtp = otpRepository.findByEmail(toEmail).orElse(new OtpEntity());
+        ///String sixDigitToken = String.format("%06d", new Random().nextInt(999999));
+        String sixDigitToken = "123456";
+        Instant creationTime = Instant.now();
+        Instant expirationTime = creationTime.plusSeconds(600);
+
+        userOtp.setEmail(toEmail);
+        userOtp.setOtp(sixDigitToken);
+        userOtp.setCreationTime(creationTime);
+        userOtp.setExpirationTime(expirationTime);
+        otpRepository.save(userOtp);
+
+        HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
+        MailStructure mailStructure = MailStructure.builder()
+                .subject("Multifactor Code Verification")
+                .htmlContent(verifyEmailHtmlContent(userEntity.getFirstName(), userOtp.getOtp(), logo.getUrl()))
+                .build();
+        ResponseEntity<EmailResponseDto[]> responseEntity = null;
+        try {
+            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure, null);
+
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
             return new EmailResponseDto[]{EmailResponseDto.builder()
@@ -173,6 +255,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             throw new BadRequestException("Token expired. Resend email");
         }
 
+
         UserEntity userEntity = userRepository.findByEmail(token.getEmail())
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
@@ -196,6 +279,85 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .data(String.format("Email verified for User with Id: %s", userEntity.getId()))
                 .build();
     }
+
+
+    public ResponseDto<LoginResponseDto> verify2faEmail(String verificationToken) {
+
+        ///String refreshToken ="";
+
+        if (verificationToken == null) {
+            throw new BadRequestException("Invalid verification token");
+        }
+        OtpEntity oTPToken = otpRepository.findByOtpAndExpired(verificationToken, false)
+                .orElseThrow(() -> new BadRequestException("Token expired"));
+
+        if (isTokenExpired(oTPToken.getOtp(), oTPToken.getExpirationTime())) {
+            oTPToken.setExpired(true);
+            throw new BadRequestException("Token expired. Resend email");
+        }
+
+        oTPToken.setExpired(true);
+
+        otpRepository.save(oTPToken);
+
+        Optional<UserEntity> userEntity = userRepository.findByEmail(oTPToken.getEmail());
+
+        if(userEntity.isEmpty()){
+            throw new BadRequestException("User not found");
+        }
+
+        UserEntity user = userEntity.get();
+//
+//        return ResponseDto.<String>builder()
+//                .statusCode(200)
+//                .status(true)
+//                .message("MFA Verified successfully")
+//                .data(String.format("2FA verified for User with Id: %s", token.getEmail()))
+//                .build();
+
+
+        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId())
+                .orElse(organizationRepository.findByOrganizationId(
+                        orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
+//
+//       if (organizationEntity == null){
+//           throw new ForbiddenException("User is not linked with any organization");
+//       }
+
+        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());  // current user
+
+
+
+        TokenEntity tokenEntity = tokenRepository.findByUserEntityAndExpiredFalseAndRevokedFalse(user).get();
+
+        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                .userId(user.getId())
+                .userName(user.getUserName())
+                .merchantId(null)
+                .merchantName(null)
+                .userType(String.valueOf(user.getUsertype()))
+                .event(Events.LOGIN.name())
+                .dateTimeStamp(Instant.now())
+                .isDeleted(false)
+                .succeeded(true)
+                .build());
+
+        return ResponseDto.<LoginResponseDto>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Login successful")
+                .data(LoginResponseDto
+                        .builder()
+                        .accessToken(tokenEntity.getToken())
+                        .refreshToken("")
+                        .acctStatus(user.getAcctStatus().name())
+                        .userId(user.getId())
+                        .organizationId(org.get().getId())
+                        .isEmailVerified(user.getIsEnabled())
+                        .build())
+                .build();
+    }
+
 
     @Override
     public EmailResponseDto[] sendInvitationEmail(String toEmail, String fromOrganization, String password) {

@@ -6,6 +6,7 @@ import com.bbng.dao.microservices.auth.passport.config.LogoutService;
 import com.bbng.dao.microservices.auth.passport.dto.request.ChangePasswordDto;
 import com.bbng.dao.microservices.auth.passport.dto.request.LoginDto;
 import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
+import com.bbng.dao.microservices.auth.passport.dto.response.MfaDto;
 import com.bbng.dao.microservices.auth.passport.service.UserService;
 import com.bbng.dao.util.email.dto.response.EmailResponseDto;
 import com.bbng.dao.util.email.service.EmailVerificationService;
@@ -38,7 +39,7 @@ public class PassportController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<LoginResponseDto>> userLogin(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<ResponseDto<MfaDto>> userLogin(@RequestBody @Valid LoginDto loginDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(loginDto));
     }
 
@@ -91,6 +92,12 @@ public class PassportController {
     @GetMapping("/verify-email")
     public ResponseEntity<ResponseDto<String>> verifyEmail(@RequestParam("token") String verificationToken) {
         return ResponseEntity.status(HttpStatus.OK).body(emailService.verifyEmail(verificationToken));
+    }
+
+
+    @GetMapping("/verify-login-otp")
+    public ResponseEntity<ResponseDto<LoginResponseDto>>  verifyLoginOtp(@RequestParam("otp") String otpToken) {
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.verify2faEmail(otpToken));
     }
 
 //
