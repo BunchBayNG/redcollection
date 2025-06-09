@@ -79,7 +79,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                 .firstName("Super")
                 .lastName("Admin")
                 .organizationName("REDTECH")
-                .email("admin@redtechlimited.com")
+                .email("cakpomughe@gmail.com")
                 .password(passwordEncoder.encode("123456Abc!"))
                 .build());
         createRedtechAdminPermissions();
