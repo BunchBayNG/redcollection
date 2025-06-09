@@ -117,7 +117,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public ResponseDto<List<UserResponseDto>> getAllStaffs(String merchantAdminId) {
+    public ResponseDto<List<UserResponseDto>> getAllStaff(String merchantAdminId) {
         //search the orgstaff repo and retrieve all the userId using the invitedById
        List<String> staffIds = orgStaffRepository.findUserIdByInvitedBy(merchantAdminId);
 
@@ -150,7 +150,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public ResponseDto<String> disableStff(String merchantAdminId, String staffId) {
+    public ResponseDto<String> disableStaff(String merchantAdminId, String staffId) {
         //get the user
         UserEntity userEntity = userRepository.findById(merchantAdminId).orElseThrow(() -> new UserNotFoundException("No user Found in the system with the provided merchantAdminId: "+ merchantAdminId));
         boolean isOrganisationAdmin = userEntity.getUsertype().equals(UserType.ORGANIZATION_ADMIN);

@@ -48,13 +48,11 @@ public class InvitationController {
     }
 
 
-
-
-    @GetMapping("get-staffs")
+    @GetMapping("get-staff")
     public ResponseEntity<ResponseDto<List<UserResponseDto>>> getAllOrgStaff(@RequestParam String merchantAdminId){
 
-        permissionService.checkPermission(request, "CAN_GET_STAFFS", jwtService);
-        return ResponseEntity.status(HttpStatus.OK).body(invitationService.getAllStaffs(merchantAdminId));
+        permissionService.checkPermission(request, "CAN_GET_STAFF", jwtService);
+        return ResponseEntity.status(HttpStatus.OK).body(invitationService.getAllStaff(merchantAdminId));
     }
 
     @PutMapping("disable-staff")
@@ -62,7 +60,15 @@ public class InvitationController {
 
         permissionService.checkPermission(request, "CAN_DISABLE_STAFF", jwtService);
 
-        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStff(merchantAdminId, staffId));
+        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStaff(merchantAdminId, staffId));
+    }
+
+    @PutMapping("onboard-org")
+    public ResponseEntity<ResponseDto<String>> onboardOrg(@RequestParam String merchantAdminId, @RequestParam String staffId){
+
+        permissionService.checkPermission(request, "CAN_ONBOARD_ORG", jwtService);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStaff(merchantAdminId, staffId));
     }
 
 
