@@ -182,6 +182,11 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
+    public ResponseDto<String> onboardOrg(String merchantAdminId, String staffId) {
+        return null;
+    }
+
+    @Override
     public ResponseDto<String> assignPermissionsToRole(AssignRoleRequestDto assignRoleRequestDto, DataInitializerServiceImpl dataInitializerService) {
         String adminId = assignRoleRequestDto.getAdminId();
         UserEntity admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException("No User Found with the given user id: "+ adminId));

@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 
        } catch (Exception e) {
            log.info("An exception Occurred");
-           throw new ForbiddenException(e.toString());
+           throw new ForbiddenException("Bad credentials, please check your username and password");
        }
 
 

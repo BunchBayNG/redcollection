@@ -19,7 +19,7 @@ public interface InvitationService {
     ResponseDto<List<UserResponseDto>> getAllStaff(String merchantAdminId);
 
     ResponseDto<String> disableStaff(String merchantAdminId, String staffId);
-    ResponseDto<String> onboardOrg                                                                                                                                                                                      (String merchantAdminId, String staffId);
+    ResponseDto<String> onboardOrg(String merchantAdminId, String staffId);
 
     ResponseDto<String> assignPermissionsToRole(AssignRoleRequestDto assignRoleRequestDto, DataInitializerServiceImpl dataInitializerService);
 
