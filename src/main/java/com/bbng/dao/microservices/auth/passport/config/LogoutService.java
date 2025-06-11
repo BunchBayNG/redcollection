@@ -1,4 +1,5 @@
 package com.bbng.dao.microservices.auth.passport.config;
+
 import com.bbng.dao.microservices.auth.passport.entity.TokenEntity;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class LogoutService implements LogoutHandler {
 
     private TokenRepository tokenRepository;
+
     @Override
     public void logout(HttpServletRequest request,
                        HttpServletResponse response,
@@ -21,12 +23,12 @@ public class LogoutService implements LogoutHandler {
 
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return;
         }
         String jwt = authHeader.substring(7);
         TokenEntity token = tokenRepository.findByToken(jwt).orElseThrow(() -> new ResourceNotFoundException("Token not found"));
-        if (token != null){
+        if (token != null) {
             token.setExpired(true);
             token.setRevoked(true);
             tokenRepository.save(token);

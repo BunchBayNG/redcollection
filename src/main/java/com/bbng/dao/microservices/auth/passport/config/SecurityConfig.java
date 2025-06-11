@@ -30,6 +30,11 @@ public class SecurityConfig {
     private LogoutService logoutService;
 
     @Bean
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
@@ -51,7 +56,6 @@ public class SecurityConfig {
         return source;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -70,7 +74,7 @@ public class SecurityConfig {
                                         "/webjars/**",
                                         "/swagger-ui.html",
                                         "/docs"
-                                        ).permitAll()
+                                ).permitAll()
                                 .anyRequest().authenticated());
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.logout(logout -> logout
@@ -80,14 +84,6 @@ public class SecurityConfig {
         );
 
         return http.build();
-    }
-
-
-
-
-    @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

@@ -75,6 +75,4 @@ public class Message {
     private Object images;
 
 
-
-
 }

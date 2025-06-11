@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.config;
 
 
-
 import com.bbng.dao.microservices.auth.passport.impl.setupImpl.DataInitializerServiceImpl;
 import com.bbng.dao.microservices.auth.passport.utils.SecurityConstants;
 import io.jsonwebtoken.Claims;
@@ -22,13 +21,14 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class JWTService {
-private final DataInitializerServiceImpl initializerService;
+    private final DataInitializerServiceImpl initializerService;
+    public long refreshExpiration = SecurityConstants.REFRESH_TOKEN_EXPIRATION;
 
     public JWTService(DataInitializerServiceImpl initializerService) {
         this.initializerService = initializerService;
     }
 
-    public Claims getAllClaims(String token){
+    public Claims getAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
@@ -57,9 +57,6 @@ private final DataInitializerServiceImpl initializerService;
                 .compact();
     }
 
-    public long refreshExpiration = SecurityConstants.REFRESH_TOKEN_EXPIRATION;
-
-
     public String generateRefreshToken(Map<String, Object> extraClaims, String username) {
         return Jwts.builder()
                 .setClaims(extraClaims)
@@ -83,13 +80,13 @@ private final DataInitializerServiceImpl initializerService;
         claims.put("roles", roles);
         claims.put("permissions", permissions);
         claims.put("email", userDetails.getUsername()); // Assuming getUsername() returns the email
-      log.info("username; {}",userDetails.getUsername());
+        log.info("username; {}", userDetails.getUsername());
         // Use the correct field (username or email) as the subject
         return generateToken(claims, userDetails);
     }
 
 
-    public String generateTokenWithClaims(String username, Map<String,Object> claims){
+    public String generateTokenWithClaims(String username, Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)

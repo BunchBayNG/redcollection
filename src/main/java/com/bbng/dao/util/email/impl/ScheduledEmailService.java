@@ -49,12 +49,12 @@ public class ScheduledEmailService {
         List<UserEntity> merchants = userRepository.getAllUsers();
 
 
-        for(UserEntity user: merchants){
-           Optional<OrganizationEntity> organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId());
-           String organizationId = "";
-           if(organizationEntity.isPresent()){
-               organizationId = organizationEntity.get().getId();
-           }
+        for (UserEntity user : merchants) {
+            Optional<OrganizationEntity> organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId());
+            String organizationId = "";
+            if (organizationEntity.isPresent()) {
+                organizationId = organizationEntity.get().getId();
+            }
             EmailRequestDTO emailRequestDTO = buildEmailRequest(user.getEmail(), user, organizationId);
             javaMailService.sendGridHtmlContent(user.getEmail(), MailStructure.builder()
                     .htmlContent(emailRequestDTO.getMessage().getHtml())
@@ -80,17 +80,17 @@ public class ScheduledEmailService {
         double successfulTransactionPercentage = 0.0;
 
         double failedTransactionPercentage = 0.0;
-    log.info("generating Html contents");
+        log.info("generating Html contents");
 
-    // get the public id;
+        // get the public id;
         HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
-       String url =  logo.getUrl();
-       if (url == null || url.isEmpty()){
-           url = "https://res.cloudinary.com/bunchbay/image/upload/v1731115765/redtech_HeaderLogo/byw0qnu5jr1cuzbxabmh.png";
-       }
+        String url = logo.getUrl();
+        if (url == null || url.isEmpty()) {
+            url = "https://res.cloudinary.com/bunchbay/image/upload/v1731115765/redtech_HeaderLogo/byw0qnu5jr1cuzbxabmh.png";
+        }
 
 
-    //Generate Html content
+        //Generate Html content
 //        String htmlContent = Utils.generateHtmlContent(userName, reportDate, totalTransactions,
 //                totalCommissionEarns, totalWalletSpending, totalCommissionPercent, successfulTransactionPercentage,
 //                failedTransactionPercentage, user.getEmail(), url);
@@ -99,7 +99,7 @@ public class ScheduledEmailService {
         //Build and emailRequestDto
         try {
             log.info("building emailRequestDto");
-           ByteArrayOutputStream pdfFile =  PdfGenerator.createCommissionReportPdf(
+            ByteArrayOutputStream pdfFile = PdfGenerator.createCommissionReportPdf(
                     url,
                     "Commission Report Receipt",
                     reportDate,
@@ -110,7 +110,7 @@ public class ScheduledEmailService {
                     0
 
             );
-           log.info("Adding attachment");
+            log.info("Adding attachment");
             Attachments pdfAttachment = new Attachments();
             pdfAttachment.setContent(Base64.getEncoder().encodeToString(pdfFile.toByteArray()));
             pdfAttachment.setType("application/pdf");
@@ -139,7 +139,7 @@ public class ScheduledEmailService {
             emailRequestDTO.setAsync("false");
 
             return emailRequestDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("An error occurred while trying to send message: {}", e.getMessage());
             throw new InternalServerException(e.getMessage());
         }

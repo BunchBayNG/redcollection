@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.entity;
 
 
-
 import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -39,10 +39,10 @@ public class InvitationController {
     private final HttpServletRequest request;
     private final DataInitializerServiceImpl dataInitializerService;
     private final UserRepository userRepository;
-    private  final JWTService jwtService;
+    private final JWTService jwtService;
 
     @PostMapping("invite-user")
-    public ResponseEntity<ResponseDto<String>> inviteUser(@RequestBody InviteRequestDto inviteRequestDto){
+    public ResponseEntity<ResponseDto<String>> inviteUser(@RequestBody InviteRequestDto inviteRequestDto) {
 
         // make sure it's only those that have this permissions can actually access this route
         permissionService.checkPermission(request, "CAN_INVITE_STAFF", jwtService);
@@ -51,47 +51,47 @@ public class InvitationController {
 
 
     @GetMapping("get-staff")
-    public ResponseEntity<ResponseDto<List<UserResponseDto>>> getAllOrgStaff(@RequestParam String merchantAdminId){
+    public ResponseEntity<ResponseDto<List<UserResponseDto>>> getAllOrgStaff(@RequestParam String merchantAdminId) {
 
         permissionService.checkPermission(request, "CAN_GET_STAFF", jwtService);
         return ResponseEntity.status(HttpStatus.OK).body(invitationService.getAllStaff(merchantAdminId));
     }
 
     @PutMapping("disable-staff")
-    public ResponseEntity<ResponseDto<String>> disableStaff(@RequestParam String merchantAdminId, @RequestParam String staffId){
+    public ResponseEntity<ResponseDto<String>> disableStaff(@RequestParam String merchantAdminId, @RequestParam String staffId) {
 
         permissionService.checkPermission(request, "CAN_DISABLE_STAFF", jwtService);
 
-        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStaff(merchantAdminId, staffId));
+        return ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStaff(merchantAdminId, staffId));
     }
 
     @PutMapping("onboard-org")
-    public ResponseEntity<ResponseDto<String>> onboardOrg(@RequestBody OnboardOrgDto onboardOrgDto){
+    public ResponseEntity<ResponseDto<String>> onboardOrg(@RequestBody OnboardOrgDto onboardOrgDto) {
 
         permissionService.checkPermission(request, "CAN_ONBOARD_ORG", jwtService);
 
-        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.onboardOrg(onboardOrgDto));
+        return ResponseEntity.status(HttpStatus.OK).body(invitationService.onboardOrg(onboardOrgDto));
     }
 
 
     @PutMapping("remove-permission")
-    public ResponseEntity<ResponseDto<String>> removePermission(@RequestParam String merchantAdminId, @RequestParam Long permissionId){
+    public ResponseEntity<ResponseDto<String>> removePermission(@RequestParam String merchantAdminId, @RequestParam Long permissionId) {
 
         permissionService.checkPermission(request, "CAN_REMOVE_PERMISSION", jwtService);
         String username = extractTokenFromHeader();
-        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.disablePermission(username, merchantAdminId, permissionId));
+        return ResponseEntity.status(HttpStatus.OK).body(invitationService.disablePermission(username, merchantAdminId, permissionId));
     }
 
     @PutMapping("assign-role")
-    public ResponseEntity<ResponseDto<String>> assignRole(@RequestBody AssignRoleRequestDto assignRoleRequestDto){
+    public ResponseEntity<ResponseDto<String>> assignRole(@RequestBody AssignRoleRequestDto assignRoleRequestDto) {
         // check if roleId is present, if it's not present, then the merchant want to create a new Role
-       if(assignRoleRequestDto.getRoleId() == null || assignRoleRequestDto.getRoleId().isEmpty()){
+        if (assignRoleRequestDto.getRoleId() == null || assignRoleRequestDto.getRoleId().isEmpty()) {
 
-           permissionService.checkPermission(request, "CAN_CREATE_ROLE", jwtService);
-           // create roles
-           log.info("creating new roles");
-           return ResponseEntity.status(HttpStatus.OK).body(invitationService.createRoleWithPermissions(assignRoleRequestDto, dataInitializerService));
-       }
+            permissionService.checkPermission(request, "CAN_CREATE_ROLE", jwtService);
+            // create roles
+            log.info("creating new roles");
+            return ResponseEntity.status(HttpStatus.OK).body(invitationService.createRoleWithPermissions(assignRoleRequestDto, dataInitializerService));
+        }
 
         permissionService.checkPermission(request, "CAN_ASSIGN_PERMISSIONS", jwtService);
 
@@ -100,19 +100,19 @@ public class InvitationController {
 
 
     public void givePermissionToAdmins(HttpServletRequest request, Optional<PermissionEntity> permissionEntityOptional, boolean giveToredtechStaff) {
-        if (permissionEntityOptional.isPresent()){
+        if (permissionEntityOptional.isPresent()) {
             //extract token from request
             String userName = GetUserFromToken.extractTokenFromHeader(request, jwtService);
             UserEntity user = userRepository.findByUsernameOrEmail(userName, null).orElseThrow(() -> new
                     UserNotFoundException("Can't get user form your token. Is user already redtech user?"));
             boolean admin;
-            if(giveToredtechStaff){
-                admin =  user.getUsertype().equals(UserType.SUPER_ADMIN) ||  user.getUsertype().equals(UserType.ORGANIZATION_ADMIN) ||  user.getUsertype().equals(UserType.REDTECH_STAFF);
+            if (giveToredtechStaff) {
+                admin = user.getUsertype().equals(UserType.SUPER_ADMIN) || user.getUsertype().equals(UserType.ORGANIZATION_ADMIN) || user.getUsertype().equals(UserType.REDTECH_STAFF);
                 //get his roles and check if he alred has this permission, if not give it that permission, else no nothing
-                if(admin){
+                if (admin) {
                     log.info("its allowed user to create roles");
                     boolean hasPermissionAlready = user.getRoleEntities().stream().map(RoleEntity::getPermissions).anyMatch(permissionEntities -> permissionEntities.contains(permissionEntityOptional.get()));
-                    if (!hasPermissionAlready){
+                    if (!hasPermissionAlready) {
                         log.info("no match found creating roles");
                         dataInitializerService.createRoleAndAssignPermissions("ROLE_ORGANIZATION_ADMIN", List.of(permissionEntityOptional.get()));
                         dataInitializerService.createRoleAndAssignPermissions("ROLE_REDTECH_STAFF", List.of(permissionEntityOptional.get()));
@@ -121,12 +121,12 @@ public class InvitationController {
                 }
 
 
-            }else{
-                admin =  user.getUsertype().equals(UserType.SUPER_ADMIN) ||  user.getUsertype().equals(UserType.ORGANIZATION_ADMIN);
-                if(admin){
+            } else {
+                admin = user.getUsertype().equals(UserType.SUPER_ADMIN) || user.getUsertype().equals(UserType.ORGANIZATION_ADMIN);
+                if (admin) {
                     log.info("its allowed user to create roles");
                     boolean hasPermissionAlready = user.getRoleEntities().stream().map(RoleEntity::getPermissions).anyMatch(permissionEntities -> permissionEntities.contains(permissionEntityOptional.get()));
-                    if (!hasPermissionAlready){
+                    if (!hasPermissionAlready) {
                         log.info("no match found creating roles");
                         dataInitializerService.createRoleAndAssignPermissions("ROLE_ORGANIZATION_ADMIN", List.of(permissionEntityOptional.get()));
                         dataInitializerService.createRoleAndAssignPermissions("ROLE_SUPER_ADMIN", List.of(permissionEntityOptional.get()));
@@ -135,15 +135,15 @@ public class InvitationController {
             }
 
 
-
         }
 
 
     }
-    private String extractTokenFromHeader(){
+
+    private String extractTokenFromHeader() {
         // get the header
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer")){
+        if (header == null || !header.startsWith("Bearer")) {
             throw new UnauthorizedException("You are not authorized to make this request, please log in!");
         }
         //get the token

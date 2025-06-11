@@ -16,16 +16,16 @@ import java.util.Map;
 public interface EmailService {
     /**
      * @param emailRequest- EmailRequestDTO Object
-     *          The Message Object has compulsory fields to be included in each request
-     *                    1. fromEmail
-     *                    2. fromName
-     *                    3. to:
+     *                      The Message Object has compulsory fields to be included in each request
+     *                      1. fromEmail
+     *                      2. fromName
+     *                      3. to:
      *                      3a. email
      *                      3b. name
      *                      3c. type
-     *                    4.html--- Using html template
-     *                    5. subject
-     *                    6. EmailType
+     *                      4.html--- Using html template
+     *                      5. subject
+     *                      6. EmailType
      */
     ResponseEntity<String> sendGridSimpleMail(EmailRequestDTO emailRequest) throws IOException;
 

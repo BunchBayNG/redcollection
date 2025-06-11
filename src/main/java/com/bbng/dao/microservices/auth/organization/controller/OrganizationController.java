@@ -119,10 +119,10 @@ public class OrganizationController {
 //    }
 
     @GetMapping("merchant/org-management/get-organizationBy-orgId")
-    public  ResponseEntity<ResponseDto<OrganizationEntity>> getOrganizationByUserId(@RequestParam String orgId){
+    public ResponseEntity<ResponseDto<OrganizationEntity>> getOrganizationByUserId(@RequestParam String orgId) {
         log.info("assigning permissions for get organisation by userId");
 
-        permissionService.checkPermission(request,"GET_ORGANIZATION_BY_USERID", jwtService);
+        permissionService.checkPermission(request, "GET_ORGANIZATION_BY_USERID", jwtService);
         return ResponseEntity.status(HttpStatus.OK).body(organizationService.getOrganizationByUserId(orgId));
     }
 
@@ -142,8 +142,6 @@ public class OrganizationController {
 //        permissionService.checkPermission(request,"ADMIN_GET_KYC_STATS", jwtService);
 //        return ResponseEntity.status(HttpStatus.OK).body(organizationService.getKycStats());
 //    }
-
-
 
 
 }

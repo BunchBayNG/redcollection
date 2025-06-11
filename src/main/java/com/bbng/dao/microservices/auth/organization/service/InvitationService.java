@@ -18,6 +18,7 @@ public interface InvitationService {
     ResponseDto<List<UserResponseDto>> getAllStaff(String merchantAdminId);
 
     ResponseDto<String> disableStaff(String merchantAdminId, String staffId);
+
     ResponseDto<String> onboardOrg(OnboardOrgDto onboardOrgDto);
 
     ResponseDto<String> assignPermissionsToRole(AssignRoleRequestDto assignRoleRequestDto, DataInitializerServiceImpl dataInitializerService);

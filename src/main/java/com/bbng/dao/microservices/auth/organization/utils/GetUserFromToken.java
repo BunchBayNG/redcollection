@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 
 public class GetUserFromToken {
-    public static String extractTokenFromHeader(HttpServletRequest request, JWTService jwtService){
+    public static String extractTokenFromHeader(HttpServletRequest request, JWTService jwtService) {
         // get the header
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer")){
+        if (header == null || !header.startsWith("Bearer")) {
             throw new UnauthorizedException("You are not authorized to make this request, please log in!");
         }
         //get the token

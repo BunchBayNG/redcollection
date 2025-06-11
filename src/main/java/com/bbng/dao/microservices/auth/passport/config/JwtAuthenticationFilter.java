@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
-
     /**
      * the request, the response, consider filter chain like a pointer to the next filter in the chain
      * extract the authorization details from the request.
@@ -85,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("filtering request");
             filterChain.doFilter(request, response);
             log.info("done with apiKey");
-        }else {
+        } else {
             // Proceed with JWT processing for non-API-key tokens
             log.info("still procceed with jwt");
             String username;

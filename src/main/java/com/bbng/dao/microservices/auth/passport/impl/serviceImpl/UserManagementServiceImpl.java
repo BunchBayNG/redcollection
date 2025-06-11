@@ -32,10 +32,9 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserRepository userRepository;
     private final UserFilterSpec userFilterSpec;
-    private FileAndImageUploadService fileAndImageUploadService;
     private final OrganizationRepository organizationRepository;
     private final OrgStaffRepository orgStaffRepository;
-
+    private FileAndImageUploadService fileAndImageUploadService;
 
     @Override
     public ResponseDto<String> updateUserProfile(UserProfileUpdateRequestDto userProfileUpdateRequestDto) {
@@ -84,7 +83,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public ResponseDto<UserProfileDto> getUserProfile(String userId) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("No User Found with the given userId: "+ userId));
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("No User Found with the given userId: " + userId));
         UserProfileDto userProfileDto = new UserProfileDto();
         userProfileDto.setFirstName(user.getFirstName());
         userProfileDto.setLastName(user.getLastName());
@@ -104,7 +103,6 @@ public class UserManagementServiceImpl implements UserManagementService {
                 .statusCode(200)
                 .message("User Profile successfully retrieved!")
                 .data(userProfileDto).build();
-
 
 
     }

@@ -27,8 +27,8 @@ public class UserManagementController {
     @PutMapping(value = "update-user", consumes = "multipart/form-data")
     ResponseEntity<ResponseDto<String>> updateUserProfile(
             @RequestParam String userId,
-    @RequestParam(required = false) MultipartFile logoUrl
-    ){
+            @RequestParam(required = false) MultipartFile logoUrl
+    ) {
         var userProfileUpdateRequestDto = UserProfileUpdateRequestDto.builder()
                 .userId(userId)
                 .logoUrl(logoUrl).build();
@@ -54,7 +54,7 @@ public class UserManagementController {
     }
 
     @GetMapping("get-user-profile")
-    public ResponseEntity<ResponseDto<UserProfileDto>> getUserProfile(@RequestParam String userId){
+    public ResponseEntity<ResponseDto<UserProfileDto>> getUserProfile(@RequestParam String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userManagementService.getUserProfile(userId));
     }
 

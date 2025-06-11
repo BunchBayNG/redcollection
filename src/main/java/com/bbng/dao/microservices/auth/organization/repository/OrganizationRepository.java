@@ -23,6 +23,7 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
 
     @Query("Select o from OrganizationEntity  o where o.contactEmail = ?1")
     Optional<OrganizationEntity> findByContactEmail(String email);
+
     @Query("select (count(o) > 0) from OrganizationEntity o where o.organizationName = ?1")
     boolean existsByorganizationName(String organizationName);
 

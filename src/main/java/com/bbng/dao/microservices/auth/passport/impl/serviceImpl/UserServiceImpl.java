@@ -61,10 +61,16 @@ import java.util.regex.Pattern;
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class UserServiceImpl implements UserService {
-    private final AuditLogRepository auditLogRepository;
-
+    private final static String WRONG_PASSWORD_FORMAT = """
+                        Please pass at least one digit.
+                        At least one lowercase letter.
+                        At least one uppercase letter.
+                        At least one special character from the specified set (@, #, $, %, ^, &, +, =, !, -, _)
+                        No whitespace characters.
+                        The overall length of the password must be between 8 and 20 characters.")
+            """;
     public final String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!-_])(?=\\S+$).{8,20}$";
-
+    private final AuditLogRepository auditLogRepository;
     private final PassportUserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -79,32 +85,35 @@ public class UserServiceImpl implements UserService {
     private final AuditLogService auditLogService;
     private final OrgStaffRepository orgStaffRepository;
 
-
+    public static String generateRandomDigits() {
+        int randomDigits = 1000 + new SecureRandom().nextInt(9000);
+        return String.valueOf(randomDigits);
+    }
 
     @Override
     public ResponseDto<MfaDto> login(LoginDto loginDto) {
-        String token ="";
+        String token = "";
         String refreshToken = "";
         UserEntity user;
-       try {
-           org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
-           SecurityContextHolder.getContext().setAuthentication(authentication);
-           log.info("authentication name {}", authentication.getName());
-           log.info("authentication principal {}", authentication.getPrincipal());
-           user = userRepository.findByUsernameOrEmail(loginDto.getEmail(), loginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException(String.format("User with %s not found", loginDto.getEmail())));
-           log.info("user email {}", user.getEmail());
+        try {
+            org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("authentication name {}", authentication.getName());
+            log.info("authentication principal {}", authentication.getPrincipal());
+            user = userRepository.findByUsernameOrEmail(loginDto.getEmail(), loginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException(String.format("User with %s not found", loginDto.getEmail())));
+            log.info("user email {}", user.getEmail());
 
-           Map<String, Object> claims = generateHashMap(loginDto.getEmail());
+            Map<String, Object> claims = generateHashMap(loginDto.getEmail());
             token = jwtService.generateTokenWithClaims(authentication.getName(), claims);
-          refreshToken = jwtService.generateRefreshToken(claims, authentication.getName());
+            refreshToken = jwtService.generateRefreshToken(claims, authentication.getName());
 
-          log.info("token {}", token);
-          log.info("refreshToken {}", refreshToken);
+            log.info("token {}", token);
+            log.info("refreshToken {}", refreshToken);
 
-       } catch (Exception e) {
-           log.info("An exception Occurred");
-           throw new ForbiddenException("Bad credentials, please check your username and password");
-       }
+        } catch (Exception e) {
+            log.info("An exception Occurred");
+            throw new ForbiddenException("Bad credentials, please check your username and password");
+        }
 
 
         revokeValidTokens(user);
@@ -121,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
         emailVerificationService.send2faEmail(loginDto.getEmail());
 
-                return ResponseDto.<MfaDto>builder()
+        return ResponseDto.<MfaDto>builder()
                 .statusCode(200)
                 .status(true)
                 .message("Login successful, Enter MFA code to verify your account")
@@ -168,7 +177,6 @@ public class UserServiceImpl implements UserService {
 //                .build();
     }
 
-
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -211,6 +219,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+//
+//    @Override
+//    public UserResponseDto editUser(String email, UserRequestDto userRequestDTO) {
+//        UserEntity userEntity = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new UserNotFoundException("User not found"));
+//        UsersMapper.mapToUserEntity(userRequestDTO, userEntity);
+//        userRepository.save(userEntity);
+//        UserResponseDto userResponseDto = new UserResponseDto();
+//
+//        return UsersMapper.mapToUserResponseDto(userEntity, userResponseDto);
+//
+//    }
+
     @Override
     public ResponseDto<String> changePassword(ChangePasswordDto changePasswordDto) {
 
@@ -245,7 +266,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-
     @Override
     public ResponseDto<String> resetPassword(String token, String newPassword, String confirmPassword) {
 
@@ -261,7 +281,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Both passwords do not match");
         }
 
-        if(passwordEncoder.matches(newPassword, user.getPassword())){
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
             throw new BadRequestException("Can't use your old password");
         }
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -289,19 +309,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-//
-//    @Override
-//    public UserResponseDto editUser(String email, UserRequestDto userRequestDTO) {
-//        UserEntity userEntity = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new UserNotFoundException("User not found"));
-//        UsersMapper.mapToUserEntity(userRequestDTO, userEntity);
-//        userRepository.save(userEntity);
-//        UserResponseDto userResponseDto = new UserResponseDto();
-//
-//        return UsersMapper.mapToUserResponseDto(userEntity, userResponseDto);
-//
-//    }
-
     private void revokeValidTokens(UserEntity user) {
 
         List<TokenEntity> tokenEntities = tokenRepository.findAllValidTokensByUserId(user.getId());
@@ -315,21 +322,11 @@ public class UserServiceImpl implements UserService {
         tokenRepository.saveAll(tokenEntities);
     }
 
-
     private boolean isInputValid(String input, String regex) {
         return Pattern.compile(regex)
                 .matcher(input)
                 .matches();
     }
-
-    private final static String WRONG_PASSWORD_FORMAT = """
-                        Please pass at least one digit.
-                        At least one lowercase letter.
-                        At least one uppercase letter.
-                        At least one special character from the specified set (@, #, $, %, ^, &, +, =, !, -, _)
-                        No whitespace characters.
-                        The overall length of the password must be between 8 and 20 characters.")
-            """;
 
     private Map<String, Object> generateHashMap(String username) {
 
@@ -350,11 +347,6 @@ public class UserServiceImpl implements UserService {
         claims.put("permissions", userPermissions);
         claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
         return claims;
-    }
-
-    public static String generateRandomDigits() {
-        int randomDigits = 1000 + new SecureRandom().nextInt(9000);
-        return String.valueOf(randomDigits);
     }
 
 }

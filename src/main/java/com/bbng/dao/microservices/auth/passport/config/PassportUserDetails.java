@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.config;
 
 
-
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

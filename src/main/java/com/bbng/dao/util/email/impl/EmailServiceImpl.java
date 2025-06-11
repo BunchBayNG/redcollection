@@ -44,29 +44,33 @@ import java.util.Map;
 @AllArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
+    private final EmailRepository emailRepository;
+    private final Cloudinary cloudinary;
+    private final HeaderLogoRepository headerLogoRepository;
     @Value("${SENDGRID_API_KEY}")
     private String key;
     @Value("${mail.from}")
     private String fromEmail;
 
     @Autowired
-    private final EmailRepository emailRepository;
-    @Autowired
-    private final Cloudinary cloudinary;
-    @Autowired
-    private final HeaderLogoRepository headerLogoRepository;
+    public EmailServiceImpl(EmailRepository emailRepository, Cloudinary cloudinary, HeaderLogoRepository headerLogoRepository) {
+        this.emailRepository = emailRepository;
+        this.cloudinary = cloudinary;
+        this.headerLogoRepository = headerLogoRepository;
+    }
+
     /**
      * @param - EmailRequestDTO Object
      *          The Message Object has compulsory fields to be included in each request
-     *                    1. fromEmail
-     *                    2. fromName
-     *                    3. to:
-     *                      3a. email
-     *                      3b. name
-     *                      3c. type
-     *                    4.html--- Using html template
-     *                    5. subject
-     *                    6. EmailType
+     *          1. fromEmail
+     *          2. fromName
+     *          3. to:
+     *          3a. email
+     *          3b. name
+     *          3c. type
+     *          4.html--- Using html template
+     *          5. subject
+     *          6. EmailType
      */
 //    @Override
 //    public ResponseEntity<EmailResponseDto[]> sendSimpleMail(EmailRequestDTO emailRequest) {
@@ -136,18 +140,17 @@ public class EmailServiceImpl implements EmailService {
 //        return ResponseEntity.ok().body(emailResponses);
 //
 //    }
-
     @Override
-    public ResponseDto<Map<String, String>> uploadHeaderLogo(HeaderLogoRequestDto headerLogoRequest)  {
+    public ResponseDto<Map<String, String>> uploadHeaderLogo(HeaderLogoRequestDto headerLogoRequest) {
         Map<String, Object> uploadParams = ObjectUtils.asMap(
                 "folder", "redtech_HeaderLogo",
                 "resource_type", "auto"
         );
         Map<?, ?> uploadResult = new HashMap<>();
-        try{
+        try {
             uploadResult = cloudinary.uploader().upload(headerLogoRequest.getHeaderLogo().getBytes(), uploadParams);
-        }catch (Exception e){
-            throw new InternalServerException("error occurred: "+ e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerException("error occurred: " + e.getMessage());
         }
 
         // Retrieve the URL and public ID from the upload result
@@ -190,11 +193,10 @@ public class EmailServiceImpl implements EmailService {
         mail.addContent(content);
 
 
-
         // Add multiple recipients using Personalization
         Personalization personalization = new Personalization();
 
-        for(String recipientEmail: mailStructure.getRecipients()){
+        for (String recipientEmail : mailStructure.getRecipients()) {
             Email to = new Email(recipientEmail);
             personalization.addTo(to);
         }
@@ -202,16 +204,16 @@ public class EmailServiceImpl implements EmailService {
 
 
         try {
-            if (attachments != null){
-            for (MultipartFile attachment: attachments){
-                Attachments sendGridAttachment = new Attachments();
-                sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachment.getBytes()));
-                sendGridAttachment.setType(attachment.getContentType());
-                sendGridAttachment.setFilename(attachment.getOriginalFilename());
-                sendGridAttachment.setDisposition("Attachment");
-                mail.addAttachments(sendGridAttachment);
+            if (attachments != null) {
+                for (MultipartFile attachment : attachments) {
+                    Attachments sendGridAttachment = new Attachments();
+                    sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachment.getBytes()));
+                    sendGridAttachment.setType(attachment.getContentType());
+                    sendGridAttachment.setFilename(attachment.getOriginalFilename());
+                    sendGridAttachment.setDisposition("Attachment");
+                    mail.addAttachments(sendGridAttachment);
+                }
             }
-        }
             // Create a SendGrid client and send the email
             SendGrid sg = new SendGrid(key);
             Request request = new Request();
@@ -253,34 +255,37 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-    public String getHeaderLogoUrl(String publicId){
+    public String getHeaderLogoUrl(String publicId) {
         // Create a transformed URL with the publicId
-       return cloudinary.url()
-               .transformation(new Transformation().width(600).height(150).crop("fill"))
-               .generate(publicId);
+        return cloudinary.url()
+                .transformation(new Transformation().width(600).height(150).crop("fill"))
+                .generate(publicId);
 
     }
 
-    private String getSubject(String subject){
-        if (subject == null || subject.isEmpty()){
+    private String getSubject(String subject) {
+        if (subject == null || subject.isEmpty()) {
             throw new BadRequestException("Subject must not be empty");
         }
         return subject;
     }
-    private String getHtml(String text){
-        if (text == null || text.isEmpty()){
+
+    private String getHtml(String text) {
+        if (text == null || text.isEmpty()) {
             throw new BadRequestException("Text or HTML must not be empty");
         }
         return text;
     }
-    private String getFromName(String fromName){
-        if (fromName == null || fromName.isEmpty()){
+
+    private String getFromName(String fromName) {
+        if (fromName == null || fromName.isEmpty()) {
             throw new BadRequestException("Sender Name must not be empty");
         }
         return fromName;
     }
-    private List<To> getTo(List<To> receiver){
-        if (receiver == null ){
+
+    private List<To> getTo(List<To> receiver) {
+        if (receiver == null) {
             throw new BadRequestException("Receiver Email must not be empty");
         }
         return receiver;
@@ -305,14 +310,14 @@ public class EmailServiceImpl implements EmailService {
 
         Personalization personalization = new Personalization();
 
-        for(To recipientEmail: emailRequest.getMessage().getTo()){
+        for (To recipientEmail : emailRequest.getMessage().getTo()) {
             Email to = new Email(recipientEmail.getEmail());
             personalization.addTo(to);
         }
         mail.addPersonalization(personalization);
 
-        if (emailRequest.getMessage().getAttachments() != null){
-            for (Attachments attachments: emailRequest.getMessage().getAttachments()){
+        if (emailRequest.getMessage().getAttachments() != null) {
+            for (Attachments attachments : emailRequest.getMessage().getAttachments()) {
                 Attachments sendGridAttachment = new Attachments();
                 sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachments.getContent().getBytes()));
                 sendGridAttachment.setType(attachments.getType());

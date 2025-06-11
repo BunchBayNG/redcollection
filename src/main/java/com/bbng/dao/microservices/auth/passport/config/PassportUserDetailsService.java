@@ -20,9 +20,9 @@ public class PassportUserDetailsService implements UserDetailsService {
 //       UserEntity user = userRepository.findByUsernameOrEmail(username, username).orElseThrow(() -> new UsernameNotFoundException(String.format("No such user with %s found", username)));
 
 //        return new PassportUserDetails(user);
-       var user = userRepository.findByUsernameOrEmail(username, username);
-      
+        var user = userRepository.findByUsernameOrEmail(username, username);
 
-       return user.map(PassportUserDetails::new).orElseThrow(() -> new UsernameNotFoundException(String.format("No such user with %s found", username)));
+
+        return user.map(PassportUserDetails::new).orElseThrow(() -> new UsernameNotFoundException(String.format("No such user with %s found", username)));
     }
 }

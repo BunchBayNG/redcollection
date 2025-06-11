@@ -25,7 +25,7 @@ public class PermissionService {
     private final UserRepository userRepository;
 
     public Optional<PermissionEntity> createPermissionIfNotFound(String name, String description) {
-        Optional<PermissionEntity> permissionOptional = permissionRepository.findByNameOrDescription(name,description);
+        Optional<PermissionEntity> permissionOptional = permissionRepository.findByNameOrDescription(name, description);
 
         if (permissionOptional.isEmpty()) {
             PermissionEntity permission = PermissionEntity.builder()
@@ -69,17 +69,17 @@ public class PermissionService {
     public void checkPermission(HttpServletRequest request, String permissionName, JWTService jwtService) {
         PermissionEntity permissionEntityOptional =
                 permissionRepository.findByNameOrDescription(permissionName, null).orElseThrow(() ->
-                        new ResourceNotFoundException("No permission found for the given name: "+ permissionName));
-        String username =GetUserFromToken.extractTokenFromHeader(request, jwtService);
+                        new ResourceNotFoundException("No permission found for the given name: " + permissionName));
+        String username = GetUserFromToken.extractTokenFromHeader(request, jwtService);
 
         UserEntity user = userRepository.findByUsernameOrEmail(username, null).orElseThrow(() ->
                 new UserNotFoundException("Can't find user with the username extracted from token. Is user a redtech user?"));
-       boolean hasPermission = user.getRoleEntities().stream().map(RoleEntity::getPermissions).anyMatch(permissionEntities ->
+        boolean hasPermission = user.getRoleEntities().stream().map(RoleEntity::getPermissions).anyMatch(permissionEntities ->
                 permissionEntities.contains(permissionEntityOptional));
 
-       if(!hasPermission) {
-           throw new ForbiddenException("You do not have the necessary permission for this operation");
-       }
+        if (!hasPermission) {
+            throw new ForbiddenException("You do not have the necessary permission for this operation");
+        }
     }
 
 }

@@ -1,7 +1,6 @@
 package com.bbng.dao.util.email.entity;
 
 
-
 import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

@@ -73,7 +73,7 @@ public class UserFilterSpec {
             Optional<String> firstName,
             Optional<String> lastName,
             Optional<String> usertype
-            ) {
+    ) {
 
         return Specification
                 .where(findById(id))

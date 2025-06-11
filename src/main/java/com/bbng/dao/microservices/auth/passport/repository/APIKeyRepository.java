@@ -17,6 +17,8 @@ public interface APIKeyRepository extends JpaRepository<ApiKeyEntity, Long> {
     boolean existsByLiveKey(String liveKey);
 
     List<ApiKeyEntity> findByUserId(String id);
+
     Optional<ApiKeyEntity> findByTestKey(String testKey);
+
     Optional<ApiKeyEntity> findByLiveKey(String liveKey);
 }

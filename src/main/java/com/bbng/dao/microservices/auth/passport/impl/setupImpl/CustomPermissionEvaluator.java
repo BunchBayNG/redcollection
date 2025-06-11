@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.impl.setupImpl;
 
 
-
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.repository.PermissionRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;

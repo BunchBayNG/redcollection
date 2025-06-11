@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.controller;
 
 
-
 import com.bbng.dao.microservices.auth.passport.config.LogoutService;
 import com.bbng.dao.microservices.auth.passport.dto.request.ChangePasswordDto;
 import com.bbng.dao.microservices.auth.passport.dto.request.LoginDto;
@@ -50,8 +49,8 @@ public class PassportController {
 
     @GetMapping("logout")
     public ResponseEntity<ResponseDto<String>> logout(HttpServletRequest request,
-                                                            HttpServletResponse response,
-                                                            Authentication authentication) {
+                                                      HttpServletResponse response,
+                                                      Authentication authentication) {
         logoutService.logout(request, response, authentication);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<String>builder()
                 .statusCode(200)
@@ -76,7 +75,6 @@ public class PassportController {
     }
 
 
-
     @PostMapping("/reset-password-mail")
     public EmailResponseDto[] sendForgotPasswordMail(@RequestParam(name = "email") String toEmail) {
         return emailService.sendForgotPasswordMail(toEmail);
@@ -96,7 +94,7 @@ public class PassportController {
 
 
     @GetMapping("/verify-login-otp")
-    public ResponseEntity<ResponseDto<LoginResponseDto>>  verifyLoginOtp(@RequestParam("otp") String otpToken) {
+    public ResponseEntity<ResponseDto<LoginResponseDto>> verifyLoginOtp(@RequestParam("otp") String otpToken) {
         return ResponseEntity.status(HttpStatus.OK).body(emailService.verify2faEmail(otpToken));
     }
 

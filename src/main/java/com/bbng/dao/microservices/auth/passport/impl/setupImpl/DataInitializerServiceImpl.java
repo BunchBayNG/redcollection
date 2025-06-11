@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.impl.setupImpl;
 
 
-
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.passport.dto.request.SignUpDto;
@@ -40,10 +39,9 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
     private Map<String, List<String>> rolePermissionsMap;
 
 
-
     public DataInitializerServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository,
                                       PermissionService permissionService, PasswordEncoder passwordEncoder,
-                                      UserRepository userRepository, OrganizationRepository organizationRepository ) {
+                                      UserRepository userRepository, OrganizationRepository organizationRepository) {
         this.roleRepository = roleRepository;
 
         this.permissionRepository = permissionRepository;
@@ -185,7 +183,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
     }
 
     private void assignPermissionsToUserType(List<PermissionEntity> permissionEntityList) {
-        List<UserEntity> users =  userRepository.findByOrganizationAdmin();
+        List<UserEntity> users = userRepository.findByOrganizationAdmin();
         users.forEach(user -> {
             user.getRoleEntities().forEach(role -> {
                 createRoleAndAssignPermissions(role.getRoleName(), permissionEntityList);
@@ -194,7 +192,6 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
 
 
     }
-
 
 
     private void createRedtechAdminPermissions() {
@@ -387,18 +384,17 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                     .build();
 
             OrganizationEntity savedOrg = organizationRepository.save(organizationEntity);
-           organizationRepository.save(savedOrg);
+            organizationRepository.save(savedOrg);
 
-        }
-        else if (optionalUser.get().getUserName() == null){
-           var user = optionalUser.get();
-           user.setUserName(user.getFirstName().toUpperCase() + " " + user.getLastName().toUpperCase());
-           userRepository.save(user);
+        } else if (optionalUser.get().getUserName() == null) {
+            var user = optionalUser.get();
+            user.setUserName(user.getFirstName().toUpperCase() + " " + user.getLastName().toUpperCase());
+            userRepository.save(user);
         }
     }
 
 
-    public Map<String, List<String>>allocatePermissionsToRoles() {
+    public Map<String, List<String>> allocatePermissionsToRoles() {
         try {
             // Map role names to associated permissions
             Map<String, List<String>> rolePermissionsMap = new HashMap<>();
@@ -427,7 +423,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
 
 
     public RoleEntity createRoleAndAssignPermissions(String roleName, List<PermissionEntity> permissions) {
-       Optional<RoleEntity> result = Optional.empty();
+        Optional<RoleEntity> result = Optional.empty();
         try {
             // Check if the role already exists
             RoleEntity role = roleRepository.findByRoleName(roleName).orElse(null);
@@ -436,7 +432,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
             if (role == null) {
                 log.info("role is null creating new role");
                 role = RoleEntity.builder().roleName(roleName).build();
-               role =  roleRepository.save(role);
+                role = roleRepository.save(role);
                 log.info("done saving role. Rolename: {}", role.getRoleName());
             }
             log.info("printing role name: {}", role.getRoleName());
@@ -457,14 +453,14 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                         .toList();
 
                 // Add only new permissions
-                if(!newPermissions.isEmpty()){
+                if (!newPermissions.isEmpty()) {
                     role.getPermissions().addAll(newPermissions);
                     role = roleRepository.save(role);
                 }
 
             }
             log.info("returning role. {}", role.getRoleName());
-            return  role;
+            return role;
         } catch (Exception e) {
             // log the exception
             e.printStackTrace();
@@ -474,8 +470,6 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
 
 
     }
-
-
 
 
 }

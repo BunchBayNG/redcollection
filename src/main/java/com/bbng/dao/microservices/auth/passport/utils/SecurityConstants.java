@@ -6,7 +6,7 @@ public class SecurityConstants {
 
     public static final String JWT_SECRET = "uPWl+Tgc++99AGX9YLz6xGbbKnuAZdQVT/GemEyudnM=";
 
-//    this refresh token expiration is written in milliseconds i.e 7days was converted to 604800000
+    //    this refresh token expiration is written in milliseconds i.e 7days was converted to 604800000
     public static final long REFRESH_TOKEN_EXPIRATION = 604800000;
     public static final int ALGORITHM_SHIFT_KEY = 25;
 //    app.jwt-refresh-token-expiration-milliseconds=

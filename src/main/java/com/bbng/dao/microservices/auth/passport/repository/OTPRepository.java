@@ -7,11 +7,13 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface OTPRepository  extends JpaRepository<OtpEntity, String> {
+public interface OTPRepository extends JpaRepository<OtpEntity, String> {
 
 
-    Optional<OtpEntity> findByEmail (String email);
-    Optional<OtpEntity> findByOtp (String otp);
-    Optional<OtpEntity> findByOtpAndExpired (String otp,  boolean expired);
+    Optional<OtpEntity> findByEmail(String email);
+
+    Optional<OtpEntity> findByOtp(String otp);
+
+    Optional<OtpEntity> findByOtpAndExpired(String otp, boolean expired);
 
 }

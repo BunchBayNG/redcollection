@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class InvitationServiceImpl implements InvitationService {
 
+    private static final SecureRandom secureRandom = new SecureRandom();
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;
     private final OrgStaffRepository orgStaffRepository;
@@ -57,14 +58,12 @@ public class InvitationServiceImpl implements InvitationService {
     private final PermissionRepository permissionRepository;
     private final AuditLogService auditLogService;
 
-    private static final SecureRandom secureRandom = new SecureRandom();
-
     @Override
     @Transactional
     public ResponseDto<String> inviteUser(InviteRequestDto inviteRequestDto) {
         UserEntity userEntity = userRepository.findById(inviteRequestDto.getUserId()).orElseThrow(() -> new ResourceNotFoundException(String.format("User with id: %s not found", inviteRequestDto.getUserId())));
 
-        if (userRepository.existsByEmail(inviteRequestDto.getEmail())){
+        if (userRepository.existsByEmail(inviteRequestDto.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists. Bad request");
         }
 
@@ -123,13 +122,13 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public ResponseDto<List<UserResponseDto>> getAllStaff(String merchantAdminId) {
         //search the org staff repo and retrieve all the userId using the invitedById
-       List<String> staffIds = orgStaffRepository.findUserIdByInvitedBy(merchantAdminId);
+        List<String> staffIds = orgStaffRepository.findUserIdByInvitedBy(merchantAdminId);
 
-       // loop through them and get their userEntity
+        // loop through them and get their userEntity
         List<UserEntity> userEntities = new ArrayList<>();
-        for(String id: staffIds){
-            UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("This user is not found,. UserId: " +id));
-            if(user.isInvitedUser()){
+        for (String id : staffIds) {
+            UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("This user is not found,. UserId: " + id));
+            if (user.isInvitedUser()) {
                 userEntities.add(user);
             }
         }
@@ -156,16 +155,16 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public ResponseDto<String> disableStaff(String merchantAdminId, String staffId) {
         //get the user
-        UserEntity userEntity = userRepository.findById(merchantAdminId).orElseThrow(() -> new UserNotFoundException("No user Found in the system with the provided merchantAdminId: "+ merchantAdminId));
+        UserEntity userEntity = userRepository.findById(merchantAdminId).orElseThrow(() -> new UserNotFoundException("No user Found in the system with the provided merchantAdminId: " + merchantAdminId));
         boolean isOrganisationAdmin = userEntity.getUsertype().equals(UserType.ORGANIZATION_ADMIN);
-        if(isOrganisationAdmin) {
-          // get organization staff by the staff id
-          OrgStaffEntity staffOrg = orgStaffRepository.findOrganizationByUserId(staffId).orElseThrow(() -> new UserNotFoundException("Can't find staff in the organizationStaff. Does this staff belongs to an organization?"));
-          if (!staffOrg.getInvitedBy().equals(merchantAdminId)){
-              throw new ForbiddenException("As an OrganizationAdmin you can only disable a staff in your organization");
-          }
+        if (isOrganisationAdmin) {
+            // get organization staff by the staff id
+            OrgStaffEntity staffOrg = orgStaffRepository.findOrganizationByUserId(staffId).orElseThrow(() -> new UserNotFoundException("Can't find staff in the organizationStaff. Does this staff belongs to an organization?"));
+            if (!staffOrg.getInvitedBy().equals(merchantAdminId)) {
+                throw new ForbiddenException("As an OrganizationAdmin you can only disable a staff in your organization");
+            }
         }
-        UserEntity staff = userRepository.findById(staffId).orElseThrow(()-> new UserNotFoundException("No user found with the provided staffId: "+ staffId));
+        UserEntity staff = userRepository.findById(staffId).orElseThrow(() -> new UserNotFoundException("No user found with the provided staffId: " + staffId));
         staff.setIsEnabled(false);
         userRepository.save(staff);
         auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
@@ -174,14 +173,14 @@ public class InvitationServiceImpl implements InvitationService {
                 .event(Events.DISABLE_STAFF.name())
                 .isDeleted(false)
                 .description("Staff has been disabled")
-                .merchantName(userEntity.getFirstName() + " "+ userEntity.getLastName())
+                .merchantName(userEntity.getFirstName() + " " + userEntity.getLastName())
                 .merchantId(userEntity.getId())
                 .build());
         return ResponseDto.<String>builder()
                 .status(true)
                 .statusCode(200)
                 .message("Staff has been disabled!")
-                .data("Staff with the id: "+ staffId + " has been successfully disabled")
+                .data("Staff with the id: " + staffId + " has been successfully disabled")
                 .build();
     }
 
@@ -191,7 +190,7 @@ public class InvitationServiceImpl implements InvitationService {
         UserEntity userEntity = userRepository.findById(onboardOrgDto.getInviteUserId()).orElseThrow(()
                 -> new ResourceNotFoundException(String.format("User with id: %s not found", onboardOrgDto.getInviteUserId())));
 
-        if (userRepository.existsByEmail(onboardOrgDto.getContactEmail())){
+        if (userRepository.existsByEmail(onboardOrgDto.getContactEmail())) {
             throw new EmailAlreadyExistsException("Email already exists. Bad request");
         }
 
@@ -199,7 +198,6 @@ public class InvitationServiceImpl implements InvitationService {
 
         RoleEntity roleOrganizationAdmin = roleRepository.findByRoleName("ROLE_ORGANIZATION_ADMIN").
                 orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-
 
 
         UserEntity newSavedUser = userRepository.save(UserEntity.builder()
@@ -216,10 +214,7 @@ public class InvitationServiceImpl implements InvitationService {
                 .build());
 
 
-
-
-
-        OrganizationEntity newOrgEntity =  new OrganizationEntity();
+        OrganizationEntity newOrgEntity = new OrganizationEntity();
 
         newOrgEntity.setMerchantAdminId(newSavedUser.getId());
         newOrgEntity.setOrganizationName(onboardOrgDto.getOrganizationName());
@@ -233,7 +228,7 @@ public class InvitationServiceImpl implements InvitationService {
         newOrgEntity.setSettlementAccountNumber(generateAccountNumber());
         newOrgEntity.setSettlementAccountStatus("BALANCED");
         newOrgEntity.setSettlementBankName("United Bank of Africa");
-        newOrgEntity.setSettlementAccountName( "UBA-" +onboardOrgDto.getContactFirstName() + " " + onboardOrgDto.getContactLastName());
+        newOrgEntity.setSettlementAccountName("UBA-" + onboardOrgDto.getContactFirstName() + " " + onboardOrgDto.getContactLastName());
 
         organizationRepository.save(newOrgEntity);
 
@@ -291,16 +286,16 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public ResponseDto<String> assignPermissionsToRole(AssignRoleRequestDto assignRoleRequestDto, DataInitializerServiceImpl dataInitializerService) {
         String adminId = assignRoleRequestDto.getAdminId();
-        UserEntity admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException("No User Found with the given user id: "+ adminId));
+        UserEntity admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException("No User Found with the given user id: " + adminId));
 
         String staffEmail = assignRoleRequestDto.getEmail();
-        UserEntity staff = userRepository.findByEmail(staffEmail).orElseThrow(() ->  new ResourceNotFoundException("Can't find a staff with the provided email: "+ staffEmail));
+        UserEntity staff = userRepository.findByEmail(staffEmail).orElseThrow(() -> new ResourceNotFoundException("Can't find a staff with the provided email: " + staffEmail));
 
-        if(admin.getUsertype().equals(UserType.ORGANIZATION_ADMIN)){
+        if (admin.getUsertype().equals(UserType.ORGANIZATION_ADMIN)) {
             /// log.info("making sure this staff belongs to this organization");
             //make sure this staff belongs to his organization
-            OrgStaffEntity orgStaffEntity =  orgStaffRepository.findByUserId(staff.getId()).orElseThrow(() -> new ResourceNotFoundException("Can't find this staff in the organizationStaff"));
-            if (!orgStaffEntity.getInvitedBy().equals(adminId)){
+            OrgStaffEntity orgStaffEntity = orgStaffRepository.findByUserId(staff.getId()).orElseThrow(() -> new ResourceNotFoundException("Can't find this staff in the organizationStaff"));
+            if (!orgStaffEntity.getInvitedBy().equals(adminId)) {
                 throw new ForbiddenException("You can only assign role to a staff that belongs to your organization");
             }
         }
@@ -308,17 +303,16 @@ public class InvitationServiceImpl implements InvitationService {
         String roleId = assignRoleRequestDto.getRoleId();
 
         log.info("proceeding with assigning role to th staff");
-        RoleEntity role =  roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("No Role found with the given RoleId: "+ roleId));
+        RoleEntity role = roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("No Role found with the given RoleId: " + roleId));
         List<PermissionEntity> permissionEntityList = new ArrayList<>();
         //set the permissions if it's not empty
-        for(Long permissionId: assignRoleRequestDto.getPermissionsIds()){
+        for (Long permissionId : assignRoleRequestDto.getPermissionsIds()) {
             PermissionEntity permission = permissionRepository.findById(permissionId).orElseThrow(() ->
-                    new ResourceNotFoundException("No permission Found by the given PermissionsId: "+ permissionId));
+                    new ResourceNotFoundException("No permission Found by the given PermissionsId: " + permissionId));
             permissionEntityList.add(permission);
         }
         log.info("Assigning permissions to the role");
         RoleEntity roleWithPermission = dataInitializerService.createRoleAndAssignPermissions(role.getRoleName(), permissionEntityList);
-
 
 
         log.info("done return results");
@@ -363,7 +357,7 @@ public class InvitationServiceImpl implements InvitationService {
         userRepository.save(user);
         return ResponseDto.<String>builder()
                 .message("Role Successfully created")
-                .data("Role has been created Successfully! role ID: "+ role.getId())
+                .data("Role has been created Successfully! role ID: " + role.getId())
                 .status(true)
                 .statusCode(201)
                 .build();
@@ -375,29 +369,29 @@ public class InvitationServiceImpl implements InvitationService {
         log.info("we are in the disable permission service");
         //get the user with the id
         UserEntity authUser = userRepository.findByUsernameOrEmail(username, null).orElseThrow(() -> new UserNotFoundException("no user found with the extracted token user"));
-        if (authUser.getUsertype().equals(UserType.ORGANIZATION_STAFF)){
+        if (authUser.getUsertype().equals(UserType.ORGANIZATION_STAFF)) {
             throw new ForbiddenException("Only User with userType Organization Admin can perform this operation");
         }
         UserEntity staff = userRepository.findById(merchantAdminId).orElseThrow(() -> new UserNotFoundException("No user found with the given merchantId"));
 
-        if(authUser.getUsertype().equals(UserType.ORGANIZATION_ADMIN)){
+        if (authUser.getUsertype().equals(UserType.ORGANIZATION_ADMIN)) {
             // make sure it's only staff from his organization he can disable
             log.info("making sure this staff belongs to these organization");
             //make sure this staff belongs to his organization
-            OrgStaffEntity orgStaffEntity =  orgStaffRepository.findByUserId(staff.getId()).orElseThrow(() -> new ResourceNotFoundException("Can't find this staff in the organizationStaff"));
-            if (!orgStaffEntity.getInvitedBy().equals(authUser.getId())){
+            OrgStaffEntity orgStaffEntity = orgStaffRepository.findByUserId(staff.getId()).orElseThrow(() -> new ResourceNotFoundException("Can't find this staff in the organizationStaff"));
+            if (!orgStaffEntity.getInvitedBy().equals(authUser.getId())) {
                 throw new ForbiddenException("You can only disable permission to a staff that belongs to your organization");
             }
         }
-        PermissionEntity permission = permissionRepository.findById(permissionId).orElseThrow(() -> new ResourceNotFoundException("No permission found with the given permissionId: "+ permissionId));
+        PermissionEntity permission = permissionRepository.findById(permissionId).orElseThrow(() -> new ResourceNotFoundException("No permission found with the given permissionId: " + permissionId));
 
         staff.getRoleEntities()
                 .forEach(roleEntity -> {
-                   Set<PermissionEntity> permissionEntities =  roleEntity.getPermissions().stream()
+                    Set<PermissionEntity> permissionEntities = roleEntity.getPermissions().stream()
                             .filter(permissionEntity ->
                                     !permissionEntity.getName().equals(permission.getName()))
                             .collect(Collectors.toSet());
-                   roleEntity.setPermissions(permissionEntities);
+                    roleEntity.setPermissions(permissionEntities);
                 });
 
         userRepository.save(staff);
@@ -415,7 +409,7 @@ public class InvitationServiceImpl implements InvitationService {
                 .message("permission disabled SuccessFully")
                 .status(true)
                 .statusCode(200)
-                .data("Permission with permissionName: "+ permission.getName() + " has been disable for the user: "+ staff.getUserName())
+                .data("Permission with permissionName: " + permission.getName() + " has been disable for the user: " + staff.getUserName())
                 .build();
     }
 

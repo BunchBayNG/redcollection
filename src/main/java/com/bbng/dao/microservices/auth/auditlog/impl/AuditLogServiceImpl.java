@@ -94,7 +94,7 @@ public class AuditLogServiceImpl implements AuditLogService {
         }
     }
 
-    private AuditLogResponseDto mapToAuditLogResponseDto (AuditLogEntity auditLog){
+    private AuditLogResponseDto mapToAuditLogResponseDto(AuditLogEntity auditLog) {
         return AuditLogResponseDto.builder()
                 .id(auditLog.getId())
                 .event(auditLog.getEvent())

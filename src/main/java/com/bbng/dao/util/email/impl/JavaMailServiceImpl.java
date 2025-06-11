@@ -37,7 +37,6 @@ public class JavaMailServiceImpl implements JavaMailService {
     private String send_grid_apiKey;
 
 
-
     @Override
     public void sendGridHtmlContent(String recipientEmail, MailStructure mailStructure, Attachments pdfAttachment) throws MessagingException {
         Email from = new Email(sender);
@@ -51,7 +50,7 @@ public class JavaMailServiceImpl implements JavaMailService {
 
 
         //convert to base64
-        if (pdfAttachment != null){
+        if (pdfAttachment != null) {
             newMail.addAttachments(pdfAttachment);
         }
 

@@ -1,4 +1,3 @@
-
 package com.bbng.dao.microservices.auth.passport.dto.response;
 
 import lombok.*;

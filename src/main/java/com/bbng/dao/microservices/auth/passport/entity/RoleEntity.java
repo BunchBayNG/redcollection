@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.entity;
 
 
-
 import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
@@ -23,7 +22,6 @@ public class RoleEntity extends BaseEntity {
     private String id;
     private String roleName;
     private String description;
-
 
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)

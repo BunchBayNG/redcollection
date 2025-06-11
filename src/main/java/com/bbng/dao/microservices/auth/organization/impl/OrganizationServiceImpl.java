@@ -36,7 +36,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         ///organizationEntity.setOrgStatus(updateRequestDto.getStatus().name());
         organizationEntity.setProductPrefix(updateRequestDto.getProductPrefix());
 
-         organizationRepository.save(organizationEntity);
+        organizationRepository.save(organizationEntity);
 
         return ResponseDto.<String>builder()
                 .statusCode(200)
@@ -231,7 +231,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .statusCode(200)
                 .status(true)
                 .message("Organization fetched Successfully!")
-                .data(organizationRepository.findByOrganizationId(orgId).orElseThrow(() -> new ResourceNotFoundException("No Organization found for this user with the userId: "+ orgId)))
+                .data(organizationRepository.findByOrganizationId(orgId).orElseThrow(() -> new ResourceNotFoundException("No Organization found for this user with the userId: " + orgId)))
                 .build();
     }
 

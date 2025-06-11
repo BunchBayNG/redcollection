@@ -59,10 +59,10 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private VerificationTokenRepository verificationTokenRepository;
 
     private OTPRepository otpRepository;
-    private  UserRepository userRepository;
-    private  OrganizationRepository organizationRepository;
-    private  JavaMailService javaMailService;
-    private  SystemConfigRepository systemConfigRepository;
+    private UserRepository userRepository;
+    private OrganizationRepository organizationRepository;
+    private JavaMailService javaMailService;
+    private SystemConfigRepository systemConfigRepository;
     private OrgStaffRepository orgStaffRepository;
     private HeaderLogoRepository headerLogoRepository;
 
@@ -122,7 +122,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         token.setEmail(toEmail);
         verificationTokenRepository.save(token);
         //https://app.redtechlimited.com/reset-password?token=d9718062-10ad-4234-a56f-2245d2b92dd5
-        String verificationLink = redtechUrl + "register/verify-email?token="  + token.getVerificationToken() + "&email=" + toEmail;
+        String verificationLink = redtechUrl + "register/verify-email?token=" + token.getVerificationToken() + "&email=" + toEmail;
 //        EmailRequestDTO emailRequest = buildVerificationEmailRequest(toEmail, verificationLink, userEntity.getFirstName());
         HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
         MailStructure mailStructure = MailStructure.builder()
@@ -306,7 +306,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         Optional<UserEntity> userEntity = userRepository.findByEmail(oTPToken.getEmail());
 //
-        if(userEntity.isEmpty()){
+        if (userEntity.isEmpty()) {
             throw new BadRequestException("User not found");
         }
 
@@ -332,7 +332,6 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 //       }
 
         Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());  // current user
-
 
 
         TokenEntity tokenEntity = tokenRepository.findByUserEntityAndExpiredFalseAndRevokedFalse(user).get();
@@ -519,7 +518,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         MailStructure mailStructure = MailStructure.builder()
                 .subject("Wallet Deposit notification")
                 .htmlContent(confirmationAdminWalletTopupHtmlContent(messageType, transactionId, organizationId, organizationName,
-                           amount, accountNumber, accountName, userName, isConfirmedDate))
+                        amount, accountNumber, accountName, userName, isConfirmedDate))
                 .build();
 
         try {
@@ -613,13 +612,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Override
     public EmailResponseDto[] sendCreditAlertEmail(String toEmail, String userId, String organizationName, String organizationId,
                                                    String customerName, BigDecimal amount, String transactionDate, String billType,
-                                                   String transactionId, BigDecimal currentBal,BigDecimal billAmount, String message) {
+                                                   String transactionId, BigDecimal currentBal, BigDecimal billAmount, String message) {
         HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
         MailStructure mailStructure = MailStructure.builder()
                 .subject("Wallet Credit notification")
                 .htmlContent(creditAlertHtmlContent(organizationName, organizationId,
-                         customerName,  amount, transactionDate, billType,
-                         transactionId, currentBal, billAmount,  message, logo.getUrl()))
+                        customerName, amount, transactionDate, billType,
+                        transactionId, currentBal, billAmount, message, logo.getUrl()))
                 .build();
 
         try {
@@ -679,7 +678,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Override
     public void sendKycVerificationMail(String email, String customerName) {
         HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
-       String htmlContent = Utils.buildKycSuccessfulmessage(logo.getUrl(), customerName);
+        String htmlContent = Utils.buildKycSuccessfulmessage(logo.getUrl(), customerName);
         try {
             javaMailService.sendGridHtmlContent(email, MailStructure.builder()
                     .htmlContent(htmlContent)
@@ -764,6 +763,6 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     private String applicationUrl(HttpServletRequest request) {
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        return "https://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 }

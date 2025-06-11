@@ -31,7 +31,7 @@ import java.util.Map;
 public class EmailController {
 
     private final EmailService emailService;
-    private  final PermissionService permissionService;
+    private final PermissionService permissionService;
     private final HttpServletRequest request;
     private final JWTService jwtService;
 
@@ -44,19 +44,20 @@ public class EmailController {
     }
 
     @GetMapping("/admin/getSentEmails")
-    public ResponseEntity<ResponseDto<List<EmailEntity>>> getMails(){
+    public ResponseEntity<ResponseDto<List<EmailEntity>>> getMails() {
         log.info("assigning permissions to set merchant specific commission for vendVtu");
 
         permissionService.checkPermission(request, "ADMIN_GET_SENT_EMAILS", jwtService);
-            return ResponseEntity.status(HttpStatus.OK).body(emailService.getSentOutMails());
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.getSentOutMails());
     }
+
     @PostMapping("/admin/sendMail")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> sendMail(@Valid @RequestBody EmailRequestDTO requestDTO){
+    public ResponseEntity<String> sendMail(@Valid @RequestBody EmailRequestDTO requestDTO) {
         try {
             return emailService.sendGridSimpleMail(requestDTO);
         } catch (IOException e) {
-            log.error("AN Error occurred while sending out emails: {}",e.getMessage());
+            log.error("AN Error occurred while sending out emails: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -70,7 +71,7 @@ public class EmailController {
             @RequestParam(required = false) String htmlContent,
             @RequestParam List<String> recipients,
             @RequestParam(required = false) List<MultipartFile> attachments
-            ){
+    ) {
         try {
             var mailStructure = MailStructure.builder()
                     .subject(subject)
@@ -81,22 +82,21 @@ public class EmailController {
             permissionService.checkPermission(request, "ADMIN_SEND_EMAILS_NOTIFICATIONS", jwtService);
             return emailService.sendGridSimpleEmail(mailStructure, attachments);
         } catch (Exception e) {
-            log.error("AN Error occurred while sending out emails: {}",e.getMessage());
+            log.error("AN Error occurred while sending out emails: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
 
-
     @PostMapping(value = "admin/upload-redtech-headerLogo", consumes = "multipart/form-data")
     public ResponseEntity<ResponseDto<Map<String, String>>> uploadHeaderLogo(
-            @RequestPart("file") MultipartFile file){
+            @RequestPart("file") MultipartFile file) {
         var headerLogo = HeaderLogoRequestDto.builder()
                 .headerLogo(file)
                 .build();
 
         permissionService.checkPermission(request, "ADMIN_UPLOAD_EMAILS_HEADER_IMAGE", jwtService);
-    return ResponseEntity.status(HttpStatus.OK).body(emailService.uploadHeaderLogo(headerLogo));
+        return ResponseEntity.status(HttpStatus.OK).body(emailService.uploadHeaderLogo(headerLogo));
     }
 
 }

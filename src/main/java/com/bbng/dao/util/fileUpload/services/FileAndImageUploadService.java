@@ -23,8 +23,8 @@ public class FileAndImageUploadService {
 
     }
 
-    public String uploadFile(MultipartFile file, String doc){
-        if (file == null){
+    public String uploadFile(MultipartFile file, String doc) {
+        if (file == null) {
             return "";
         }
         Map<String, Object> options = new HashMap<>();
@@ -34,8 +34,8 @@ public class FileAndImageUploadService {
         try {
             Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), options);
             return (String) uploadResult.get("secure_url");
-        }catch (Exception e){
-            throw new InternalServerException("error occurred while uploading image to cloundinary: "+ e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerException("error occurred while uploading image to cloundinary: " + e.getMessage());
         }
 
     }

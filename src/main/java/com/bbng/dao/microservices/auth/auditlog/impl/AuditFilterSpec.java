@@ -76,7 +76,7 @@ public class AuditFilterSpec {
             Optional<String> merchantId,
             Optional<String> merchantName,
             Optional<String> usertype
-            ) {
+    ) {
 
         return Specification
                 .where(findById(id))
