@@ -1,6 +1,5 @@
 package com.bbng.dao.microservices.auth.passport.impl.serviceImpl;
 
-import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrgStaffRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.passport.dto.request.UserProfileUpdateRequestDto;

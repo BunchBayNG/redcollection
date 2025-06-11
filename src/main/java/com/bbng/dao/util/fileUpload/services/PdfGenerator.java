@@ -11,7 +11,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 

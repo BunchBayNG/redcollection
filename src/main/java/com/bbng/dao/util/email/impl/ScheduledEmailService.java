@@ -9,7 +9,6 @@ import com.bbng.dao.util.email.dto.request.EmailRequestDTO;
 import com.bbng.dao.util.email.dto.request.MailStructure;
 import com.bbng.dao.util.email.dto.request.Message;
 import com.bbng.dao.util.email.dto.request.To;
-import com.bbng.dao.util.email.utils.Utils;
 import com.bbng.dao.util.exceptions.customExceptions.InternalServerException;
 import com.bbng.dao.util.fileUpload.entity.HeaderLogoEntity;
 import com.bbng.dao.util.fileUpload.repository.HeaderLogoRepository;
@@ -22,12 +21,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
