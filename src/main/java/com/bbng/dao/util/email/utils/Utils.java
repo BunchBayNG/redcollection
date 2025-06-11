@@ -205,7 +205,7 @@ public class Utils {
                 "  <h2>Wallet Top Up</h2>\n" +
                 "  <p>A top up transaction has been initiated for your wallet by <b>" + organizationName + "</b>.</p>\n" +
                 "  <ul>\n" +
-                "    <li>Transaction ID: " + transactionId + "</li>\n" +
+                "    <li>TransactionEntity ID: " + transactionId + "</li>\n" +
                 "    <li>Customer ID: " + customerId + "</li>\n" +
                 "    <li>Customer Name: " + customerName + "</li>\n" +
                 "    <li>Organization Name: " + organizationName + "</li>\n" +
@@ -228,7 +228,7 @@ public class Utils {
                         "    A payment Deposit from <b>%s</b> has been %s by the Admin <b>%s</b> in our system. Please review the transaction details below:\n" +
                         "  </p>\n" +
                         "  <ul style=\"font-size: 16px; color: #555; list-style-type: none; padding: 0;\">\n" +
-                        "    <li><strong>Transaction ID:</strong> %s</li>\n" +
+                        "    <li><strong>TransactionEntity ID:</strong> %s</li>\n" +
                         "    <li><strong>organization ID:</strong> %s</li>\n" +
                         "    <li><strong>Business Name:</strong> %s</li>\n" +
                         "    <li><strong>Confirmed By:</strong> %s</li>\n" +
@@ -253,7 +253,7 @@ public class Utils {
                 "  <h2>Wallet Top Up</h2>\n" +
                 "  <p>A top up transaction has been " + messageType + " for your wallet!!!.</p>\n" +
                 "  <ul>\n" +
-                "    <li>Transaction ID: " + transactionId + "</li>\n" +
+                "    <li>TransactionEntity ID: " + transactionId + "</li>\n" +
                 "    <li>Organization ID: " + organizationId + "</li>\n" +
                 "    <li>Customer Name: " + userName + "</li>\n" +
                 "    <li>Organization Name: " + organizationName + "</li>\n" +
@@ -277,14 +277,14 @@ public class Utils {
                         "    A payment Deposit has been initiated by the merchant <b>%s</b> in our system. Please review the transaction details below:\n" +
                         "  </p>\n" +
                         "  <ul style=\"font-size: 16px; color: #555; list-style-type: none; padding: 0;\">\n" +
-                        "    <li><strong>Transaction ID:</strong> %s</li>\n" +
+                        "    <li><strong>TransactionEntity ID:</strong> %s</li>\n" +
                         "    <li><strong>Business Name:</strong> %s</li>\n" +
                         "    <li><strong>Business email:</strong> %s</li>\n" +
                         "    <li><strong>Customer Username:</strong> %s</li>\n" +
                         "    <li><strong>Transfer To:</strong> %s</li>\n" +
                         "    <li><strong>Account Number:</strong> %s</li>\n" +
                         "    <li><strong>Amount:</strong> &#8358;%s</li>\n" +
-                        "    <li><strong>Transaction Date:</strong> &#8358;%s</li>\n" +
+                        "    <li><strong>TransactionEntity Date:</strong> &#8358;%s</li>\n" +
                         "  </ul>\n" +
                         "  <p style=\"font-size: 16px; color: #555;\">\n" +
                         "    Please check your dashboard to verify and confirm the payment\n" +
@@ -301,7 +301,7 @@ public class Utils {
                 "  <h2>Wallet Withdrawal</h2>\n" +
                 "  <p>A withdrawal transaction has been initiated from your wallet by <b>" + organizationName + "</b>.</p>\n" +
                 "  <ul>\n" +
-                "    <li>Transaction ID: " + transactionId + "</li>\n" +
+                "    <li>TransactionEntity ID: " + transactionId + "</li>\n" +
                 "    <li>Customer ID: " + customerId + "</li>\n" +
                 "    <li>Customer Name: " + customerName + "</li>\n" +
                 "    <li>Organization Name: " + organizationName + "</li>\n" +
@@ -350,7 +350,7 @@ public class Utils {
 
                 // Content Section
                 "<div class=\"content\">" +
-                "<div style=\"background-color: #F5F5F5; padding: 20px;\">\n" + "  <h2> " + message + " Credit Notification</h2>\n" + "  <p>A Credit transaction has been perform on your " + message + " .</p>\n" + "  <ul>\n" + "    <li>Transaction ID: " + transactionId + "</li>\n" + "    <li>Organization ID: " + organizationId + "</li>\n" + "    <li>Customer Name: " + customerName + "</li>\n" + "    <li>Organization Name: " + organizationName + "</li>\n" + "    <li>Amount: &#8358;" + amount.toString() + "</li>\n" + "    <li>Bill Type: " + billType + "</li>\n" + "    <li>Bill Amount:  &#8358;" + billAmount.toString() + "</li>\n" + "    <li>Current Balance:  &#8358; " + currentBal.toString() + "</li>\n" + "    <li>Transaction Date: " + transactionDate + "</li>\n" + "  </ul>\n" + "</div>" +
+                "<div style=\"background-color: #F5F5F5; padding: 20px;\">\n" + "  <h2> " + message + " Credit Notification</h2>\n" + "  <p>A Credit transaction has been perform on your " + message + " .</p>\n" + "  <ul>\n" + "    <li>TransactionEntity ID: " + transactionId + "</li>\n" + "    <li>Organization ID: " + organizationId + "</li>\n" + "    <li>Customer Name: " + customerName + "</li>\n" + "    <li>Organization Name: " + organizationName + "</li>\n" + "    <li>Amount: &#8358;" + amount.toString() + "</li>\n" + "    <li>Bill Type: " + billType + "</li>\n" + "    <li>Bill Amount:  &#8358;" + billAmount.toString() + "</li>\n" + "    <li>Current Balance:  &#8358; " + currentBal.toString() + "</li>\n" + "    <li>TransactionEntity Date: " + transactionDate + "</li>\n" + "  </ul>\n" + "</div>" +
                 "<p>Thank You,<br>redtech Team</p>" +
                 "</div>" +
 
@@ -415,14 +415,14 @@ public class Utils {
                 "  <h2>Wallet Debit Notification!</h2>\n" +
                 "  <p>A Debit transaction has been initiated from your wallet by <b>" + customerName + "</b>.</p>\n" +
                 "  <ul>\n" +
-                "    <li>Transaction ID: " + transactionId + "</li>\n" +
+                "    <li>TransactionEntity ID: " + transactionId + "</li>\n" +
                 "    <li>Organization ID: " + organizationId + "</li>\n" +
                 "    <li>Customer Name: " + customerName + "</li>\n" +
                 "    <li>Organization Name: " + organizationName + "</li>\n" +
                 "    <li>Amount: &#8358;" + amount.toString() + "</li>\n" +
                 "    <li>Bill Type: " + billType + "</li>\n" +
                 "    <li>Current Balance: &#8358;" + currentBal.toString() + "</li>\n" +
-                "    <li>Transaction Date: " + transactionDate + "</li>\n" +
+                "    <li>TransactionEntity Date: " + transactionDate + "</li>\n" +
                 "  </ul>\n" +
                 "</div>" +
                 "<p>Thank You,<br>redtech Team</p>" +

@@ -121,14 +121,14 @@ public class ScheduledEmailService {
             emailRequestDTO.setSendAt("immediate");
             emailRequestDTO.setMessage(Message.builder()
                     .html(htmlContent)
-                    .subject("Daily Transaction Summary")
+                    .subject("Daily TransactionEntity Summary")
                     .fromEmail("Info@bunchbay.com")
                     .fromName("BunchBay")
                     .attachments(Collections.singletonList(pdfAttachment))
                     .to(Collections.singletonList(To.builder()
                             .email(email)
                             .name(user.getFirstName())
-                            .type("Transaction Report")
+                            .type("TransactionEntity Report")
                             .build()))// Set merchant email here
 
                     .trackOpens("true")
