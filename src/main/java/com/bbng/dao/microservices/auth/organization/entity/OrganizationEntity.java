@@ -17,12 +17,11 @@ public class OrganizationEntity extends BaseEntity {
     @Id
     private String id;
     private String organizationName;
-    private String businessCategory;
-    private String estimatedBillType;
-    private String contactName;
+    private String contactFirstName;
+    private String contactLastName;
     private String contactEmail;
-    private String supportEmail;
-    private String phoneNumber;
+    private String contactPhoneNumber;
+    private String registeredBVN;
     private String businessLogoUrl;
     private String merchantAdminId;
     private String productPrefix;

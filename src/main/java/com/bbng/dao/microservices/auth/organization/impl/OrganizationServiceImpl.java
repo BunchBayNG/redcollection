@@ -30,7 +30,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 
         organizationEntity.setOrganizationName(updateRequestDto.getOrganizationName());
-        organizationEntity.setContactName(updateRequestDto.getContactName());
+        organizationEntity.setContactFirstName(updateRequestDto.getContactFirstName());
+        organizationEntity.setContactLastName(updateRequestDto.getContactLastName());
         organizationEntity.setContactEmail(updateRequestDto.getContactEmail());
         ///organizationEntity.setOrgStatus(updateRequestDto.getStatus().name());
         organizationEntity.setProductPrefix(updateRequestDto.getProductPrefix());

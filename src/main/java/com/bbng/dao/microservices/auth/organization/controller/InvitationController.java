@@ -3,6 +3,7 @@ package com.bbng.dao.microservices.auth.organization.controller;
 
 import com.bbng.dao.microservices.auth.organization.dto.request.AssignRoleRequestDto;
 import com.bbng.dao.microservices.auth.organization.dto.request.InviteRequestDto;
+import com.bbng.dao.microservices.auth.organization.dto.request.OnboardOrgDto;
 import com.bbng.dao.microservices.auth.organization.service.InvitationService;
 import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
@@ -64,11 +65,11 @@ public class InvitationController {
     }
 
     @PutMapping("onboard-org")
-    public ResponseEntity<ResponseDto<String>> onboardOrg(@RequestParam String merchantAdminId, @RequestParam String staffId){
+    public ResponseEntity<ResponseDto<String>> onboardOrg(@RequestBody OnboardOrgDto onboardOrgDto){
 
         permissionService.checkPermission(request, "CAN_ONBOARD_ORG", jwtService);
 
-        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStaff(merchantAdminId, staffId));
+        return  ResponseEntity.status(HttpStatus.OK).body(invitationService.onboardOrg(onboardOrgDto));
     }
 
 

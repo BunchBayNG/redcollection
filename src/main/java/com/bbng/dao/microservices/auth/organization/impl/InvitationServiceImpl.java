@@ -6,6 +6,7 @@ import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogRequestDto;
 import com.bbng.dao.microservices.auth.auditlog.service.AuditLogService;
 import com.bbng.dao.microservices.auth.organization.dto.request.AssignRoleRequestDto;
 import com.bbng.dao.microservices.auth.organization.dto.request.InviteRequestDto;
+import com.bbng.dao.microservices.auth.organization.dto.request.OnboardOrgDto;
 import com.bbng.dao.microservices.auth.organization.entity.OrgStaffEntity;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.enums.InvitationStatus;
@@ -29,11 +30,13 @@ import com.bbng.dao.util.response.ResponseDto;
 import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +58,7 @@ public class InvitationServiceImpl implements InvitationService {
     private final PermissionRepository permissionRepository;
     private final AuditLogService auditLogService;
 
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     @Transactional
@@ -72,6 +76,7 @@ public class InvitationServiceImpl implements InvitationService {
         RoleEntity roleOrganizationStaff = roleRepository.findByRoleName("ROLE_ORGANIZATION_STAFF").orElseThrow(() -> new ResourceNotFoundException("Role not found"));
         RoleEntity roleRedtechStaff = roleRepository.findByRoleName("ROLE_REDTECH_STAFF").orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
+        ///  this is to invite staff
         UserType userType = userEntity.getUsertype().equals(UserType.ORGANIZATION_ADMIN) ? UserType.ORGANIZATION_STAFF : UserType.REDTECH_STAFF;
         RoleEntity role = userType.equals(UserType.REDTECH_STAFF) ? roleRedtechStaff : roleOrganizationStaff;
 
@@ -182,8 +187,106 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public ResponseDto<String> onboardOrg(String merchantAdminId, String staffId) {
-        return null;
+    public ResponseDto<String> onboardOrg(OnboardOrgDto onboardOrgDto) {
+
+        UserEntity userEntity = userRepository.findById(onboardOrgDto.getInviteUserId()).orElseThrow(()
+                -> new ResourceNotFoundException(String.format("User with id: %s not found", onboardOrgDto.getInviteUserId())));
+
+        if (userRepository.existsByEmail(onboardOrgDto.getContactEmail())){
+            throw new EmailAlreadyExistsException("Email already exists. Bad request");
+        }
+
+        String password = PasswordGenerator.generatePassword();
+
+        RoleEntity roleOrganizationAdmin = roleRepository.findByRoleName("ROLE_ORGANIZATION_ADMIN").
+                orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
+
+
+        UserEntity newSavedUser = userRepository.save(UserEntity.builder()
+                .email(onboardOrgDto.getContactEmail())
+                .firstName(onboardOrgDto.getContactFirstName())
+                .lastName(onboardOrgDto.getContactLastName())
+                .phoneNumber(onboardOrgDto.getPhoneNumber())
+                .userName(onboardOrgDto.getContactFirstName().toUpperCase() + " " + onboardOrgDto.getContactLastName())
+                .password(passwordEncoder.encode(password))
+                .usertype(UserType.ORGANIZATION_ADMIN)
+                .roleEntities(Set.of(roleOrganizationAdmin))
+                .isEnabled(false)
+                .isInvitedUser(true)
+                .build());
+
+
+
+
+
+        OrganizationEntity newOrgEntity =  new OrganizationEntity();
+
+        newOrgEntity.setMerchantAdminId(newSavedUser.getId());
+        newOrgEntity.setOrganizationName(onboardOrgDto.getOrganizationName());
+        newOrgEntity.setProductPrefix(onboardOrgDto.getProductPrefix());
+        newOrgEntity.setBusinessLogoUrl(onboardOrgDto.getBusinessLogoUrl());
+
+        ///  todo: make a call to UBA to get this data
+        newOrgEntity.setRegisteredBVN(onboardOrgDto.getRegisteredBVN());
+        newOrgEntity.setContactLastName(onboardOrgDto.getContactLastName());
+        newOrgEntity.setContactFirstName(onboardOrgDto.getContactFirstName());
+        newOrgEntity.setSettlementAccountNumber(generateAccountNumber());
+        newOrgEntity.setSettlementAccountStatus("BALANCED");
+        newOrgEntity.setSettlementBankName("United Bank of Africa");
+        newOrgEntity.setSettlementAccountName( "UBA-" +onboardOrgDto.getContactFirstName() + " " + onboardOrgDto.getContactLastName());
+
+        organizationRepository.save(newOrgEntity);
+
+
+        OrgStaffEntity orgStaffEntity = OrgStaffEntity.builder()
+                .invitationStatus(InvitationStatus.AWAITING_ACTIVATION)
+                .organizationId(newOrgEntity.getId())
+                .userId(newSavedUser.getId())
+                .userRole(null)
+                .invitedBy(onboardOrgDto.getInviteUserId())
+                .build();
+
+        orgStaffRepository.save(orgStaffEntity);
+        emailVerificationService.sendInvitationEmail(onboardOrgDto.getContactEmail(), newOrgEntity.getOrganizationName(), password);
+
+        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                .userId(userEntity.getId())
+                .userName(userEntity.getUserName())
+                .event(Events.ONBOARD_MERCHANT.name())
+                .isDeleted(false)
+                .description("New Merchant has been onboarded!")
+                .merchantName(newOrgEntity.getOrganizationName())
+                .merchantId(newOrgEntity.getId())
+                .build());
+
+
+        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                .userId(userEntity.getId())
+                .userName(userEntity.getUserName())
+                .event(Events.ONBOARD_MERCHANT_ADMIN.name())
+                .isDeleted(false)
+                .description("Invitation to the provided user has be sent out!")
+                .merchantName(newOrgEntity.getOrganizationName())
+                .merchantId(newOrgEntity.getId())
+                .build());
+
+
+        return ResponseDto.<String>builder()
+                .statusCode(201)
+                .status(true)
+                .message("Merchant onboard successful")
+                .data(String.format("Merchant onboard successful, and merchant admin with id: %s has been invited. Ask to check email for verification", newSavedUser.getId()))
+                .build();
+
+
+    }
+
+
+    public String generateAccountNumber() {
+        // Generate a 10-digit number
+        long accountNumber = secureRandom.nextLong(1_000_000_000L, 10_000_000_000L);
+        return String.format("%010d", accountNumber); // Ensure it's 10 digits
     }
 
     @Override
@@ -238,6 +341,7 @@ public class InvitationServiceImpl implements InvitationService {
                 .build();
 
     }
+
 
     @Override
     public ResponseDto<String> createRoleWithPermissions(AssignRoleRequestDto assignRoleRequestDto, DataInitializerServiceImpl dataInitializerService) {

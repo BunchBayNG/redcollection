@@ -2,8 +2,6 @@ package com.bbng.dao.microservices.auth.passport.service;
 
 import com.bbng.dao.microservices.auth.passport.dto.request.ChangePasswordDto;
 import com.bbng.dao.microservices.auth.passport.dto.request.LoginDto;
-import com.bbng.dao.microservices.auth.passport.dto.request.SignUpDto;
-import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
 import com.bbng.dao.microservices.auth.passport.dto.response.MfaDto;
 import com.bbng.dao.util.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +20,5 @@ public interface UserService {
 
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
-
-    // UserResponseDto editUser(String email, UserRequestDto userRequestDTO);
 
 }

@@ -1,7 +1,5 @@
 package com.bbng.dao.microservices.auth.organization.dto.request;
 
-
-import com.bbng.dao.microservices.auth.organization.enums.OrgStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,13 +9,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UpdateOrgDto {
+public class OnboardOrgDto {
 
-    private String organizationId;
+    private String inviteUserId;
     private String organizationName;
     private String contactFirstName;
     private String contactLastName;
     private String contactEmail;
-    private OrgStatus status;
+    private String phoneNumber;
+    private String registeredBVN;
+    private String businessLogoUrl;
     private String productPrefix;
 }
