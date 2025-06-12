@@ -67,7 +67,7 @@ public class PayoutImpl implements PayoutService {
         return ResponseDto.<Page<PayoutEntity>>builder()
                 .statusCode(200)
                 .status(true)
-                .message("Password reset successfully")
+                .message("Payouts fetched successfully")
                 .data(payoutRepository.findAll(spec, pageRequest))
                 .build();
     }

@@ -25,7 +25,7 @@ public class PayoutEntity {
 
     private String merchantName;
     private String merchantOrgId;
-    private String SourceAccount;
+    private String sourceAccount;
     private String destinationAccount;
     private Double amount;
     private String status;
