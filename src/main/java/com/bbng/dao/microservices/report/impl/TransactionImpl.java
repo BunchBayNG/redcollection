@@ -56,7 +56,7 @@ public class TransactionImpl implements TransactionService {
         return ResponseDto.<Page<TransactionEntity>>builder()
                 .statusCode(200)
                 .status(true)
-                .message("Password reset successfully")
+                .message("Transactions fetched successfully")
                 .data(transactionRepository.findAll(spec, pageRequest))
                 .build();
     }
