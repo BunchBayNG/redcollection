@@ -67,7 +67,7 @@ public class SettlementImpl implements SettlementService {
         return ResponseDto.<Page<SettlementEntity>>builder()
                 .statusCode(200)
                 .status(true)
-                .message("Password reset successfully")
+                .message("settlements fetched successfully")
                 .data(settlementRepository.findAll(spec, pageRequest))
                 .build();
     }

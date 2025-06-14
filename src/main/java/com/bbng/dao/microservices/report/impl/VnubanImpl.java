@@ -57,7 +57,7 @@ public class VnubanImpl implements VnubanService {
         return ResponseDto.<Page<VnubanEntity>>builder()
                 .statusCode(200)
                 .status(true)
-                .message("Password reset successfully")
+                .message("vnubans fetched successfully")
                 .data(vnubanRepository.findAll(spec, pageRequest))
                 .build();
     }
