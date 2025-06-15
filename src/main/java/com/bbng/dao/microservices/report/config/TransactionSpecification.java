@@ -20,7 +20,7 @@ public class TransactionSpecification {
     }
 
     public static Specification<TransactionEntity> hasVNuban(String vNuban) {
-        return (root, query, builder) -> builder.equal(root.get("vNuban"), vNuban);
+        return (root, query, builder) -> builder.equal(root.get("vnuban"), vNuban);
     }
 
     public static Specification<TransactionEntity> isBetweenTimestamps(LocalDateTime start, LocalDateTime end) {

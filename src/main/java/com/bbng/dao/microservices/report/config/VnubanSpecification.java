@@ -19,11 +19,11 @@ public class VnubanSpecification {
     }
 
     public static Specification<VnubanEntity> hasVNuban(String vNuban) {
-        return (root, query, builder) -> builder.equal(root.get("vNuban"), vNuban);
+        return (root, query, builder) -> builder.equal(root.get("vnuban"), vNuban);
     }
 
     public static Specification<VnubanEntity> isBetweenTimestamps(LocalDateTime start, LocalDateTime end) {
-        return (root, query, builder) -> builder.between(root.get("timestamp"), start, end);
+        return (root, query, builder) -> builder.between(root.get("createdAt"), start, end);
     }
 
     public static Specification<VnubanEntity> hasStatus(String status) {
