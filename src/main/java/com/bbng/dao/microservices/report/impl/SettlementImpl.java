@@ -1,17 +1,17 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.SettlementSpecification;
+import com.bbng.dao.microservices.report.dto.SettlementFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.SettlementEntity;
 import com.bbng.dao.microservices.report.repository.SettlementRepository;
 import com.bbng.dao.microservices.report.service.SettlementService;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class SettlementImpl implements SettlementService {
@@ -22,53 +22,37 @@ public class SettlementImpl implements SettlementService {
         this.settlementRepository = settlementRepository;
     }
 
-
     @Override
-    public ResponseDto<Page<SettlementEntity>>  getSettlements( String sourceAccount, String merchantName,
-                                                                String merchantOrgId,  String destinationAccount,
-                                                                String transactionRef, String reference, LocalDateTime startDate, LocalDateTime endDate, String status,
-                                                                String sortBy, boolean ascending, int page, int size) {
+    public ResponseDto<Page<SettlementEntity>>  getSettlements(SettlementFilterRequestDto request) {
+        Specification<SettlementEntity> spec = SettlementSpecification.getSettlements(request);
 
-        //Specification<SettlementEntity> spec = Specification.where(null);
+        Pageable pageable = getPageable(request);
 
-        Specification<SettlementEntity> spec = (root, query, builder) -> null;
-
-        if (sourceAccount != null) {
-            spec = spec.and(SettlementSpecification.hasSourceAccount(sourceAccount));
-        }
-
-        if (destinationAccount != null) {
-            spec = spec.and(SettlementSpecification.hasDestinationAccount(destinationAccount));
-        }
-        if (merchantName != null) {
-            spec = spec.and(SettlementSpecification.hasMerchantName(merchantName));
-        }
-
-        if (merchantOrgId != null) {
-            spec = spec.and(SettlementSpecification.hasMerchantOrgId(merchantOrgId));
-        }
-        if (transactionRef != null) {
-            spec = spec.and(SettlementSpecification.hasTransactionRef(transactionRef));
-        }
-
-        if (reference != null) {
-            spec = spec.and(SettlementSpecification.hasReference(reference));
-        }
-        if (startDate != null && endDate != null) {
-            spec = spec.and(SettlementSpecification.isBetweenTimestamps(startDate, endDate));
-        }
-        if (status != null) {
-            spec = spec.and(SettlementSpecification.hasStatus(status));
-        }
-
-        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        Page<SettlementEntity> page = settlementRepository.findAll(spec, pageable);
 
         return ResponseDto.<Page<SettlementEntity>>builder()
                 .statusCode(200)
                 .status(true)
-                .message("settlements fetched successfully")
-                .data(settlementRepository.findAll(spec, pageRequest))
+                .message("Settlements fetched successfully")
+                .data(page)
                 .build();
     }
+
+
+    private Pageable getPageable(SettlementFilterRequestDto request) {
+        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
+        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+
+        Sort sort = switch (sortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+            case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
+            case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
+            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+        };
+
+        return PageRequest.of(request.getPage(), request.getSize(), sort);
+    }
+    
+    
 }

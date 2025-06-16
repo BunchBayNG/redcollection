@@ -1,33 +1,36 @@
 package com.bbng.dao.microservices.report.config;
 
+import com.bbng.dao.microservices.report.dto.TransactionFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.TransactionEntity;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionSpecification {
 
-    public static Specification<TransactionEntity> hasTransactionId(String transactionId) {
-        return (root, query, builder) -> builder.equal(root.get("transactionId"), transactionId);
-    }
+    public static Specification<TransactionEntity> getTransactions(TransactionFilterRequestDto request) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-    public static Specification<TransactionEntity> hasMerchantOrgId(String merchantOrgId) {
-        return (root, query, builder) -> builder.equal(root.get("merchantOrgId"), merchantOrgId);
-    }
+            if (request.getSearch() != null && !request.getSearch().isEmpty()) {
+                Predicate byTransactionId = cb.like(cb.lower(root.get("transactionId")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byVNUBAN = cb.like(cb.lower(root.get("vnuban")), "%" + request.getSearch().toLowerCase() + "%");
+                predicates.add(cb.or(byTransactionId, byMerchantOrgId, byMerchantName, byVNUBAN));
+            }
 
-    public static Specification<TransactionEntity> hasMerchantName(String merchantName) {
-        return (root, query, builder) -> builder.like(root.get("merchantName"), "%" + merchantName + "%");
-    }
+            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("status")), request.getStatus().toLowerCase()));
+            }
 
-    public static Specification<TransactionEntity> hasVNuban(String vNuban) {
-        return (root, query, builder) -> builder.equal(root.get("vnuban"), vNuban);
-    }
+            if (request.getStartDate() != null && request.getEndDate() != null) {
+                predicates.add(cb.between(root.get("createdAt"), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(23, 59, 59)));
+            }
 
-    public static Specification<TransactionEntity> isBetweenTimestamps(LocalDateTime start, LocalDateTime end) {
-        return (root, query, builder) -> builder.between(root.get("createdAt"), start, end);
-    }
-
-    public static Specification<TransactionEntity> hasStatus(String status) {
-        return (root, query, builder) -> builder.equal(root.get("status"), status);
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }

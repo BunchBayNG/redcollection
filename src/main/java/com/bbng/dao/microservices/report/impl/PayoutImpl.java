@@ -1,12 +1,14 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.PayoutSpecification;
+import com.bbng.dao.microservices.report.dto.PayoutFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.PayoutEntity;
 import com.bbng.dao.microservices.report.repository.PayoutRepository;
 import com.bbng.dao.microservices.report.service.PayoutService;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -23,53 +25,36 @@ public class PayoutImpl implements PayoutService {
     }
 
 
-
     @Override
-    public ResponseDto<Page<PayoutEntity>>  getPayouts(String sourceAccount, String merchantName, String merchantOrgId, String destinationAccount,
-                                                       String transactionRef, String paymentReference, LocalDateTime startDate, LocalDateTime endDate, String status,
-                                                       String sortBy, boolean ascending, int page, int size) {
+    public ResponseDto<Page<PayoutEntity>>  getPayouts(PayoutFilterRequestDto request) {
+        Specification<PayoutEntity> spec = PayoutSpecification.getPayouts(request);
 
-        //Specification<SettlementEntity> spec = Specification.where(null);
+        Pageable pageable = getPageable(request);
 
-        Specification<PayoutEntity> spec = (root, query, builder) -> null;
-
-        if (sourceAccount != null) {
-            spec = spec.and(PayoutSpecification.hasSourceAccount(sourceAccount));
-        }
-
-        if (destinationAccount != null) {
-            spec = spec.and(PayoutSpecification.hasDestinationAccount(destinationAccount));
-        }
-        if (merchantName != null) {
-            spec = spec.and(PayoutSpecification.hasMerchantName(merchantName));
-        }
-
-        if (merchantOrgId != null) {
-            spec = spec.and(PayoutSpecification.hasMerchantOrgId(merchantOrgId));
-        }
-        if (transactionRef != null) {
-            spec = spec.and(PayoutSpecification.hasTransactionRef(transactionRef));
-        }
-
-        if (paymentReference != null) {
-            spec = spec.and(PayoutSpecification.hasPaymentReference(paymentReference));
-        }
-        if (startDate != null && endDate != null) {
-            spec = spec.and(PayoutSpecification.isBetweenTimestamps(startDate, endDate));
-        }
-        if (status != null) {
-            spec = spec.and(PayoutSpecification.hasStatus(status));
-        }
-
-        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        Page<PayoutEntity> page = payoutRepository.findAll(spec, pageable);
 
         return ResponseDto.<Page<PayoutEntity>>builder()
                 .statusCode(200)
                 .status(true)
                 .message("Payouts fetched successfully")
-                .data(payoutRepository.findAll(spec, pageRequest))
+                .data(page)
                 .build();
+    }
+
+
+    private Pageable getPageable(PayoutFilterRequestDto request) {
+        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
+        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+
+        Sort sort = switch (sortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+            case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
+            case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
+            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+        };
+
+        return PageRequest.of(request.getPage(), request.getSize(), sort);
     }
 }
 

@@ -1,42 +1,43 @@
 package com.bbng.dao.microservices.report.config;
 
+import com.bbng.dao.microservices.report.dto.PayoutFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.PayoutEntity;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PayoutSpecification {
 
-    public static Specification<PayoutEntity> hasSourceAccount(String sourceAccount) {
-        return (root, query, builder) -> builder.equal(root.get("sourceAccount"), sourceAccount);
 
+
+    public static Specification<PayoutEntity> getPayouts(PayoutFilterRequestDto request) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getSearch() != null && !request.getSearch().isEmpty()) {
+                Predicate bySourceAccount = cb.like(cb.lower(root.get("sourceAccount")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byDestinationAccount = cb.like(cb.lower(root.get("destinationAccount")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byTransactionRef = cb.like(cb.lower(root.get("transactionRef")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byReference = cb.like(cb.lower(root.get("paymentReference")), "%" + request.getSearch().toLowerCase() + "%");
+                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + request.getSearch().toLowerCase() + "%");
+                predicates.add(cb.or(bySourceAccount, byDestinationAccount, byMerchantOrgId, byMerchantName, byTransactionRef, byReference));
+            }
+
+            if (request.getStartDate() != null && request.getEndDate() != null) {
+                predicates.add(cb.between(root.get("createdAt"), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(23, 59, 59)));
+            }
+
+            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("status")), request.getStatus().toLowerCase()));
+            }
+
+
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
-    public static Specification<PayoutEntity> hasMerchantOrgId(String merchantOrgId) {
-        return (root, query, builder) -> builder.equal(root.get("merchantOrgId"), merchantOrgId);
-    }
-
-    public static Specification<PayoutEntity> hasDestinationAccount(String destinationAccount) {
-        return (root, query, builder) -> builder.equal(root.get("destinationAccount"), destinationAccount);
-    }
-
-    public static Specification<PayoutEntity> hasMerchantName(String merchantName) {
-        return (root, query, builder) -> builder.like(root.get("merchantName"), "%" + merchantName + "%");
-    }
-
-    public static Specification<PayoutEntity> hasTransactionRef(String transactionRef) {
-        return (root, query, builder) -> builder.equal(root.get("transactionRef"), transactionRef);
-    }
-
-    public static Specification<PayoutEntity> hasPaymentReference(String paymentReference) {
-        return (root, query, builder) -> builder.equal(root.get("paymentReference"), paymentReference);
-    }
-
-    public static Specification<PayoutEntity> isBetweenTimestamps(LocalDateTime start, LocalDateTime end) {
-        return (root, query, builder) -> builder.between(root.get("createdAt"), start, end);
-    }
-
-    public static Specification<PayoutEntity> hasStatus(String status) {
-        return (root, query, builder) -> builder.equal(root.get("status"), status);
-    }
 }

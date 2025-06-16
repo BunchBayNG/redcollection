@@ -1,17 +1,18 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.VnubanSpecification;
+import com.bbng.dao.microservices.report.dto.VnubanFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.VnubanEntity;
 import com.bbng.dao.microservices.report.repository.VnubanRepository;
 import com.bbng.dao.microservices.report.service.VnubanService;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 
 @Service
 public class VnubanImpl implements VnubanService {
@@ -23,42 +24,38 @@ public class VnubanImpl implements VnubanService {
     }
 
 
+
     @Override
-    public ResponseDto<Page<VnubanEntity>>  getVnubans(String vnubanType, String merchantName, String merchantOrgId, String vnuban,
-                                                            LocalDateTime startDate, LocalDateTime endDate, String status,
-                                                            String sortBy, boolean ascending, int page, int size) {
+    public ResponseDto<Page<VnubanEntity>>  getVnubans(VnubanFilterRequestDto request) {
+        Specification<VnubanEntity> spec = VnubanSpecification.getVnubans(request);
 
-        //Specification<VnubanEntity> spec = Specification.where(null);
+        Pageable pageable = getPageable(request);
 
-        Specification<VnubanEntity> spec = (root, query, builder) -> null;
-
-        if (vnubanType != null) {
-            spec = spec.and(VnubanSpecification.hasVnubanType(vnubanType));
-        }
-        if (merchantName != null) {
-            spec = spec.and(VnubanSpecification.hasMerchantName(merchantName));
-        }
-        if (merchantOrgId != null) {
-            spec = spec.and(VnubanSpecification.hasMerchantOrgId(merchantOrgId));
-        }
-        if (vnuban != null) {
-            spec = spec.and(VnubanSpecification.hasVNuban(vnuban));
-        }
-        if (startDate != null && endDate != null) {
-            spec = spec.and(VnubanSpecification.isBetweenTimestamps(startDate, endDate));
-        }
-        if (status != null) {
-            spec = spec.and(VnubanSpecification.hasStatus(status));
-        }
-
-        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        Page<VnubanEntity> page = vnubanRepository.findAll(spec, pageable);
 
         return ResponseDto.<Page<VnubanEntity>>builder()
                 .statusCode(200)
                 .status(true)
-                .message("vnubans fetched successfully")
-                .data(vnubanRepository.findAll(spec, pageRequest))
+                .message("vNUBANs fetched successfully")
+                .data(page)
                 .build();
     }
+
+
+    private Pageable getPageable(VnubanFilterRequestDto request) {
+        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
+        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+
+        Sort sort = switch (sortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+            case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
+            case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
+            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+        };
+
+        return PageRequest.of(request.getPage(), request.getSize(), sort);
+    }
+    
+    
 }
