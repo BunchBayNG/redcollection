@@ -5,10 +5,17 @@ import com.bbng.dao.microservices.auth.organization.dto.request.UpdateOrgDto;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
+import com.bbng.dao.microservices.report.config.OrganizationSpecification;
+import com.bbng.dao.microservices.report.dto.OrgFilterRequestDto;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,6 +52,38 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .data(String.format("Organization with id: %s has been updated.", updateRequestDto.getOrganizationId()))
                 .build();
 
+    }
+
+    @Override
+    public ResponseDto<Page<OrganizationEntity>>  getAllOrg(OrgFilterRequestDto request) {
+        Specification<OrganizationEntity> spec = OrganizationSpecification.getOrganizations(request);
+
+        Pageable pageable = getPageable(request);
+
+        Page<OrganizationEntity> page = organizationRepository.findAll(spec, pageable);
+
+        return ResponseDto.<Page<OrganizationEntity>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("vNUBANs fetched successfully")
+                .data(page)
+                .build();
+    }
+
+
+    private Pageable getPageable(OrgFilterRequestDto request) {
+        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
+        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+
+        Sort sort = switch (sortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+            case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
+            case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
+            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+        };
+
+        return PageRequest.of(request.getPage(), request.getSize(), sort);
     }
 
 //

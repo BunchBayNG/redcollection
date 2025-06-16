@@ -1,17 +1,10 @@
 package com.bbng.dao.microservices.report.controller;
 
-import com.bbng.dao.microservices.report.dto.PayoutFilterRequestDto;
-import com.bbng.dao.microservices.report.dto.SettlementFilterRequestDto;
-import com.bbng.dao.microservices.report.dto.TransactionFilterRequestDto;
-import com.bbng.dao.microservices.report.dto.VnubanFilterRequestDto;
-import com.bbng.dao.microservices.report.entity.PayoutEntity;
-import com.bbng.dao.microservices.report.entity.SettlementEntity;
-import com.bbng.dao.microservices.report.entity.TransactionEntity;
-import com.bbng.dao.microservices.report.entity.VnubanEntity;
-import com.bbng.dao.microservices.report.service.PayoutService;
-import com.bbng.dao.microservices.report.service.SettlementService;
-import com.bbng.dao.microservices.report.service.TransactionService;
-import com.bbng.dao.microservices.report.service.VnubanService;
+import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
+import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
+import com.bbng.dao.microservices.report.dto.*;
+import com.bbng.dao.microservices.report.entity.*;
+import com.bbng.dao.microservices.report.service.*;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,15 +22,16 @@ public class ReportsController {
     private final PayoutService payoutService;
     private final SettlementService settlementService;
     private final VnubanService vnubanService;
+    private final OrganizationService organizationService;
+    private final CustomerService customerService;
 
-    public ReportsController(TransactionService transactionService,
-                             PayoutService payoutService,
-                             SettlementService settlementService,
-                             VnubanService vnubanService) {
+    public ReportsController(TransactionService transactionService, PayoutService payoutService, SettlementService settlementService, VnubanService vnubanService, OrganizationService organizationService, CustomerService customerService) {
         this.transactionService = transactionService;
         this.payoutService = payoutService;
         this.settlementService = settlementService;
         this.vnubanService = vnubanService;
+        this.organizationService = organizationService;
+        this.customerService = customerService;
     }
 
 
@@ -54,8 +48,7 @@ public class ReportsController {
         return  ResponseEntity.status(HttpStatus.OK).body(payoutService.getPayouts(request));
     }
 
-
- @GetMapping("/settlements")
+    @GetMapping("/settlements")
     public   ResponseEntity<ResponseDto<Page<SettlementEntity> >>  getSettlements(@RequestBody SettlementFilterRequestDto request) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(settlementService.getSettlements(request));
@@ -66,5 +59,17 @@ public class ReportsController {
     public   ResponseEntity<ResponseDto<Page<VnubanEntity> >>  getVnubans(@RequestBody VnubanFilterRequestDto request ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(vnubanService.getVnubans(request));
+    }
+
+    @GetMapping("/organizations")
+    public   ResponseEntity<ResponseDto<Page<OrganizationEntity> >>  getOrg(@RequestBody OrgFilterRequestDto request ) {
+
+        return  ResponseEntity.status(HttpStatus.OK).body(organizationService.getAllOrg(request));
+    }
+
+    @GetMapping("/organization-customers")
+    public   ResponseEntity<ResponseDto<Page<CustomerEntity> >>  getOrgCustomers(@RequestBody CustomerFilterRequestDto request ) {
+
+        return  ResponseEntity.status(HttpStatus.OK).body(customerService.getOrgCustomers(request));
     }
 }

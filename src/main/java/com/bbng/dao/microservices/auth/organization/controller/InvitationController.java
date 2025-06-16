@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
-@RestController("api/v1/redtech/invite-user")
+@RestController("api/v1/users")
 public class InvitationController {
 
     private final InvitationService invitationService;
@@ -41,7 +41,7 @@ public class InvitationController {
     private final UserRepository userRepository;
     private final JWTService jwtService;
 
-    @PostMapping("invite-user")
+    @PostMapping("invite")
     public ResponseEntity<ResponseDto<String>> inviteUser(@RequestBody InviteRequestDto inviteRequestDto) {
 
         // make sure it's only those that have this permissions can actually access this route

@@ -1,20 +1,19 @@
 package com.bbng.dao.microservices.auth.organization.controller;
 
 
+import com.bbng.dao.microservices.auth.organization.dto.request.UpdateOrgDto;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.auth.passport.impl.setupImpl.PermissionService;
+import com.bbng.dao.microservices.report.dto.OrgFilterRequestDto;
 import com.bbng.dao.util.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController()
 @Slf4j
@@ -27,16 +26,14 @@ public class OrganizationController {
     private final JWTService jwtService;
     private final InvitationController controller;
     private final HttpServletRequest request;
-//    @PutMapping("merchant/org-management/update-business-on-signup")
-//    public ResponseEntity<ResponseDto<String>> updateBusinessDetails(@RequestBody UpdateBusinessRequestDto updateRequestDto){
-//
-//
-//
-//
-//        permissionService.checkPermission(request, "UPDATE_BUSINESS_ON_SIGNUP", jwtService);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(organizationService.updateBusinessDetails(updateRequestDto));
-//    }
+    @PutMapping("/update-org")
+    public ResponseEntity<ResponseDto<String>> updateBusinessDetails(@RequestBody UpdateOrgDto updateRequestDto){
+
+        permissionService.checkPermission(request, "UPDATE_BUSINESS_ON_SIGNUP", jwtService);
+
+        return ResponseEntity.status(HttpStatus.OK).body(organizationService.updateBusinessDetails(updateRequestDto));
+    }
+
 
 //    @PutMapping(value = "merchant/org-management/update-company-details", consumes = "multipart/form-data")
 //    public ResponseEntity<ResponseDto<String>> updateCompanyDetails(
@@ -118,7 +115,7 @@ public class OrganizationController {
 //        return ResponseEntity.status(HttpStatus.OK).body(organizationService.updateCompanyAccount(accountDto));
 //    }
 
-    @GetMapping("merchant/org-management/get-organizationBy-orgId")
+    @GetMapping("/get-organizationBy-orgId")
     public ResponseEntity<ResponseDto<OrganizationEntity>> getOrganizationByUserId(@RequestParam String orgId) {
         log.info("assigning permissions for get organisation by userId");
 

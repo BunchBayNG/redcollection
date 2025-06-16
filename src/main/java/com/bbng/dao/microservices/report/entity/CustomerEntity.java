@@ -1,5 +1,6 @@
 package com.bbng.dao.microservices.report.entity;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,28 +11,34 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class PayoutEntity {
+
+public class CustomerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
-    private String lastName;
-    private String vnuban;
+    private String merchantName;
+    private String merchantOrgId;
+    private String sourceAccount;
+    private String destinationAccount;
+    private Double amount;
     private String status;
+    private String transactionRef;
+    private String paymentReference;
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Getters and Setters
+
+
+
 }

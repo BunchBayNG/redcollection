@@ -103,7 +103,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         }
         OrganizationEntity org = orgRepo.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Can't find the organization By the merchantAdmin Id. " +
                 "make sure its the admin of this organization has this email"));
-        boolean exist = orgRepo.existsByorganizationName((createLiveApiKey.getBusinessName()));
+        boolean exist = orgRepo.existsByOrganizationName((createLiveApiKey.getBusinessName()));
         if (!(exist && createLiveApiKey.getBusinessName().equals(org.getOrganizationName()))){
             throw new ResourceNotFoundException("No Business exists with the given business Name: "+ createLiveApiKey.getBusinessName());
         }

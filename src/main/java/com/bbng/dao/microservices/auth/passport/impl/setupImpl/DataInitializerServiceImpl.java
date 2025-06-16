@@ -379,6 +379,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
 
             UserEntity savedUser = userRepository.saveAndFlush(user);
             OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                    .id("ORG-REDTECH")
                     .organizationName(request.getOrganizationName())
                     .merchantAdminId(savedUser.getId())
                     .build();

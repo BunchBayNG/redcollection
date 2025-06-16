@@ -40,5 +40,6 @@ public class OrganizationEntity extends BaseEntity {
             this.id = "ORG-" + ulid.nextULID().substring(12);
         }
     }
+
 }
 

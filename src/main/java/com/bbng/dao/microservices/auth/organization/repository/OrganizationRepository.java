@@ -3,11 +3,12 @@ package com.bbng.dao.microservices.auth.organization.repository;
 
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface OrganizationRepository extends JpaRepository<OrganizationEntity, String> {
+public interface OrganizationRepository extends JpaRepository<OrganizationEntity, Long>, JpaSpecificationExecutor<OrganizationEntity> {
 
     @Query("select o from OrganizationEntity o where o.merchantAdminId = ?1")
     Optional<OrganizationEntity> findOrganizationByMerchantAdminId(String id);
@@ -25,6 +26,9 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
     Optional<OrganizationEntity> findByContactEmail(String email);
 
     @Query("select (count(o) > 0) from OrganizationEntity o where o.organizationName = ?1")
-    boolean existsByorganizationName(String organizationName);
+    boolean existsByOrganizationName(String organizationName);
+
+    Optional<OrganizationEntity>  findById(String orgId);
+
 
 }
