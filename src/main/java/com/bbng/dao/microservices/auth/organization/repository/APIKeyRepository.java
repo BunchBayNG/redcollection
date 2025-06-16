@@ -1,6 +1,6 @@
-package com.bbng.dao.microservices.auth.passport.repository;
+package com.bbng.dao.microservices.auth.organization.repository;
 
-import com.bbng.dao.microservices.auth.passport.entity.ApiKeyEntity;
+import com.bbng.dao.microservices.auth.organization.entity.ApiKeyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

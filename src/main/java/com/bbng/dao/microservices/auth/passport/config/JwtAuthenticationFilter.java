@@ -1,7 +1,7 @@
 package com.bbng.dao.microservices.auth.passport.config;
 
 
-import com.bbng.dao.microservices.auth.passport.repository.APIKeyRepository;
+import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;

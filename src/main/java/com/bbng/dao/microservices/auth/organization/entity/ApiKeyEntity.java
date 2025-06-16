@@ -1,4 +1,4 @@
-package com.bbng.dao.microservices.auth.passport.entity;
+package com.bbng.dao.microservices.auth.organization.entity;
 
 
 import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
