@@ -16,6 +16,8 @@ public interface RoleRepository extends JpaRepository<RoleEntity, String> {
 
     //    Recommended role types are SUPER_ADMIN, ORGANIZATION_ADMIN, ADMIN, USER
     Optional<RoleEntity> findByRoleName(String name);
+
+
     @Query("select role from RoleEntity role where role.createdBy = ?1")
     List<RoleEntity> findByCreatedBy(String username);
 }

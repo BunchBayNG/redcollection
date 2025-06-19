@@ -294,7 +294,7 @@ public class AccountManager {
                 request.getAccountEmail(),
                 request.getInitiatorRef(),
                 BigDecimal.ZERO,
-                null,
+                null, null,
                 now,
                 ACTIVE,
                 ProvisionedAccount.Mode.OPEN
@@ -342,7 +342,7 @@ public class AccountManager {
                             request.get(i).getAccountEmail(),
                             request.get(i).getInitiatorRef(),
                             BigDecimal.ZERO,
-                            null,
+                            null, null,
                             now,
                             ACTIVE,
                             ProvisionedAccount.Mode.OPEN)

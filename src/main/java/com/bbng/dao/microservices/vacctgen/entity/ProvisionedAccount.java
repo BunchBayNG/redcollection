@@ -42,6 +42,7 @@ public class ProvisionedAccount {
 
     private BigDecimal amount;
     private String walletNo;
+    private String batchRef;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm:ss a")
