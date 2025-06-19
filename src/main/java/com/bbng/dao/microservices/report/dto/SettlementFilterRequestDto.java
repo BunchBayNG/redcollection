@@ -11,6 +11,7 @@ public class SettlementFilterRequestDto {
     private String status;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String merchantOrgId;
 
     private String sortBy;     // e.g. merchantName, destinationAccountName, status
     private String sortOrder;  // ASC, DESC, ACTIVE_FIRST, INACTIVE_FIRST

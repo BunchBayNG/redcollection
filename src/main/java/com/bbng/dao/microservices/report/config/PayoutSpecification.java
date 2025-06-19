@@ -26,6 +26,11 @@ public class PayoutSpecification {
                 predicates.add(cb.or(bySourceAccount, byDestinationAccount, byMerchantOrgId, byMerchantName, byTransactionRef, byReference));
             }
 
+
+            if (request.getMerchantOrgId() != null && !request.getMerchantOrgId().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("merchantOrgId")), request.getMerchantOrgId().toLowerCase()));
+            }
+
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(cb.between(root.get("createdAt"), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(23, 59, 59)));
             }

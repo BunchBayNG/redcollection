@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public class TransactionFilterRequestDto {
     private String search; // Transaction ID, Merchant Name or vNUBAN
     private String status;
+    private String merchantOrgId;
     private LocalDate startDate;
     private LocalDate endDate;
 

@@ -24,6 +24,12 @@ public class VnubanSpecification {
                 predicates.add(cb.or(byVnubanType, byMerchantOrgId, byMerchantName, byVNUBAN));
             }
 
+
+            if (request.getMerchantOrgId() != null && !request.getMerchantOrgId().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("merchantOrgId")), request.getMerchantOrgId().toLowerCase()));
+            }
+
+
             if (request.getStatus() != null && !request.getStatus().isEmpty()) {
                 predicates.add(cb.equal(cb.lower(root.get("status")), request.getStatus().toLowerCase()));
             }

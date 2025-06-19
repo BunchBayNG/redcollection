@@ -12,5 +12,4 @@ public interface TransactionService {
 
 
     ResponseDto<Page<TransactionEntity>>  getTransactions(TransactionFilterRequestDto request);
-
 }

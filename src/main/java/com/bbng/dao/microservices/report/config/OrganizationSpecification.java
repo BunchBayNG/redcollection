@@ -16,13 +16,10 @@ public class OrganizationSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (request.getSearch() != null && !request.getSearch().isEmpty()) {
-
-//                Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + request.getSearch().toLowerCase() + "%");
-//                Predicate byTransactionRef = cb.like(cb.lower(root.get("transactionRef")), "%" + request.getSearch().toLowerCase() + "%");
-//                Predicate byReference = cb.like(cb.lower(root.get("paymentReference")), "%" + request.getSearch().toLowerCase() + "%");
                 Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + request.getSearch().toLowerCase() + "%");
                 predicates.add(cb.or( byMerchantName));
             }
+
 
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(cb.between(root.get("createdAt"), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(23, 59, 59)));

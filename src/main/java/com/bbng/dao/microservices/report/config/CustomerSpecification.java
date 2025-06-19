@@ -30,11 +30,17 @@ public class CustomerSpecification {
                 predicates.add(cb.between(root.get("createdAt"), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(23, 59, 59)));
             }
 
-            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
-                predicates.add(cb.equal(cb.lower(root.get("status")), request.getStatus().toLowerCase()));
+
+
+            if (request.getMerchantOrgId() != null && !request.getMerchantOrgId().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("merchantOrgId")), request.getMerchantOrgId().toLowerCase()));
             }
 
 
+
+            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("status")), request.getStatus().toLowerCase()));
+            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
