@@ -6,7 +6,9 @@ import com.bbng.dao.microservices.report.dto.*;
 import com.bbng.dao.microservices.report.entity.*;
 import com.bbng.dao.microservices.report.service.*;
 import com.bbng.dao.util.response.ResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,17 @@ public class ReportsController {
         this.organizationService = organizationService;
         this.customerService = customerService;
     }
+
+
+
+
+
+
+
+
+    private final String defaultPage = "0";      // default page
+    private final String defaultSize = "10";     // default size
+    private final String defaultSortOrder = "ASC";     // default size
 
 
     @GetMapping("/transactions")
@@ -61,9 +74,22 @@ public class ReportsController {
     }
 
     @GetMapping("/organizations")
-    public   ResponseEntity<ResponseDto<Page<OrganizationEntity> >>  getOrg(@RequestParam OrgFilterRequestDto request ) {
+    public   ResponseEntity<ResponseDto<Page<OrganizationEntity> >>  getOrg(
 
-        return  ResponseEntity.status(HttpStatus.OK).body(organizationService.getAllOrg(request));
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = defaultSortOrder) String sortOrder,
+            @RequestParam(defaultValue = defaultPage) int page,
+            @RequestParam(defaultValue = defaultSize) int size
+
+    ) {
+
+        return  ResponseEntity.status(HttpStatus.OK).body(
+                organizationService.getAllOrg(search, merchantOrgId,status, sortBy, sortOrder, startDate, endDate, page, size  ));
     }
 
     @GetMapping("/organization-customers")

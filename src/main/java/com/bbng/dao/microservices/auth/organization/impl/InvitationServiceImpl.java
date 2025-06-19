@@ -67,7 +67,6 @@ public class InvitationServiceImpl implements InvitationService {
             throw new EmailAlreadyExistsException("Email already exists. Bad request");
         }
 
-        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(userEntity.getId()).orElseThrow(() -> new ResourceNotFoundException("Organization with id not found"));
 
         String password = PasswordGenerator.generatePassword();
 
@@ -90,26 +89,66 @@ public class InvitationServiceImpl implements InvitationService {
                 .isInvitedUser(true)
                 .build());
 
-        OrgStaffEntity orgStaffEntity = OrgStaffEntity.builder()
-                .invitationStatus(InvitationStatus.AWAITING_ACTIVATION)
-                .organizationId(organizationEntity.getId())
-                .userId(newSavedUser.getId())
-                .userRole(inviteRequestDto.getRole())
-                .invitedBy(inviteRequestDto.getUserId())
-                .build();
 
-        orgStaffRepository.save(orgStaffEntity);
-        emailVerificationService.sendInvitationEmail(inviteRequestDto.getEmail(), organizationEntity.getOrganizationName(), password);
+        if (userType.equals(UserType.ORGANIZATION_STAFF)) {
 
-        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
-                .userId(userEntity.getId())
-                .userName(userEntity.getUserName())
-                .event(Events.INVITE_STAFF.name())
-                .isDeleted(false)
-                .description("Invitation to the provided user has be sent out!")
-                .merchantName(organizationEntity.getOrganizationName())
-                .merchantId(organizationEntity.getId())
-                .build());
+            OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(userEntity.getId()).orElseThrow(() -> new ResourceNotFoundException("Organization with id not found"));
+
+            OrgStaffEntity orgStaffEntity = OrgStaffEntity.builder()
+                    .invitationStatus(InvitationStatus.AWAITING_ACTIVATION)
+                    .organizationId(organizationEntity.getId())
+                    .userId(newSavedUser.getId())
+                    .userRole(inviteRequestDto.getRole())
+                    .invitedBy(inviteRequestDto.getUserId())
+                    .build();
+
+            orgStaffRepository.save(orgStaffEntity);
+
+
+            auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                    .userId(userEntity.getId())
+                    .userName(userEntity.getUserName())
+                    .event(Events.INVITE_STAFF.name())
+                    .isDeleted(false)
+                    .description("Invitation to the provided user has be sent out!")
+                    .merchantName(organizationEntity.getOrganizationName())
+                    .merchantId(organizationEntity.getId())
+                    .build());
+
+
+            emailVerificationService.sendInvitationEmail(inviteRequestDto.getEmail(), organizationEntity.getOrganizationName(), password);
+
+        }
+
+        if(userType.equals(UserType.REDTECH_STAFF)) {
+
+            OrgStaffEntity orgStaffEntity = OrgStaffEntity.builder()
+                    .invitationStatus(InvitationStatus.AWAITING_ACTIVATION)
+                    .organizationId("ORG-REDTECH")
+                    .userId(newSavedUser.getId())
+                    .userRole(inviteRequestDto.getRole())
+                    .invitedBy(inviteRequestDto.getUserId())
+                    .build();
+
+            orgStaffRepository.save(orgStaffEntity);
+
+            auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                    .userId(userEntity.getId())
+                    .userName(userEntity.getUserName())
+                    .event(Events.INVITE_STAFF.name())
+                    .isDeleted(false)
+                    .description("Invitation to the provided user has be sent out!")
+                    .merchantName("REDTECH")
+                    .merchantId("ORG-REDTECH")
+                    .build());
+
+
+            emailVerificationService.sendInvitationEmail(inviteRequestDto.getEmail(), "REDTECH", password);
+
+
+        }
+
+
         return ResponseDto.<String>builder()
                 .statusCode(201)
                 .status(true)

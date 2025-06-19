@@ -6,7 +6,6 @@ import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.auth.passport.impl.setupImpl.PermissionService;
-import com.bbng.dao.microservices.report.dto.OrgFilterRequestDto;
 import com.bbng.dao.util.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

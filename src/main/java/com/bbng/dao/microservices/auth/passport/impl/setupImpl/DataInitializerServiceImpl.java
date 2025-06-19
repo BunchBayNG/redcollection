@@ -245,15 +245,16 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
 
             Optional<RoleEntity> roleOptional = roleRepository.findByRoleName("ROLE_SUPER_ADMIN");
             user.setRoleEntities(Collections.singleton(roleOptional.get()));
+            userRepository.saveAndFlush(user);
 
-            UserEntity savedUser = userRepository.saveAndFlush(user);
-            OrganizationEntity organizationEntity = OrganizationEntity.builder()
-                    .organizationName(request.getOrganizationName())
-                    .merchantAdminId(savedUser.getId())
-                    .build();
-
-            OrganizationEntity savedOrg = organizationRepository.save(organizationEntity);
-            organizationRepository.save(savedOrg);
+//            UserEntity savedUser = userRepository.saveAndFlush(user);
+//            OrganizationEntity organizationEntity = OrganizationEntity.builder()
+//                    .organizationName(request.getOrganizationName())
+//                    .merchantAdminId(savedUser.getId())
+//                    .build();
+//
+//            OrganizationEntity savedOrg = organizationRepository.save(organizationEntity);
+//            organizationRepository.save(savedOrg);
 
         } else if (optionalUser.get().getUserName() == null) {
             var user = optionalUser.get();
