@@ -13,11 +13,13 @@ import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PermissionService {
@@ -67,6 +69,9 @@ public class PermissionService {
     }
 
     public void checkPermission(HttpServletRequest request, String permissionName, JWTService jwtService) {
+
+        log.info("Checking permission for permission: " + permissionName);
+
         PermissionEntity permissionEntityOptional =
                 permissionRepository.findByNameOrDescription(permissionName, null).orElseThrow(() ->
                         new ResourceNotFoundException("No permission found for the given name: " + permissionName));
@@ -74,6 +79,9 @@ public class PermissionService {
 
         UserEntity user = userRepository.findByUsernameOrEmail(username, null).orElseThrow(() ->
                 new UserNotFoundException("Can't find user with the username extracted from token. Is user a redtech user?"));
+
+        log.info("Checking permission for user: " + user.getRoleEntities().stream().map(RoleEntity::getPermissions).toList());
+
         boolean hasPermission = user.getRoleEntities().stream().map(RoleEntity::getPermissions).anyMatch(permissionEntities ->
                 permissionEntities.contains(permissionEntityOptional));
 

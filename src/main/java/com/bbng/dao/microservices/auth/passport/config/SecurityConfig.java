@@ -91,14 +91,4 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-
-//    "api/v1/regportal/cohorts/applicants/{cohortId}",
-//                                        "api/v1/regportal/cohorts/applicants/{organizationId}",
-//                                        "api/v1/regportal/cohorts/applicants/by-organization&cohort",
-//                                        "api/v1/regportal/assessment/update",
-//                                        "api/v1/regportal/assessment/add-question-to-assessment/{assessmentId}",
-//                                        "api/v1/regportal/assessment/{assessmentId}",
-//                                        "/api/v1/regportal/assessment/batch/createQuestion/**",
-//                                        "/api/v1/regportal/assessment/update-question",
-//                                        "/api/v1/regportal/assessment/delete-question/{questionId}",
 }
