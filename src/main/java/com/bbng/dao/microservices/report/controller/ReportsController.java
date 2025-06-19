@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/v1/reports")
 public class ReportsController {
@@ -33,39 +35,39 @@ public class ReportsController {
 
 
     @GetMapping("/transactions")
-    public   ResponseEntity<ResponseDto<Page<TransactionEntity> >>  getTransactions(@RequestBody TransactionFilterRequestDto request) {
+    public   ResponseEntity<ResponseDto<Page<TransactionEntity> >>  getTransactions(@RequestParam TransactionFilterRequestDto request) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(transactionService.getTransactions(request));
     }
 
 
     @GetMapping("/payouts")
-    public   ResponseEntity<ResponseDto<Page<PayoutEntity> >>  getPayouts(@RequestBody PayoutFilterRequestDto request) {
+    public   ResponseEntity<ResponseDto<Page<PayoutEntity> >>  getPayouts(@RequestParam PayoutFilterRequestDto request) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(payoutService.getPayouts(request));
     }
 
     @GetMapping("/settlements")
-    public   ResponseEntity<ResponseDto<Page<SettlementEntity> >>  getSettlements(@RequestBody SettlementFilterRequestDto request) {
+    public   ResponseEntity<ResponseDto<Page<SettlementEntity> >>  getSettlements(@RequestParam SettlementFilterRequestDto request) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(settlementService.getSettlements(request));
     }
 
 
     @GetMapping("/vnubans")
-    public   ResponseEntity<ResponseDto<Page<VnubanEntity> >>  getVnubans(@RequestBody VnubanFilterRequestDto request ) {
+    public   ResponseEntity<ResponseDto<Page<VnubanEntity> >>  getVnubans(@RequestParam VnubanFilterRequestDto request ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(vnubanService.getVnubans(request));
     }
 
     @GetMapping("/organizations")
-    public   ResponseEntity<ResponseDto<Page<OrganizationEntity> >>  getOrg(@RequestBody OrgFilterRequestDto request ) {
+    public   ResponseEntity<ResponseDto<Page<OrganizationEntity> >>  getOrg(@RequestParam OrgFilterRequestDto request ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(organizationService.getAllOrg(request));
     }
 
     @GetMapping("/organization-customers")
-    public   ResponseEntity<ResponseDto<Page<CustomerEntity> >>  getOrgCustomers(@RequestBody CustomerFilterRequestDto request ) {
+    public   ResponseEntity<ResponseDto<Page<CustomerEntity> >>  getOrgCustomers(@RequestParam CustomerFilterRequestDto request ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(customerService.getOrgCustomers(request));
     }
