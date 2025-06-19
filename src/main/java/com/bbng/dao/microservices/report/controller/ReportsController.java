@@ -12,11 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/reports")
+@RequestMapping("/api/v1/reports")
 public class ReportsController {
-
-
-
 
     private final TransactionService transactionService;
     private final PayoutService payoutService;

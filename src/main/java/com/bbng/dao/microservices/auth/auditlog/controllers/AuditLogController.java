@@ -32,7 +32,6 @@ public class AuditLogController {
             @RequestParam(required = false, defaultValue = "1", value = "pageNo")
             @Min(value = 1, message = "Minimum page no is 1") int pageNo,
             @RequestParam(required = false, defaultValue = "10", value = "pageSize") int pageSize,
-
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String merchantName,
             @RequestParam(required = false) String merchantId,

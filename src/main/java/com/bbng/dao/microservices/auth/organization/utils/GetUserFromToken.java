@@ -1,8 +1,12 @@
 package com.bbng.dao.microservices.auth.organization.utils;
 
 
+import com.bbng.dao.microservices.auth.organization.entity.ApiKeyEntity;
+import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
-import com.bbng.dao.util.exceptions.customExceptions.UnauthorizedException;
+import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
+import com.bbng.dao.util.exceptions.customExceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,10 +16,10 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 
 public class GetUserFromToken {
-    public static String extractTokenFromHeader(HttpServletRequest request, JWTService jwtService) {
+    public static String extractTokenFromHeader(HttpServletRequest request, JWTService jwtService){
         // get the header
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer")) {
+        if (header == null || !header.startsWith("Bearer")){
             throw new UnauthorizedException("You are not authorized to make this request, please log in!");
         }
         //get the token
@@ -24,4 +28,5 @@ public class GetUserFromToken {
         return jwtService.getUsername(token);
 
     }
+
 }
