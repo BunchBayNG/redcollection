@@ -19,6 +19,7 @@ import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
 import com.bbng.dao.microservices.auth.passport.entity.TokenEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.enums.TokenType;
+import com.bbng.dao.microservices.auth.passport.enums.UserType;
 import com.bbng.dao.microservices.auth.passport.repository.RoleRepository;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
@@ -53,6 +54,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -103,7 +105,13 @@ public class UserServiceImpl implements UserService {
             user = userRepository.findByUsernameOrEmail(loginDto.getEmail(), loginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException(String.format("User with %s not found", loginDto.getEmail())));
             log.info("user email {}", user.getEmail());
 
-            Map<String, Object> claims = generateHashMap(loginDto.getEmail());
+            Map<String, Object> claims = new HashMap<>();
+
+            try{
+                claims = generateHashMap(loginDto.getEmail());
+            } catch (Exception e){
+                log.error("Error generating hashmap", e);
+            }
             token = jwtService.generateTokenWithClaims(authentication.getName(), claims);
             refreshToken = jwtService.generateRefreshToken(claims, authentication.getName());
 
@@ -336,16 +344,31 @@ public class UserServiceImpl implements UserService {
 
         List<String> userPermissions = user.getRoleEntities().stream().flatMap(roleEntity -> roleEntity.getPermissions().stream()).map(PermissionEntity::getName).toList();
 
-        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
+       /// OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
+        Optional<OrganizationEntity> organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId());
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userRoles);
-        claims.put("userName", user.getUserName());
-        claims.put("userType", String.valueOf(user.getUsertype()));
-        claims.put("organization", organizationEntity.getOrganizationName());
-        claims.put("organizationId", organizationEntity.getId());
-        claims.put("permissions", userPermissions);
-        claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+        if (user.getUsertype() == UserType.REDTECH_STAFF || user.getUsertype() == UserType.SUPER_ADMIN  ){
+            claims.put("roles", userRoles);
+            claims.put("userName", user.getUserName());
+            claims.put("userType", String.valueOf(user.getUsertype()));
+            claims.put("organization", "REDTECH");
+            claims.put("organizationId", "0RG-REDTECH");
+            claims.put("permissions", userPermissions);
+            claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+        }
+
+        assert organizationEntity.isPresent();
+        if (user.getUsertype() != UserType.REDTECH_STAFF && user.getUsertype() != UserType.SUPER_ADMIN  ){
+            claims.put("roles", userRoles);
+            claims.put("userName", user.getUserName());
+            claims.put("userType", String.valueOf(user.getUsertype()));
+            claims.put("organization", organizationEntity.get().getOrganizationName());
+            claims.put("organizationId", organizationEntity.get().getId());
+            claims.put("permissions", userPermissions);
+            claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+        }
+
         return claims;
     }
 
