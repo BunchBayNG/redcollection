@@ -314,24 +314,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         log.info("User: {}", user.getEmail());
         log.info("User: {}", user.getEmail());
-//
-//        return ResponseDto.<String>builder()
-//                .statusCode(200)
-//                .status(true)
-//                .message("MFA Verified successfully")
-//                .data(String.format("2FA verified for User with Id: %s", token.getEmail()))
-//                .build();
 
-
-//        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId())
-//                .orElse(organizationRepository.findByOrganizationId(
-//                        orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
-
-//       if (organizationEntity == null){
-//           throw new ForbiddenException("User is not linked with any organization");
-//       }
-
-        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());  // current user
+        OrganizationEntity org = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElse( new OrganizationEntity());
 
 
         TokenEntity tokenEntity = tokenRepository.findByUserEntityAndExpiredFalseAndRevokedFalse(user).get();
@@ -358,7 +342,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                         .refreshToken("")
                         .acctStatus(user.getAcctStatus().name())
                         .userId(user.getId())
-                        .organizationId(org.get().getId())
+                        .organizationId(org.getId())
                         .isEmailVerified(user.getIsEnabled())
                         .build())
                 .build();
