@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.TransactionSpecification;
-import com.bbng.dao.microservices.report.dto.TransactionFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.TransactionEntity;
 import com.bbng.dao.microservices.report.repository.TransactionRepository;
 import com.bbng.dao.microservices.report.service.TransactionService;
@@ -12,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 
 @Service
@@ -24,37 +25,41 @@ public class TransactionImpl implements TransactionService {
     }
 
     @Override
-    public ResponseDto<Page<TransactionEntity>>  getTransactions(TransactionFilterRequestDto request) {
-        Specification<TransactionEntity> spec = TransactionSpecification.getTransactions(request);
+    public ResponseDto<Page<TransactionEntity>>  getTransactions(String search, String merchantOrgId, String status,
+                                                                 String sortBy, String sortOrder, LocalDate startDate,
+                                                                 LocalDate endDate, int page, int size) {
+        Specification<TransactionEntity> spec =
+                TransactionSpecification.getTransactions(search, merchantOrgId, status, startDate, endDate);
 
-        Pageable pageable = getPageable(request);
+        Pageable pageable = getPageable(sortBy, sortOrder, page, size);
         
-        Page<TransactionEntity> page = transactionRepository.findAll(spec, pageable);
+        Page<TransactionEntity> response = transactionRepository.findAll(spec, pageable);
 
         return ResponseDto.<Page<TransactionEntity>>builder()
                 .statusCode(200)
                 .status(true)
                 .message("Transactions fetched successfully")
-                .data(page)
+                .data(response)
                 .build();
     }
 
 
 
 
-    private Pageable getPageable(TransactionFilterRequestDto request) {
-        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
-        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+    private Pageable getPageable(String sortBy, String sortOrder, int page, int size) {
+        String  defaultSortBy = sortBy != null ? sortBy : "createdAt";
+        String defaultSortOrder = sortOrder != null ? sortOrder.toUpperCase() : "DESC";
 
-        Sort sort = switch (sortOrder) {
-            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
-            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+        Sort sort = switch (defaultSortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, defaultSortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, defaultSortBy);
             case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
             case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
             default -> Sort.by(Sort.Direction.DESC, "createdAt");
         };
 
-        return PageRequest.of(request.getPage(), request.getSize(), sort);
+        return PageRequest.of(page, size, sort);
     }
+
 
 }

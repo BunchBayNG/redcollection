@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.CustomerSpecification;
-import com.bbng.dao.microservices.report.dto.CustomerFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.CustomerEntity;
 import com.bbng.dao.microservices.report.repository.CustomerRepository;
 import com.bbng.dao.microservices.report.service.CustomerService;
@@ -12,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 
 @Service
@@ -25,36 +26,39 @@ public class CustomerImpl implements CustomerService {
 
 
     @Override
-    public ResponseDto<Page<CustomerEntity>>  getOrgCustomers(CustomerFilterRequestDto request) {
-        Specification<CustomerEntity> spec = CustomerSpecification.getCustomers(request);
+    public ResponseDto<Page<CustomerEntity>>  getOrgCustomers(String search, String merchantOrgId, String status,
+                                                              String sortBy, String sortOrder, LocalDate startDate,
+                                                              LocalDate endDate, int page, int size) {
+        Specification<CustomerEntity> spec =
+                CustomerSpecification.getCustomers(search, merchantOrgId, status, startDate, endDate);
 
-        Pageable pageable = getPageable(request);
+        Pageable pageable = getPageable(sortBy, sortOrder, page, size);
 
-        Page<CustomerEntity> page = customerRepository.findAll(spec, pageable);
+        Page<CustomerEntity> response = customerRepository.findAll(spec, pageable);
 
         return ResponseDto.<Page<CustomerEntity>>builder()
                 .statusCode(200)
                 .status(true)
                 .message("vNUBANs fetched successfully")
-                .data(page)
+                .data(response)
                 .build();
     }
 
 
-    private Pageable getPageable(CustomerFilterRequestDto request) {
-        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
-        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+    private Pageable getPageable(String sortBy, String sortOrder, int page, int size) {
+        String  defaultSortBy = sortBy != null ? sortBy : "createdAt";
+        String defaultSortOrder = sortOrder != null ? sortOrder.toUpperCase() : "DESC";
 
-        Sort sort = switch (sortOrder) {
-            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
-            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+        Sort sort = switch (defaultSortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, defaultSortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, defaultSortBy);
             case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
             case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
             default -> Sort.by(Sort.Direction.DESC, "createdAt");
         };
 
-        return PageRequest.of(request.getPage(), request.getSize(), sort);
+        return PageRequest.of(page, size, sort);
     }
-    
+
     
 }

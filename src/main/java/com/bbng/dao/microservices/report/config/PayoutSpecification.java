@@ -1,10 +1,10 @@
 package com.bbng.dao.microservices.report.config;
 
-import com.bbng.dao.microservices.report.dto.PayoutFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.PayoutEntity;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,33 +12,34 @@ public class PayoutSpecification {
 
 
 
-    public static Specification<PayoutEntity> getPayouts(PayoutFilterRequestDto request) {
+    public static Specification<PayoutEntity> getPayouts(String search, String merchantOrgId, String status, LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getSearch() != null && !request.getSearch().isEmpty()) {
-                Predicate bySourceAccount = cb.like(cb.lower(root.get("sourceAccount")), "%" + request.getSearch().toLowerCase() + "%");
-                Predicate byDestinationAccount = cb.like(cb.lower(root.get("destinationAccount")), "%" + request.getSearch().toLowerCase() + "%");
-                Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + request.getSearch().toLowerCase() + "%");
-                Predicate byTransactionRef = cb.like(cb.lower(root.get("transactionRef")), "%" + request.getSearch().toLowerCase() + "%");
-                Predicate byReference = cb.like(cb.lower(root.get("paymentReference")), "%" + request.getSearch().toLowerCase() + "%");
-                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + request.getSearch().toLowerCase() + "%");
+            if (search != null && !search.isEmpty()) {
+                Predicate bySourceAccount = cb.like(cb.lower(root.get("sourceAccount")), "%" + search.toLowerCase() + "%");
+                Predicate byDestinationAccount = cb.like(cb.lower(root.get("destinationAccount")), "%" + search.toLowerCase() + "%");
+                Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + search.toLowerCase() + "%");
+                Predicate byTransactionRef = cb.like(cb.lower(root.get("transactionRef")), "%" + search.toLowerCase() + "%");
+                Predicate byReference = cb.like(cb.lower(root.get("paymentReference")), "%" + search.toLowerCase() + "%");
+                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + search.toLowerCase() + "%");
                 predicates.add(cb.or(bySourceAccount, byDestinationAccount, byMerchantOrgId, byMerchantName, byTransactionRef, byReference));
             }
 
 
-            if (request.getMerchantOrgId() != null && !request.getMerchantOrgId().isEmpty()) {
-                predicates.add(cb.equal(cb.lower(root.get("merchantOrgId")), request.getMerchantOrgId().toLowerCase()));
+            if (merchantOrgId != null && !merchantOrgId.isEmpty()) {
+                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantOrgId")), "%" + merchantOrgId.toLowerCase() + "%");
+                predicates.add(cb.or( byMerchantName));
             }
 
-            if (request.getStartDate() != null && request.getEndDate() != null) {
-                predicates.add(cb.between(root.get("createdAt"), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(23, 59, 59)));
+
+            if (startDate != null &&endDate != null) {
+                predicates.add(cb.between(root.get("createdAt"), startDate.atStartOfDay(),endDate.atTime(23, 59, 59)));
             }
 
-            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
-                predicates.add(cb.equal(cb.lower(root.get("status")), request.getStatus().toLowerCase()));
+            if (status != null && !status.isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("status")), status.toLowerCase()));
             }
-
 
 
             return cb.and(predicates.toArray(new Predicate[0]));

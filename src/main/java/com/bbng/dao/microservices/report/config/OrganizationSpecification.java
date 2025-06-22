@@ -25,7 +25,6 @@ public class OrganizationSpecification {
                 predicates.add(cb.or( byMerchantName));
             }
 
-
             if (startDate != null &&endDate != null) {
                 predicates.add(cb.between(root.get("createdAt"), startDate.atStartOfDay(),endDate.atTime(23, 59, 59)));
             }

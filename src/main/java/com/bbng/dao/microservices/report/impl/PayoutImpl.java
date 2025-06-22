@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.PayoutSpecification;
-import com.bbng.dao.microservices.report.dto.PayoutFilterRequestDto;
 import com.bbng.dao.microservices.report.entity.PayoutEntity;
 import com.bbng.dao.microservices.report.repository.PayoutRepository;
 import com.bbng.dao.microservices.report.service.PayoutService;
@@ -13,7 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Service
 public class PayoutImpl implements PayoutService {
@@ -26,36 +25,40 @@ public class PayoutImpl implements PayoutService {
 
 
     @Override
-    public ResponseDto<Page<PayoutEntity>>  getPayouts(PayoutFilterRequestDto request) {
-        Specification<PayoutEntity> spec = PayoutSpecification.getPayouts(request);
+    public ResponseDto<Page<PayoutEntity>>  getPayouts(String search, String merchantOrgId, String status,
+                                                       String sortBy, String sortOrder, LocalDate startDate,
+                                                       LocalDate endDate, int page, int size) {
+        Specification<PayoutEntity> spec =
+                PayoutSpecification.getPayouts(search, merchantOrgId, status, startDate, endDate);
 
-        Pageable pageable = getPageable(request);
+        Pageable pageable = getPageable(sortBy, sortOrder, page, size);
 
-        Page<PayoutEntity> page = payoutRepository.findAll(spec, pageable);
+        Page<PayoutEntity> response = payoutRepository.findAll(spec, pageable);
 
         return ResponseDto.<Page<PayoutEntity>>builder()
                 .statusCode(200)
                 .status(true)
                 .message("Payouts fetched successfully")
-                .data(page)
+                .data(response)
                 .build();
     }
 
 
-    private Pageable getPageable(PayoutFilterRequestDto request) {
-        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
-        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
+    private Pageable getPageable(String sortBy, String sortOrder, int page, int size) {
+        String  defaultSortBy = sortBy != null ? sortBy : "createdAt";
+        String defaultSortOrder = sortOrder != null ? sortOrder.toUpperCase() : "DESC";
 
-        Sort sort = switch (sortOrder) {
-            case "ASC" -> Sort.by(Sort.Direction.ASC, sortBy);
-            case "DESC" -> Sort.by(Sort.Direction.DESC, sortBy);
+        Sort sort = switch (defaultSortOrder) {
+            case "ASC" -> Sort.by(Sort.Direction.ASC, defaultSortBy);
+            case "DESC" -> Sort.by(Sort.Direction.DESC, defaultSortBy);
             case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
             case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
             default -> Sort.by(Sort.Direction.DESC, "createdAt");
         };
 
-        return PageRequest.of(request.getPage(), request.getSize(), sort);
+        return PageRequest.of(page, size, sort);
     }
+
 }
 
 

@@ -13,6 +13,7 @@ public interface OrganizationService {
 
     ResponseDto<OrganizationEntity> getOrganizationByUserId(String orgId);
 
-    ResponseDto<Page<OrganizationEntity>>  getAllOrg(String search, String merchantOrgId, String status, String sortBy,
-                                                     String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
+    ResponseDto<Page<OrganizationEntity>>
+    getAllOrg(String search, String merchantOrgId, String status, String sortBy,
+              String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 }
