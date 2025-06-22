@@ -1,6 +1,7 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.VnubanSpecification;
+import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.entity.VnubanEntity;
 import com.bbng.dao.microservices.report.repository.VnubanRepository;
 import com.bbng.dao.microservices.report.service.VnubanService;
@@ -12,7 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -60,6 +64,40 @@ public class VnubanImpl implements VnubanService {
 
         return PageRequest.of(page, size, sort);
     }
+
+
+    public long getTotalVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        return vnubanRepository.countByGeneratedAtBetween(merchantOrgId, startDate, endDate);
+    }
+
+
+    public long getTotalStaticVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        return vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "STATIC", startDate, endDate);
+    }
+
+    public long getTotalDynamicVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        return vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "DYNAMIC", startDate, endDate);
+    }
+
+//    public List<ChartPointDTO> getGeneratedVnubansChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+//        return vnubanRepository.groupGeneratedVnubansByPeriod(merchantOrgId, pattern, startDate, endDate);
+//    }
+
+    public List<ChartPointDTO> getGeneratedVnubansChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+
+        List<Object[]> rawResult =  vnubanRepository.groupGeneratedVnubansByPeriod(merchantOrgId, pattern, startDate, endDate);
+        List<ChartPointDTO> result = rawResult.stream()
+                .map(row -> new ChartPointDTO(
+                        (String) row[0],
+                        (BigDecimal) row[1]
+                ))
+                .toList();
+        return result;
+    }
+
+
+
+
 
 
 

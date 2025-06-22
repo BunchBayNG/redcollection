@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+
 public class PayoutEntity {
 
     @Id
@@ -24,6 +26,8 @@ public class PayoutEntity {
     private Long id;
 
     private String firstName;
+    private BigDecimal amount;
+    private String merchantOrgId;
     private String lastName;
     private String vnuban;
     private String status;

@@ -123,6 +123,9 @@ public class OrganizationController {
     }
 
 
+
+
+
 //    @GetMapping("admin/org-management/get-all-kyc")
 //    public  ResponseEntity<ResponseDto<List<KycResponseDto>>> fetchAllKyc(){
 //        log.info("assigning permissions for get All Kyc");
