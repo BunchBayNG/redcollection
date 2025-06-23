@@ -84,7 +84,7 @@ public class SettlementImpl implements SettlementService {
 
         return total == 0 ? 0 : (double) success / total * 100;
     }
-//
+/*
 //    public List<ChartPointDTO> getSuccessfulSettlementVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 //        return settlementRepository.groupSuccessfulSettlementVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
 //    }
@@ -93,30 +93,30 @@ public class SettlementImpl implements SettlementService {
 //        return settlementRepository.groupSuccessfulSettlementCountByPeriod(merchantOrgId, pattern, startDate, endDate);
 //    }
 
+ */
+
 
     public List<ChartPointDTO> getSuccessfulSettlementVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult = settlementRepository.groupSuccessfulSettlementVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        return rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
     }
 
 
     public List<ChartPointDTO> getSuccessfulSettlementCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult =  settlementRepository.groupSuccessfulSettlementCountByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        return rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
     }
 
 

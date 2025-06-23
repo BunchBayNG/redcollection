@@ -11,7 +11,7 @@ import java.util.List;
 public class OrganizationSpecification {
 
 
-    public static Specification<OrganizationEntity> getOrganizations(String search, String merchantOrgId, String status,LocalDate startDate, LocalDate endDate) {
+    public static Specification<OrganizationEntity> getOrganizations(String search, String status,LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -19,11 +19,13 @@ public class OrganizationSpecification {
                 Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + search.toLowerCase() + "%");
                 predicates.add(cb.or( byMerchantName));
             }
+/*
+//            if (merchantOrgId != null && !merchantOrgId.isEmpty()) {
+//                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantOrgId")), "%" + merchantOrgId.toLowerCase() + "%");
+//                predicates.add(cb.or( byMerchantName));
+//            }
 
-            if (merchantOrgId != null && !merchantOrgId.isEmpty()) {
-                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantOrgId")), "%" + merchantOrgId.toLowerCase() + "%");
-                predicates.add(cb.or( byMerchantName));
-            }
+ */
 
             if (startDate != null &&endDate != null) {
                 predicates.add(cb.between(root.get("createdAt"), startDate.atStartOfDay(),endDate.atTime(23, 59, 59)));

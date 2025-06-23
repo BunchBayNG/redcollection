@@ -15,10 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/v1/reports")
+@RequestMapping("${apiVersion}" + "/reports")
 public class ReportsController {
 
     private final TransactionService transactionService;
@@ -38,13 +37,6 @@ public class ReportsController {
         this.organizationService = organizationService;
         this.customerService = customerService;
     }
-
-
-
-
-
-
-
 
     private final String defaultPage = "0";      // default page
     private final String defaultSize = "10";     // default size
@@ -127,7 +119,6 @@ public class ReportsController {
     public   ResponseEntity<ResponseDto<Page<OrganizationEntity> >>  getOrg(
 
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String merchantOrgId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
             @RequestParam(required = false) String status,
@@ -139,7 +130,7 @@ public class ReportsController {
     ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(organizationService
-                .getAllOrg(search, merchantOrgId,status, sortBy, sortOrder, startDate, endDate, page, size  ));
+                .getAllOrg(search,status, sortBy, sortOrder, startDate, endDate, page, size  ));
     }
 
     @GetMapping("/organization-customers")

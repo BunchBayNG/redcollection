@@ -14,10 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("api/v1/redtech/merchant/org-management")
+@RequestMapping("${apiVersion}" +  "/merchant/org-management")
 public class OrganizationController {
 
     private final OrganizationService organizationService;

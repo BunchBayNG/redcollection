@@ -29,7 +29,6 @@ import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.exceptions.customExceptions.BadRequestException;
 import com.bbng.dao.util.exceptions.customExceptions.ForbiddenException;
-import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

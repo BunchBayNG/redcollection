@@ -6,11 +6,13 @@ import com.bbng.dao.microservices.auth.passport.impl.setupImpl.PermissionService
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @Slf4j
-@RestController("api/v1/redtech/admin/manage-config")
+@RestController
+@RequestMapping("${apiVersion}" +  "/admin/manage-config")
 public class ConfigurationController {
 
     private final PermissionService permissionService;

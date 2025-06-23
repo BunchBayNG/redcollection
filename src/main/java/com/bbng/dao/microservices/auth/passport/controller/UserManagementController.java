@@ -11,20 +11,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
-@RestController("api/v1/redtech/user-management")
+@RestController
+@RequestMapping("${apiVersion}" + "/user-management")
+
 @Slf4j
 public class UserManagementController {
 
     private final UserManagementService userManagementService;
 
-    @PutMapping(value = "update-user", consumes = "multipart/form-data")
+    @PutMapping(value = "/update-user", consumes = "multipart/form-data")
     ResponseEntity<ResponseDto<String>> updateUserProfile(
             @RequestParam String userId,
             @RequestParam(required = false) MultipartFile logoUrl
@@ -35,12 +34,11 @@ public class UserManagementController {
         return ResponseEntity.status(HttpStatus.OK).body(userManagementService.updateUserProfile(userProfileUpdateRequestDto));
     }
 
-    @GetMapping("get-users")
+    @GetMapping("/get-users")
     public ResponseEntity<PagedResponseDto<UserResponseDto>> getUsers(
             @RequestParam(required = false, defaultValue = "1", value = "pageNo")
             @Min(value = 1, message = "Minimum page no is 1") int pageNo,
             @RequestParam(required = false, defaultValue = "10", value = "pageSize") int pageSize,
-
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String firstName,
@@ -53,7 +51,7 @@ public class UserManagementController {
         return ResponseEntity.status(HttpStatus.OK).body(userManagementService.getAllUsers(id, email, firstName, lastName, userType, dateBegin, dateEnd, pageNo, pageSize));
     }
 
-    @GetMapping("get-user-profile")
+    @GetMapping("/get-user-profile")
     public ResponseEntity<ResponseDto<UserProfileDto>> getUserProfile(@RequestParam String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userManagementService.getUserProfile(userId));
     }

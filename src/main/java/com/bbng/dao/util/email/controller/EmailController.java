@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("api/v1/redtech/email")
+@RequestMapping("${apiVersion}" + "/email")
 @Validated
 
 public class EmailController {
@@ -43,7 +43,7 @@ public class EmailController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/admin/getSentEmails")
+    @GetMapping("/admin/get-Sent-emails")
     public ResponseEntity<ResponseDto<List<EmailEntity>>> getMails() {
         log.info("assigning permissions to set merchant specific commission for vendVtu");
 
@@ -51,19 +51,19 @@ public class EmailController {
         return ResponseEntity.status(HttpStatus.OK).body(emailService.getSentOutMails());
     }
 
-    @PostMapping("/admin/sendMail")
+    @PostMapping("/admin/send-mail")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> sendMail(@Valid @RequestBody EmailRequestDTO requestDTO) {
         try {
             return emailService.sendGridSimpleMail(requestDTO);
         } catch (IOException e) {
-            log.error("AN Error occurred while sending out emails: {}", e.getMessage());
+            log.error("An error occurred while sending out emails: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
 
-    @PostMapping(value = "/admin/sendEmailNotification", consumes = "multipart/form-data")
+    @PostMapping(value = "/admin/send-email-Notification", consumes = "multipart/form-data")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> sendEmail(
             @RequestParam String subject,
@@ -82,13 +82,13 @@ public class EmailController {
             permissionService.checkPermission(request, "ADMIN_SEND_EMAILS_NOTIFICATIONS", jwtService);
             return emailService.sendGridSimpleEmail(mailStructure, attachments);
         } catch (Exception e) {
-            log.error("AN Error occurred while sending out emails: {}", e.getMessage());
+            log.error("An error occurred while sending out emails: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
 
-    @PostMapping(value = "admin/upload-redtech-headerLogo", consumes = "multipart/form-data")
+    @PostMapping(value = "admin/upload-email-headerLogo", consumes = "multipart/form-data")
     public ResponseEntity<ResponseDto<Map<String, String>>> uploadHeaderLogo(
             @RequestPart("file") MultipartFile file) {
         var headerLogo = HeaderLogoRequestDto.builder()

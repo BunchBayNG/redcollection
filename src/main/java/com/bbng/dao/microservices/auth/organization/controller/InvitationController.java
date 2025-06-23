@@ -31,7 +31,8 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
-@RestController("api/v1/users")
+@RestController
+@RequestMapping("${apiVersion}" + "/users")
 public class InvitationController {
 
     private final InvitationService invitationService;
@@ -41,7 +42,7 @@ public class InvitationController {
     private final UserRepository userRepository;
     private final JWTService jwtService;
 
-    @PostMapping("invite")
+    @PostMapping("/invite")
     public ResponseEntity<ResponseDto<String>> inviteUser(@RequestBody InviteRequestDto inviteRequestDto) {
 
         // make sure it's only those that have this permissions can actually access this route
@@ -50,14 +51,14 @@ public class InvitationController {
     }
 
 
-    @GetMapping("get-staff")
+    @GetMapping("/get-staff")
     public ResponseEntity<ResponseDto<List<UserResponseDto>>> getAllOrgStaff(@RequestParam String merchantAdminId) {
 
         permissionService.checkPermission(request, "CAN_GET_STAFF", jwtService);
         return ResponseEntity.status(HttpStatus.OK).body(invitationService.getAllStaff(merchantAdminId));
     }
 
-    @PutMapping("disable-staff")
+    @PutMapping("/disable-staff")
     public ResponseEntity<ResponseDto<String>> disableStaff(@RequestParam String merchantAdminId, @RequestParam String staffId) {
 
         permissionService.checkPermission(request, "CAN_DISABLE_STAFF", jwtService);
@@ -65,7 +66,7 @@ public class InvitationController {
         return ResponseEntity.status(HttpStatus.OK).body(invitationService.disableStaff(merchantAdminId, staffId));
     }
 
-    @PutMapping("onboard-org")
+    @PutMapping("/onboard-org")
     public ResponseEntity<ResponseDto<String>> onboardOrg(@RequestBody OnboardOrgDto onboardOrgDto) {
 
         permissionService.checkPermission(request, "CAN_ONBOARD_ORG", jwtService);
@@ -74,7 +75,7 @@ public class InvitationController {
     }
 
 
-    @PutMapping("remove-permission")
+    @PutMapping("/remove-permission")
     public ResponseEntity<ResponseDto<String>> removePermission(@RequestParam String merchantAdminId, @RequestParam Long permissionId) {
 
         permissionService.checkPermission(request, "CAN_REMOVE_PERMISSION", jwtService);
@@ -82,7 +83,7 @@ public class InvitationController {
         return ResponseEntity.status(HttpStatus.OK).body(invitationService.disablePermission(username, merchantAdminId, permissionId));
     }
 
-    @PutMapping("assign-role")
+    @PutMapping("/assign-role")
     public ResponseEntity<ResponseDto<String>> assignRole(@RequestBody AssignRoleRequestDto assignRoleRequestDto) {
         // check if roleId is present, if it's not present, then the merchant want to create a new Role
         if (assignRoleRequestDto.getRoleId() == null || assignRoleRequestDto.getRoleId().isEmpty()) {
@@ -104,7 +105,7 @@ public class InvitationController {
             //extract token from request
             String userName = GetUserFromToken.extractTokenFromHeader(request, jwtService);
             UserEntity user = userRepository.findByUsernameOrEmail(userName, null).orElseThrow(() -> new
-                    UserNotFoundException("Can't get user form your token. Is user already redtech user?"));
+                    UserNotFoundException("Can't get user form your token. Is user already a user?"));
             boolean admin;
             if (giveToredtechStaff) {
                 admin = user.getUsertype().equals(UserType.SUPER_ADMIN) || user.getUsertype().equals(UserType.ORGANIZATION_ADMIN) || user.getUsertype().equals(UserType.REDTECH_STAFF);

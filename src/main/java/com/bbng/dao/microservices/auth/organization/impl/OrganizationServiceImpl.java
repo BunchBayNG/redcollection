@@ -56,11 +56,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public ResponseDto<Page<OrganizationEntity>>  getAllOrg(String search, String merchantOrgId, String status,
+    public ResponseDto<Page<OrganizationEntity>>  getAllOrg(String search, String status,
                                                             String sortBy, String sortOrder, LocalDate startDate,
                                                             LocalDate endDate, int page, int size) {
         Specification<OrganizationEntity> spec =
-                OrganizationSpecification.getOrganizations(search, merchantOrgId, status, startDate, endDate);
+                OrganizationSpecification.getOrganizations(search, status, startDate, endDate);
 
         Pageable pageable = getPageable(sortBy, sortOrder, page, size);
 

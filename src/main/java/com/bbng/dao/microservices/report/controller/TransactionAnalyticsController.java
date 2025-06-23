@@ -3,18 +3,20 @@ package com.bbng.dao.microservices.report.controller;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.dto.TopMerchantDTO;
-import com.bbng.dao.microservices.report.service.SettlementService;
 import com.bbng.dao.microservices.report.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/analytics/transactions")
+@RequestMapping("${apiVersion}" + "/analytics/transactions")
 @RequiredArgsConstructor
 public class TransactionAnalyticsController {
 

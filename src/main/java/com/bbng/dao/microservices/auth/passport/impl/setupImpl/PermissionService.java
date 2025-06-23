@@ -78,7 +78,7 @@ public class PermissionService {
         String username = GetUserFromToken.extractTokenFromHeader(request, jwtService);
 
         UserEntity user = userRepository.findByUsernameOrEmail(username, null).orElseThrow(() ->
-                new UserNotFoundException("Can't find user with the username extracted from token. Is user a redtech user?"));
+                new UserNotFoundException("Can't find user with the username extracted from token."));
 
         log.info("Checking permission for user: " + user.getRoleEntities().stream().map(RoleEntity::getPermissions).toList());
 

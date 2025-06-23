@@ -1,12 +1,8 @@
 package com.bbng.dao.microservices.auth.organization.utils;
 
 
-import com.bbng.dao.microservices.auth.organization.entity.ApiKeyEntity;
-import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
-import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
-import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
-import com.bbng.dao.util.exceptions.customExceptions.*;
+import com.bbng.dao.util.exceptions.customExceptions.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;

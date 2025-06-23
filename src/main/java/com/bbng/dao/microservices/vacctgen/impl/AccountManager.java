@@ -4,8 +4,6 @@ package com.bbng.dao.microservices.vacctgen.impl;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
-import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
-import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
 import com.bbng.dao.microservices.vacctgen.config.ApplicationProperties;
 import com.bbng.dao.microservices.vacctgen.config.MerchantSearchFilter;
@@ -33,7 +31,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -738,6 +735,6 @@ public class AccountManager {
       //  String email = GetUserFromToken.extractUserFromApiKey(request, apiKeyRepository, userRepository);
 
         return organizationRepository.findByContactEmail("email").orElseThrow(() ->
-                new ResourceNotFoundException("Can't find Org with the username extracted from token. Is user a redtech user?"));
+                new ResourceNotFoundException("Can't find Org with the username extracted from token."));
     }
 }

@@ -67,9 +67,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(httpRequests ->
                         httpRequests.
                                 requestMatchers(
-                                        "/api/v1/redtech/general-mgt/**",
-                                        "/api/v1/redtech/auth/**",
-                                        "/api/v1/redtech/email/sendMail",
+                                        "/api/v1/general-mgt/**",
+                                        "/api/v1/auth/**",
+                                        "/api/v1/email/sendMail",
                                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
                                         "/webjars/**",
                                         "/swagger-ui.html",

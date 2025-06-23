@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("api/v1/virtual-account/")
+@RequestMapping("${apiVersion}" + "/virtual-account/")
 public class AccountController {
     private static final Logger log = LoggerFactory.getLogger(AccountController.class);
     private final AccountManager accountManager;

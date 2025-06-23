@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("api/v1/redtech/auth")
+@RequestMapping("${apiVersion}" + "/auth")
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class PassportController {

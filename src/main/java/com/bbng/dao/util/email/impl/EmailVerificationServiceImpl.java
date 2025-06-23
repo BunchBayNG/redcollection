@@ -375,7 +375,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         log.info("Generated verification token: {}", token.getVerificationToken());
         token.setEmail(toEmail);
         verificationTokenRepository.save(token);
-        String verificationLink = redtechUrl + "api/v1/redtech/verify-email?token=" + token.getVerificationToken();
+        String verificationLink = redtechUrl + "api/v1/verify-email?token=" + token.getVerificationToken();
 
         MailStructure mailStructure = MailStructure.builder()
                 .subject("Invitation mail")

@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.auth.passport.impl.setupImpl;
 
 
-import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.passport.dto.request.SignUpDto;
 import com.bbng.dao.microservices.auth.passport.entity.PermissionEntity;
@@ -76,7 +75,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
         createSystemUser(SignUpDto.builder()
                 .firstName("Super")
                 .lastName("Admin")
-                .organizationName("REDTECH")
+                .organizationName("${orgName}")
                 .email("cakpomughe@gmail.com")
                 .password(passwordEncoder.encode("123456Abc!"))
                 .build());

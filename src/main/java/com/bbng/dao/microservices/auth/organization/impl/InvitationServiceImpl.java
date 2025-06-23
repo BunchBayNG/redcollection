@@ -124,7 +124,7 @@ public class InvitationServiceImpl implements InvitationService {
 
             OrgStaffEntity orgStaffEntity = OrgStaffEntity.builder()
                     .invitationStatus(InvitationStatus.AWAITING_ACTIVATION)
-                    .organizationId("ORG-REDTECH")
+                    .organizationId("${orgId}")
                     .userId(newSavedUser.getId())
                     .userRole(inviteRequestDto.getRole())
                     .invitedBy(inviteRequestDto.getUserId())
@@ -138,12 +138,12 @@ public class InvitationServiceImpl implements InvitationService {
                     .event(Events.INVITE_STAFF.name())
                     .isDeleted(false)
                     .description("Invitation to the provided user has be sent out!")
-                    .merchantName("REDTECH")
-                    .merchantId("ORG-REDTECH")
+                    .merchantName("${orgName}")
+                    .merchantId("${orgId}")
                     .build());
 
 
-            emailVerificationService.sendInvitationEmail(inviteRequestDto.getEmail(), "REDTECH", password);
+            emailVerificationService.sendInvitationEmail(inviteRequestDto.getEmail(), "${orgName}", password);
 
 
         }

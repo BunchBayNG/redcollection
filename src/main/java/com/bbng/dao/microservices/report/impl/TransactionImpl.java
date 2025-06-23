@@ -1,8 +1,8 @@
 package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.TransactionSpecification;
-import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
+import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.dto.TopMerchantDTO;
 import com.bbng.dao.microservices.report.entity.TransactionEntity;
 import com.bbng.dao.microservices.report.repository.TransactionRepository;
