@@ -3,9 +3,14 @@ package com.bbng.dao.microservices.report.controller;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.dto.TopMerchantDTO;
+import com.bbng.dao.microservices.report.entity.TransactionEntity;
 import com.bbng.dao.microservices.report.service.TransactionService;
+import com.bbng.dao.util.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,69 +29,73 @@ public class TransactionAnalyticsController {
 
 
     @GetMapping("/total-merchants")
-    public long getTotalMerchantCount(
+    public ResponseEntity<ResponseDto<Long>> getTotalMerchantCount(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return transactionService.getTotalMerchantCount(startDate, endDate);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(transactionService.getTotalMerchantCount(startDate, endDate));
     }
 
     @GetMapping("/top-merchants")
-    public List<TopMerchantDTO> getTopMerchantsByVolume(
+    public ResponseEntity<ResponseDto<List<TopMerchantDTO>>>  getTopMerchantsByVolume(
             @RequestParam(defaultValue = "5") int topN,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return transactionService.getTopMerchantsByVolume(startDate, endDate, topN);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(transactionService
+                .getTopMerchantsByVolume(startDate, endDate, topN));
+
     }
 
     @GetMapping("/count-summary")
-    public AnalyticsCountSummaryDTO getTransactionCountSummary(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<AnalyticsCountSummaryDTO>>  getTransactionCountSummary(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return transactionService.getTransactionCountSummary(merchantOrgId, startDate, endDate);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(transactionService
+                .getTransactionCountSummary(merchantOrgId, startDate, endDate));
     }
 
     @GetMapping("/successful-volume")
-    public BigDecimal getSuccessfulTransactionVolume(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<BigDecimal>> getSuccessfulTransactionVolume(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return transactionService.getSuccessfulTransactionVolume(merchantOrgId, startDate, endDate);
+        return  ResponseEntity.status(HttpStatus.OK).body(transactionService
+                .getSuccessfulTransactionVolume(merchantOrgId, startDate, endDate));
+
     }
 
-//    @GetMapping("/successful-rate")
-//    public double getSuccessfulTransactionRate(
-//            @RequestParam(required = false) Long merchantOrgId,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
-//    ) {
-//        return transactionService.getSuccessfulTransactionRate(merchantOrgId, startDate, endDate);
-//    }
 
     @GetMapping("/successful-volume-chart")
-    public List<ChartPointDTO> getSuccessfulTransactionVolumeChart(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<List<ChartPointDTO>>>  getSuccessfulTransactionVolumeChart(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam String period,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         String pattern = resolvePattern(period);
-        return transactionService.getSuccessfulTransactionVolumeChart(merchantOrgId, pattern, startDate, endDate);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(transactionService
+                .getSuccessfulTransactionVolumeChart(merchantOrgId,pattern, startDate, endDate));
     }
 
     @GetMapping("/successful-count-chart")
-    public List<ChartPointDTO> getSuccessfulTransactionCountChart(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<List<ChartPointDTO>>> getSuccessfulTransactionCountChart(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam String period,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         String pattern = resolvePattern(period);
-        return transactionService.getSuccessfulTransactionCountChart(merchantOrgId, pattern, startDate, endDate);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(transactionService
+                .getSuccessfulTransactionCountChart(merchantOrgId, pattern,  startDate, endDate));
     }
 
     private String resolvePattern(String period) {

@@ -3,8 +3,11 @@ package com.bbng.dao.microservices.report.controller;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.service.SettlementService;
+import com.bbng.dao.util.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,52 +26,49 @@ public class SettlementAnalyticsController {
     private final SettlementService settlementService;
 
     @GetMapping("/count-summary")
-    public AnalyticsCountSummaryDTO getSettlementCountSummary(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<AnalyticsCountSummaryDTO>>  getSettlementCountSummary(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return settlementService.getSettlementCountSummary(merchantOrgId, startDate, endDate);
+        return  ResponseEntity.status(HttpStatus.OK).body(settlementService
+                .getSettlementCountSummary(merchantOrgId, startDate, endDate));
     }
 
     @GetMapping("/successful-volume")
-    public BigDecimal getSuccessfulSettlementVolume(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<BigDecimal>>   getSuccessfulSettlementVolume(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
-        return settlementService.getSuccessfulSettlementVolume(merchantOrgId, startDate, endDate);
+        return  ResponseEntity.status(HttpStatus.OK).body(settlementService.
+                getSuccessfulSettlementVolume(merchantOrgId, startDate, endDate));
     }
 
-//    @GetMapping("/successful-rate")
-//    public double getSuccessfulSettlementRate(
-//            @RequestParam(required = false) Long merchantOrgId,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
-//    ) {
-//        return settlementService.getSuccessfulSettlementRate(merchantOrgId, startDate, endDate);
-//    }
 
     @GetMapping("/successful-volume-chart")
-    public List<ChartPointDTO> getSuccessfulSettlementVolumeChart(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<List<ChartPointDTO> >> getSuccessfulSettlementVolumeChart(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam String period,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         String pattern = resolvePattern(period);
-        return settlementService.getSuccessfulSettlementVolumeChart(merchantOrgId, pattern, startDate, endDate);
+        return  ResponseEntity.status(HttpStatus.OK).body(settlementService
+                .getSuccessfulSettlementVolumeChart(merchantOrgId, pattern, startDate, endDate));
     }
 
     @GetMapping("/successful-count-chart")
-    public List<ChartPointDTO> getSuccessfulSettlementCountChart(
-            @RequestParam(required = false) Long merchantOrgId,
+    public ResponseEntity<ResponseDto<List<ChartPointDTO>>>  getSuccessfulSettlementCountChart(
+            @RequestParam(required = false) String merchantOrgId,
             @RequestParam String period,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         String pattern = resolvePattern(period);
-        return settlementService.getSuccessfulSettlementCountChart(merchantOrgId, pattern, startDate, endDate);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(settlementService
+                .getSuccessfulSettlementCountChart(merchantOrgId, pattern, startDate, endDate));
     }
 
     private String resolvePattern(String period) {

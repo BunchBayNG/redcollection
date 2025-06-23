@@ -17,10 +17,9 @@ public interface VnubanService {
     getVnubans(String search, String merchantOrgId, String status, String sortBy,
                String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 
-    long getTotalVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    long getTotalStaticVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    long getTotalDynamicVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getGeneratedVnubansChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
-
+    ResponseDto<Long>  getTotalVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Long>  getTotalStaticVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Long> getTotalDynamicVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>>  getGeneratedVnubansChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
 
 }

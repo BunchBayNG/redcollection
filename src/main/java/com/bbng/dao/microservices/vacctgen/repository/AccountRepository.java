@@ -30,13 +30,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Modifying
     @Query("update Account a set a.status = ?2 where a.id = ?1")
-    int markAccountAsProvisioned(Long id, Account.Status status);
+    void markAccountAsProvisioned(Long id, Account.Status status);
 
     List<Account> findAllByStatus(Account.Status status, Pageable page);
 
     @Modifying
     @Query("update Account a set a.status = ?2 where a in ?1")
-    int markAllAsProvisioned(List<Account> accounts, Account.Status provisioned);
+    void markAllAsProvisioned(List<Account> accounts, Account.Status provisioned);
 
     @Modifying
     @Query(value = "UPDATE account SET status = ?1 WHERE value in (SELECT DISTINCT account_no FROM provisioned_account WHERE status = ?2 and mode = ?3 and provision_date < DATEADD(day, -30, GETDATE()) )", nativeQuery = true)

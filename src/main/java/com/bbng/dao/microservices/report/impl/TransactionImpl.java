@@ -68,75 +68,115 @@ public class TransactionImpl implements TransactionService {
     }
 
 
-    public long getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate) {
-        return transactionRepository.countDistinctMerchantOrgId(startDate, endDate);
+    public ResponseDto<Long> getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate) {
+        Long response =  transactionRepository.countDistinctMerchantOrgId(startDate, endDate);
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total Merchants fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public List<TopMerchantDTO> getTopMerchantsByVolume(LocalDateTime startDate, LocalDateTime endDate, int topN) {
+    public  ResponseDto< List<TopMerchantDTO> > getTopMerchantsByVolume(LocalDateTime startDate, LocalDateTime endDate, int topN) {
 
         List<Object[]> rawResult = transactionRepository.findTopMerchantsByVolume(startDate, endDate, topN);
 
-        List<TopMerchantDTO> result = rawResult.stream()
+        List<TopMerchantDTO> response = rawResult.stream()
                 .map(row -> new TopMerchantDTO(
                         ((Number) row[0]).longValue(), // merchantOrgId
                         ((String) row[1]), // merchantOrgId
                         (BigDecimal) row[2]            // totalVolume
                 ))
                 .toList();
-        return result;
+
+        return ResponseDto.<List<TopMerchantDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Transactions performing Merchants fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public AnalyticsCountSummaryDTO getTransactionCountSummary(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+    public   ResponseDto<AnalyticsCountSummaryDTO>  getTransactionCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
         long total = transactionRepository.countByCreatedAtBetween(merchantOrgId, startDate, endDate);
         long success = transactionRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "SUCCESS", startDate, endDate);
         long pending = transactionRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "PENDING", startDate, endDate);
         long failed = transactionRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "FAILED", startDate, endDate);
 
-        return new AnalyticsCountSummaryDTO(total, success, pending, failed);
+        AnalyticsCountSummaryDTO response = new AnalyticsCountSummaryDTO(total, success, pending, failed);
+
+        return ResponseDto.<AnalyticsCountSummaryDTO>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Transactions analytics count fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public BigDecimal getSuccessfulTransactionVolume(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        return transactionRepository.sumAmountByStatus(merchantOrgId, "SUCCESS", startDate, endDate);
+    public  ResponseDto<BigDecimal> getSuccessfulTransactionVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        BigDecimal response = transactionRepository.sumAmountByStatus(merchantOrgId, "SUCCESS", startDate, endDate);
+        return ResponseDto.<BigDecimal>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Transaction Volume fetched successfully")
+                .data(response)
+                .build();
+
+
     }
 
-    public double getSuccessfulTransactionRate(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDto<Double> getSuccessfulTransactionRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
         long total = transactionRepository.countByCreatedAtBetween(merchantOrgId, startDate, endDate);
         long success = transactionRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "SUCCESS", startDate, endDate);
 
-        return total == 0 ? 0 : (double) success / total * 100;
-    }
-//
-//    public List<ChartPointDTO> getSuccessfulTransactionVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
-//        return transactionRepository.groupSuccessfulTransactionVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
-//    }
-//
-//    public List<ChartPointDTO> getSuccessfulTransactionCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
-//        return transactionRepository.groupSuccessfulTransactionCountByPeriod(merchantOrgId, pattern, startDate, endDate);
-//    }
+        Double response =  total == 0 ? 0 : (double) success / total * 100;
 
-    public List<ChartPointDTO> getSuccessfulTransactionVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+        return ResponseDto.<Double>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Transactions Rate fetched successfully")
+                .data(response)
+                .build();
+    }
+
+    public ResponseDto<List<ChartPointDTO>> getSuccessfulTransactionVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult = transactionRepository.groupSuccessfulTransactionVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        List<ChartPointDTO> response = rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Success Transactions Volume Chart fetched successfully")
+                .data(response)
+                .build();
     }
 
 
-    public List<ChartPointDTO> getSuccessfulTransactionCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDto<List<ChartPointDTO>>  getSuccessfulTransactionCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult =  transactionRepository.groupSuccessfulTransactionCountByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        List<ChartPointDTO> response = rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
+
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Success Transactions Count Chart fetched successfully")
+                .data(response)
+                .build();
     }
 
 

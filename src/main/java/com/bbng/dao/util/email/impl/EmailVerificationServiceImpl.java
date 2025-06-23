@@ -151,17 +151,18 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
 
-    public EmailResponseDto[] send2faEmail(String toEmail) {
+    public void send2faEmail(String toEmail) {
         UserEntity userEntity = userRepository.findByEmail(toEmail)
                 .orElseThrow(() -> new BadRequestException("User with email: " + toEmail + " not found"));
 
         if (userEntity == null) {
-            return new EmailResponseDto[]{EmailResponseDto.builder()
+            EmailResponseDto.builder()
                     .email(toEmail)
                     .status("User does not exist. Verification email not sent.")
                     .userId(null)
                     .rejectReason("User does not exist")
-                    .queuedReason(null).build()};
+                    .queuedReason(null).build();
+            return;
         }
 
         OtpEntity userOtp = otpRepository.findByEmail(toEmail).orElse(new OtpEntity());
@@ -187,19 +188,20 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
-            return new EmailResponseDto[]{EmailResponseDto.builder()
+            EmailResponseDto.builder()
                     .email(toEmail)
                     .status("Error sending verification email.")
                     .userId(null)
                     .rejectReason("Email sending error")
-                    .queuedReason(null).build()};
+                    .queuedReason(null).build();
+            return;
         }
 
-        return new EmailResponseDto[]{EmailResponseDto.builder()
+        EmailResponseDto.builder()
                 .email(toEmail)
                 .status("Verification Email Sent.")
                 .userId(userEntity.getId())
-                .build()};
+                .build();
     }
 
     @Override
@@ -350,26 +352,28 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
 
     @Override
-    public EmailResponseDto[] sendInvitationEmail(String toEmail, String fromOrganization, String password) {
+    public void sendInvitationEmail(String toEmail, String fromOrganization, String password) {
         UserEntity userEntity = userRepository.findByEmail(toEmail)
                 .orElseThrow(() -> new BadRequestException("User with email: " + toEmail + " not found"));
 
         if (userEntity != null && userEntity.getIsEnabled()) {
-            return new EmailResponseDto[]{EmailResponseDto.builder()
+            EmailResponseDto.builder()
                     .email(userEntity.getEmail())
                     .status("User had been verified already, proceed to login")
                     .userId(userEntity.getId())
                     .rejectReason("User had been verified already")
-                    .queuedReason(null).build()};
+                    .queuedReason(null).build();
+            return;
         }
 
         if (userEntity == null) {
-            return new EmailResponseDto[]{EmailResponseDto.builder()
+            EmailResponseDto.builder()
                     .email(toEmail)
                     .status("User does not exist. Invitation email not sent.")
                     .userId(null)
                     .rejectReason("User does not exist")
-                    .queuedReason(null).build()};
+                    .queuedReason(null).build();
+            return;
         }
         VerificationToken token = generateVerificationToken();
         log.info("Generated verification token: {}", token.getVerificationToken());
@@ -389,19 +393,20 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
-            return new EmailResponseDto[]{EmailResponseDto.builder()
+            EmailResponseDto.builder()
                     .email(toEmail)
                     .status("Error sending verification email.")
                     .userId(null)
                     .rejectReason("Email sending error")
-                    .queuedReason(null).build()};
+                    .queuedReason(null).build();
+            return;
         }
 
-        return new EmailResponseDto[]{EmailResponseDto.builder()
+        EmailResponseDto.builder()
                 .email(toEmail)
                 .status("Verification Email Sent.")
                 .userId(userEntity.getId())
-                .build()};
+                .build();
     }
 
 

@@ -28,7 +28,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     private final AuditFilterSpec auditFilterSpec;
 
     @Override
-    public String registerLogToAudit(AuditLogRequestDto auditLogRequestDto) {
+    public void registerLogToAudit(AuditLogRequestDto auditLogRequestDto) {
 
         AuditLogEntity auditLog =
                 AuditLogEntity.builder()
@@ -44,7 +44,6 @@ public class AuditLogServiceImpl implements AuditLogService {
                         .build();
 
         AuditLogEntity savedEntity = auditLogRepository.save(auditLog);
-        return "Logged to Audit Table successfully";
     }
 
     @Override

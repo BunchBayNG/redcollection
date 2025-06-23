@@ -66,50 +66,88 @@ public class PayoutImpl implements PayoutService {
 
 
 
-    public AnalyticsCountSummaryDTO getPayoutCountSummary(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+    public  ResponseDto<AnalyticsCountSummaryDTO> getPayoutCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
         long total = payoutRepository.countByCreatedAtBetween(merchantOrgId, startDate, endDate);
         long success = payoutRepository.countByStatusAndCreatedAtBetween(merchantOrgId,"SUCCESS", startDate, endDate);
         long pending = payoutRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "PENDING", startDate, endDate);
         long failed = payoutRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "FAILED", startDate, endDate);
 
-        return new AnalyticsCountSummaryDTO(total, success, pending, failed);
+        AnalyticsCountSummaryDTO response = new AnalyticsCountSummaryDTO(total, success, pending, failed);
+
+        return ResponseDto.<AnalyticsCountSummaryDTO>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Payouts Count fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public BigDecimal getSuccessfulPayoutVolume(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        return payoutRepository.sumAmountByStatus(merchantOrgId,"SUCCESS", startDate, endDate);
+    public  ResponseDto<BigDecimal>   getSuccessfulPayoutVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        BigDecimal response =  payoutRepository.sumAmountByStatus(merchantOrgId,"SUCCESS", startDate, endDate);
+        return ResponseDto.<BigDecimal>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Payouts Volume fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public double getSuccessfulPayoutRate(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDto<Double>  getSuccessfulPayoutRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
         long total = payoutRepository.countByCreatedAtBetween(merchantOrgId, startDate, endDate);
         long success = payoutRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "SUCCESS", startDate, endDate);
 
-        return total == 0 ? 0 : (double) success / total * 100;
+        Double response =  total == 0 ? 0 : (double) success / total * 100;
+        return ResponseDto.<Double>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Payouts Rate fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public List<ChartPointDTO> getSuccessfulPayoutVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+    public  ResponseDto<List<ChartPointDTO>> getSuccessfulPayoutVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult = payoutRepository.groupSuccessfulPayoutVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        List<ChartPointDTO> response = rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Payouts Volume Chart  fetched successfully")
+                .data(response)
+                .build();
     }
 
 
-    public List<ChartPointDTO> getSuccessfulPayoutCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+
+    public  ResponseDto< List<ChartPointDTO>> getSuccessfulPayoutCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult =  payoutRepository.groupSuccessfulPayoutCountByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        List<ChartPointDTO> response = rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Payouts Count Chart fetched successfully")
+                .data(response)
+                .build();
+
+
+
+
     }
+
+
 
 
 

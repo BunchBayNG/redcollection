@@ -22,7 +22,7 @@ public interface PayoutRepository extends JpaRepository<PayoutEntity, Long>, Jpa
         AND p.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByCreatedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
@@ -34,7 +34,7 @@ public interface PayoutRepository extends JpaRepository<PayoutEntity, Long>, Jpa
         AND p.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByStatusAndCreatedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("status") String status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -47,7 +47,7 @@ public interface PayoutRepository extends JpaRepository<PayoutEntity, Long>, Jpa
         AND p.createdAt BETWEEN :startDate AND :endDate
     """)
     BigDecimal sumAmountByStatus(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("status") String status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -64,7 +64,7 @@ public interface PayoutRepository extends JpaRepository<PayoutEntity, Long>, Jpa
     ORDER BY DATE_FORMAT(p.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulPayoutVolumeByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -82,7 +82,7 @@ public interface PayoutRepository extends JpaRepository<PayoutEntity, Long>, Jpa
     ORDER BY DATE_FORMAT(p.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulPayoutCountByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

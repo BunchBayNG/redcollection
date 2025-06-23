@@ -19,7 +19,7 @@ public interface VnubanRepository extends JpaRepository<VnubanEntity, Long>, Jpa
         AND v.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByGeneratedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
@@ -31,7 +31,7 @@ public interface VnubanRepository extends JpaRepository<VnubanEntity, Long>, Jpa
         AND v.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByTypeAndGeneratedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("vnubanType") String vnubanType,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -47,7 +47,7 @@ public interface VnubanRepository extends JpaRepository<VnubanEntity, Long>, Jpa
     ORDER BY DATE_FORMAT(v.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupGeneratedVnubansByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

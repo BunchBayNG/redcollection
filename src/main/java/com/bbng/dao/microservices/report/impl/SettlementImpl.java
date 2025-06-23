@@ -65,58 +65,92 @@ public class SettlementImpl implements SettlementService {
 
 
 
-    public AnalyticsCountSummaryDTO getSettlementCountSummary(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+    public  ResponseDto<AnalyticsCountSummaryDTO>  getSettlementCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
         long total = settlementRepository.countByCreatedAtBetween(merchantOrgId, startDate, endDate);
         long success = settlementRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "SUCCESS", startDate, endDate);
         long pending = settlementRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "PENDING", startDate, endDate);
         long failed = settlementRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "FAILED", startDate, endDate);
 
-        return new AnalyticsCountSummaryDTO(total, success, pending, failed);
+        AnalyticsCountSummaryDTO response = new AnalyticsCountSummaryDTO(total, success, pending, failed);
+
+        return ResponseDto.<AnalyticsCountSummaryDTO>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Settlements count fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public BigDecimal getSuccessfulSettlementVolume(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        return settlementRepository.sumAmountByStatus(merchantOrgId, "SUCCESS", startDate, endDate);
+    public ResponseDto<BigDecimal>  getSuccessfulSettlementVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+
+        return ResponseDto.<BigDecimal>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Settlements Volume fetched successfully")
+                .data(settlementRepository.sumAmountByStatus(merchantOrgId, "SUCCESS", startDate, endDate))
+                .build();
     }
 
-    public double getSuccessfulSettlementRate(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDto<Double> getSuccessfulSettlementRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
         long total = settlementRepository.countByCreatedAtBetween(merchantOrgId, startDate, endDate);
         long success = settlementRepository.countByStatusAndCreatedAtBetween(merchantOrgId, "SUCCESS", startDate, endDate);
 
-        return total == 0 ? 0 : (double) success / total * 100;
+        Double response = total == 0 ? 0 : (double) success / total * 100;
+
+        return ResponseDto.<Double>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Settlements rate fetched successfully")
+                .data(response)
+                .build();
     }
 /*
-//    public List<ChartPointDTO> getSuccessfulSettlementVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+//    public List<ChartPointDTO> getSuccessfulSettlementVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 //        return settlementRepository.groupSuccessfulSettlementVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
 //    }
 //
-//    public List<ChartPointDTO> getSuccessfulSettlementCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+//    public List<ChartPointDTO> getSuccessfulSettlementCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 //        return settlementRepository.groupSuccessfulSettlementCountByPeriod(merchantOrgId, pattern, startDate, endDate);
 //    }
 
  */
 
 
-    public List<ChartPointDTO> getSuccessfulSettlementVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDto<List<ChartPointDTO>> getSuccessfulSettlementVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult = settlementRepository.groupSuccessfulSettlementVolumeByPeriod(merchantOrgId, pattern, startDate, endDate);
-        return rawResult.stream()
+        List<ChartPointDTO> response =  rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Settlements volume chart fetched successfully")
+                .data(response)
+                .build();
     }
 
 
-    public List<ChartPointDTO> getSuccessfulSettlementCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDto<List<ChartPointDTO>> getSuccessfulSettlementCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult =  settlementRepository.groupSuccessfulSettlementCountByPeriod(merchantOrgId, pattern, startDate, endDate);
-        return rawResult.stream()
+        List<ChartPointDTO> response =  rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Successful Settlements count chart fetched successfully")
+                .data(response)
+                .build();
     }
 
 

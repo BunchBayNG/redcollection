@@ -333,28 +333,24 @@ public class EmailServiceImpl implements EmailService {
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
 
-        try {
-            Response response = sg.api(request);
-            System.out.println(response.getStatusCode());
-            System.out.println(response.getBody());
-            System.out.println(response.getHeaders());
+        Response response = sg.api(request);
+        System.out.println(response.getStatusCode());
+        System.out.println(response.getBody());
+        System.out.println(response.getHeaders());
 
-            // Process response and save to repository if necessary
-            EmailEntity email = EmailEntity.builder()
-                    .emailType(emailRequest.getEmailType())
-                    .receiver(emailRequest.getMessage().getTo().stream().map(To::getEmail).toList())
-                    .status(String.valueOf(response.getStatusCode()))
-                    .emailId("")
-                    .queuedReason(response.getBody())
-                    .rejectReason("")
-                    .build();
-            emailRepository.save(email);
+        // Process response and save to repository if necessary
+        EmailEntity email = EmailEntity.builder()
+                .emailType(emailRequest.getEmailType())
+                .receiver(emailRequest.getMessage().getTo().stream().map(To::getEmail).toList())
+                .status(String.valueOf(response.getStatusCode()))
+                .emailId("")
+                .queuedReason(response.getBody())
+                .rejectReason("")
+                .build();
+        emailRepository.save(email);
 
-            return ResponseEntity.ok().body("Email sent Out Successfully");
+        return ResponseEntity.ok().body("Email sent Out Successfully");
 
-        } catch (IOException ex) {
-            throw ex;
-        }
     }
 
 

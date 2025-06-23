@@ -38,7 +38,7 @@ public class JavaMailServiceImpl implements JavaMailService {
 
 
     @Override
-    public void sendGridHtmlContent(String recipientEmail, MailStructure mailStructure, Attachments pdfAttachment) throws MessagingException {
+    public void sendGridHtmlContent(String recipientEmail, MailStructure mailStructure, Attachments pdfAttachment) {
         Email from = new Email(sender);
         String subject = mailStructure.getSubject();
         Email to = new Email(recipientEmail);

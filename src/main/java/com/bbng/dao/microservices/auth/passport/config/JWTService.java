@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JWTService {
     private final DataInitializerServiceImpl initializerService;
-    public long refreshExpiration = SecurityConstants.REFRESH_TOKEN_EXPIRATION;
+    public final long refreshExpiration = SecurityConstants.REFRESH_TOKEN_EXPIRATION;
 
     public JWTService(DataInitializerServiceImpl initializerService) {
         this.initializerService = initializerService;

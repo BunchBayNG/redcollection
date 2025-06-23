@@ -15,7 +15,7 @@ import lombok.*;
 public class TokenEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tokenReport")
-    @SequenceGenerator(name = "tokenReport", sequenceName = "token_report", allocationSize = 50)
+    @SequenceGenerator(name = "tokenReport", sequenceName = "token_report")
     private Long id;
     @Column(name = "token", length = 50000)
     private String token;

@@ -6,5 +6,5 @@ import com.sendgrid.helpers.mail.objects.Attachments;
 import jakarta.mail.MessagingException;
 
 public interface JavaMailService {
-    void sendGridHtmlContent(String recipientEmail, MailStructure mailStructure, Attachments pdfAttachment) throws MessagingException;
+    void sendGridHtmlContent(String recipientEmail, MailStructure mailStructure, Attachments pdfAttachment);
 }

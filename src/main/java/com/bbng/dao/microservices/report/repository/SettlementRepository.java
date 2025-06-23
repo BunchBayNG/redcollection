@@ -21,7 +21,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
         AND s.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByCreatedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
@@ -33,7 +33,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
         AND s.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByStatusAndCreatedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("status") String status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -46,7 +46,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
         AND s.createdAt BETWEEN :startDate AND :endDate
     """)
     BigDecimal sumAmountByStatus(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("status") String status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -65,7 +65,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
 //        ORDER BY FUNCTION('DATE_FORMAT', s.createdAt, :pattern)
 //    """)
 //    List<ChartPointDTO> groupSuccessfulSettlementVolumeByPeriod(
-//            @Param("merchantOrgId") Long merchantOrgId,
+//            @Param("merchantOrgId") String merchantOrgId,
 //            @Param("pattern") String pattern,
 //            @Param("startDate") LocalDateTime startDate,
 //            @Param("endDate") LocalDateTime endDate
@@ -84,7 +84,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
 //        ORDER BY FUNCTION('DATE_FORMAT', s.createdAt, :pattern)
 //    """)
 //    List<ChartPointDTO> groupSuccessfulSettlementCountByPeriod(
-//            @Param("merchantOrgId") Long merchantOrgId,
+//            @Param("merchantOrgId") String merchantOrgId,
 //            @Param("pattern") String pattern,
 //            @Param("startDate") LocalDateTime startDate,
 //            @Param("endDate") LocalDateTime endDate
@@ -102,7 +102,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
     ORDER BY DATE_FORMAT(p.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulSettlementVolumeByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -120,7 +120,7 @@ public interface SettlementRepository extends JpaRepository<SettlementEntity, Lo
     ORDER BY DATE_FORMAT(p.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulSettlementCountByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

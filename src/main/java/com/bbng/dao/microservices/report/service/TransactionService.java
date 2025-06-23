@@ -20,12 +20,14 @@ public interface TransactionService {
     getTransactions(String search, String merchantOrgId, String status, String sortBy,
                     String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 
-    long getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate);
-    List<TopMerchantDTO> getTopMerchantsByVolume(LocalDateTime startDate, LocalDateTime endDate, int topN);
-    AnalyticsCountSummaryDTO getTransactionCountSummary(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    BigDecimal getSuccessfulTransactionVolume(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    double getSuccessfulTransactionRate(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getSuccessfulTransactionVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getSuccessfulTransactionCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
+
+    ResponseDto<Long> getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<TopMerchantDTO>> getTopMerchantsByVolume(LocalDateTime startDate, LocalDateTime endDate, int topN);
+    ResponseDto<AnalyticsCountSummaryDTO> getTransactionCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<BigDecimal> getSuccessfulTransactionVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>> getSuccessfulTransactionVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>> getSuccessfulTransactionCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Double> getSuccessfulTransactionRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+
 
 }

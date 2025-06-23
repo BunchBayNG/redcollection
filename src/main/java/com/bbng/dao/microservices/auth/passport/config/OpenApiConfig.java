@@ -20,18 +20,14 @@ import org.springframework.context.annotation.Configuration;
                 version = "v1",
                 contact = @Contact(
                         name = "RedTech",
-                        email = "hello@redtechlimited.com",
-                        url = ""
+                        email = "hello@redtechlimited.com"
                 ),
                 license = @License(
-                        name = "MIT License",
-                        url = ""
+                        name = "MIT License"
                 ),
                 termsOfService = "Terms of service"
         ),
         externalDocs = @ExternalDocumentation(
-                description = "",
-                url = ""
         ),
         servers = {
                 @Server(

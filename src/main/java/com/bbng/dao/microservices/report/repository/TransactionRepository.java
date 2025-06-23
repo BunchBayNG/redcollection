@@ -62,7 +62,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
         AND t.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByCreatedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
@@ -75,7 +75,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
         AND t.createdAt BETWEEN :startDate AND :endDate
     """)
     long countByStatusAndCreatedAtBetween(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("status") String status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -89,7 +89,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
         AND t.createdAt BETWEEN :startDate AND :endDate
     """)
     BigDecimal sumAmountByStatus(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("status") String status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -109,7 +109,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 //        ORDER BY FUNCTION('DATE_FORMAT', t.createdAt, :pattern)
 //    """)
 //    List<ChartPointDTO> groupSuccessfulTransactionVolumeByPeriod(
-//            @Param("merchantOrgId") Long merchantOrgId,
+//            @Param("merchantOrgId") String merchantOrgId,
 //            @Param("pattern") String pattern,
 //            @Param("startDate") LocalDateTime startDate,
 //            @Param("endDate") LocalDateTime endDate
@@ -129,7 +129,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 //        ORDER BY FUNCTION('DATE_FORMAT', t.createdAt, :pattern)
 //    """)
 //    List<ChartPointDTO> groupSuccessfulTransactionCountByPeriod(
-//            @Param("merchantOrgId") Long merchantOrgId,
+//            @Param("merchantOrgId") String merchantOrgId,
 //            @Param("pattern") String pattern,
 //            @Param("startDate") LocalDateTime startDate,
 //            @Param("endDate") LocalDateTime endDate
@@ -148,7 +148,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     ORDER BY DATE_FORMAT(t.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulTransactionVolumeByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -166,7 +166,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     ORDER BY DATE_FORMAT(t.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulTransactionCountByPeriod(
-            @Param("merchantOrgId") Long merchantOrgId,
+            @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

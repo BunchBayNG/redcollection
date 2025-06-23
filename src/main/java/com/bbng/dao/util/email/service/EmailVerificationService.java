@@ -12,7 +12,7 @@ import java.time.Instant;
 public interface EmailVerificationService {
     EmailResponseDto[] sendVerificationEmail(String toEmail);
 
-    EmailResponseDto[] send2faEmail(String toEmail);
+    void send2faEmail(String toEmail);
 
     EmailResponseDto[] sendForgotPasswordMail(String toEmail);
 
@@ -20,7 +20,7 @@ public interface EmailVerificationService {
 
     ResponseDto<LoginResponseDto> verify2faEmail(String verificationToken);
 
-    EmailResponseDto[] sendInvitationEmail(String toEmail, String fromOrganization, String generatedPassword);
+    void sendInvitationEmail(String toEmail, String fromOrganization, String generatedPassword);
 
     EmailResponseDto[] sendWalletTopUpEmail(String toEmail, String transactionId, String organizationName, String userName, String userEmail, String userId, BigDecimal amount);
 

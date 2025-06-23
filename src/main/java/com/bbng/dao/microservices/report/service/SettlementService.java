@@ -19,12 +19,10 @@ public interface SettlementService {
     getSettlements(String search, String merchantOrgId, String status, String sortBy,
                    String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 
-    AnalyticsCountSummaryDTO getSettlementCountSummary(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-
-    double getSuccessfulSettlementRate(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    BigDecimal getSuccessfulSettlementVolume(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getSuccessfulSettlementVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getSuccessfulSettlementCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
-
+    ResponseDto<AnalyticsCountSummaryDTO> getSettlementCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<BigDecimal> getSuccessfulSettlementVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Double> getSuccessfulSettlementRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>> getSuccessfulSettlementVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>> getSuccessfulSettlementCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
 
 }

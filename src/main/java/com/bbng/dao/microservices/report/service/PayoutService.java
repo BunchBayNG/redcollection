@@ -18,13 +18,14 @@ public interface PayoutService {
     ResponseDto<Page<PayoutEntity>>
     getPayouts(String search, String merchantOrgId, String status, String sortBy,
                String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
+
+    ResponseDto<AnalyticsCountSummaryDTO> getPayoutCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<BigDecimal> getSuccessfulPayoutVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Double> getSuccessfulPayoutRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>> getSuccessfulPayoutVolumeChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<List<ChartPointDTO>> getSuccessfulPayoutCountChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
     
-    
-    AnalyticsCountSummaryDTO getPayoutCountSummary(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    double getSuccessfulPayoutRate(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    BigDecimal getSuccessfulPayoutVolume(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getSuccessfulPayoutVolumeChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
-    List<ChartPointDTO> getSuccessfulPayoutCountChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);
-   
+
+
 
 }

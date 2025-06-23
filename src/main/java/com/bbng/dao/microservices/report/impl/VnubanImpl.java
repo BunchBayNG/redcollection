@@ -66,33 +66,56 @@ public class VnubanImpl implements VnubanService {
     }
 
 
-    public long getTotalVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        return vnubanRepository.countByGeneratedAtBetween(merchantOrgId, startDate, endDate);
+    public ResponseDto<Long>  getTotalVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        Long response =  vnubanRepository.countByGeneratedAtBetween(merchantOrgId, startDate, endDate);
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total vNUBANs fetched successfully")
+                .data(response)
+                .build();
     }
 
 
-    public long getTotalStaticVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        return vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "STATIC", startDate, endDate);
+    public ResponseDto<Long>  getTotalStaticVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        Long response = vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "STATIC", startDate, endDate);
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total Static vNUBANs fetched successfully")
+                .data(response)
+                .build();
     }
 
-    public long getTotalDynamicVnubans(Long merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        return vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "DYNAMIC", startDate, endDate);
+    public ResponseDto<Long> getTotalDynamicVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        Long response =  vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "DYNAMIC", startDate, endDate);
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total Dynamic vNUBANs fetched successfully")
+                .data(response)
+                .build();
     }
 
-//    public List<ChartPointDTO> getGeneratedVnubansChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
-//        return vnubanRepository.groupGeneratedVnubansByPeriod(merchantOrgId, pattern, startDate, endDate);
-//    }
-
-    public List<ChartPointDTO> getGeneratedVnubansChart(Long merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
+    public   ResponseDto<List<ChartPointDTO>>  getGeneratedVnubansChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<Object[]> rawResult =  vnubanRepository.groupGeneratedVnubansByPeriod(merchantOrgId, pattern, startDate, endDate);
-        List<ChartPointDTO> result = rawResult.stream()
+        List<ChartPointDTO> response  = rawResult.stream()
                 .map(row -> new ChartPointDTO(
                         (String) row[0],
                         (BigDecimal) row[1]
                 ))
                 .toList();
-        return result;
+
+        return ResponseDto.<List<ChartPointDTO>>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total vNUBANs fetched successfully")
+                .data(response)
+                .build();
     }
 
 
