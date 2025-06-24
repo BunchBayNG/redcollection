@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,6 +47,33 @@ public class SettlementImpl implements SettlementService {
                 .data(response)
                 .build();
     }
+
+
+    public void initiateSettlement(BigDecimal amount, String merchantName, String merchantOrgId,
+                                   String sourceAccount, String destinationAccount, String status,
+                                   String transactionRef, String reference, String settlementRef) {
+
+        SettlementEntity newSettlement = new SettlementEntity();
+        newSettlement.setAmount(amount);
+        newSettlement.setMerchantName(merchantName);
+        newSettlement.setMerchantOrgId(merchantOrgId);
+        newSettlement.setSourceAccount(sourceAccount);
+        newSettlement.setDestinationAccount(destinationAccount);
+        newSettlement.setStatus(status);
+        newSettlement.setTransactionRef(transactionRef);
+        newSettlement.setReference(reference);
+        newSettlement.setSettlementRef(settlementRef);
+        settlementRepository.save(newSettlement);
+
+
+
+    }
+
+//    public static String generateRandomDigits() {
+//        int randomDigits = 1000 + new SecureRandom().nextInt(9000);
+//        return "STRX-" + randomDigits;
+//    }
+
 
 
     private Pageable getPageable(String sortBy, String sortOrder, int page, int size) {

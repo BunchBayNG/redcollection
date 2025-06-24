@@ -30,6 +30,7 @@ public class SettlementEntity {
     private String status;
     private String transactionRef;
     private String reference;
+    private String settlementRef;
     @CreationTimestamp
     private LocalDateTime createdAt;
 

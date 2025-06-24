@@ -1,13 +1,19 @@
 package com.bbng.dao.microservices.report.impl;
 
+import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.organization.service.ConfigService;
 import com.bbng.dao.microservices.report.config.TransactionSpecification;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.dto.TopMerchantDTO;
+import com.bbng.dao.microservices.report.dto.TransactionRequestDTO;
 import com.bbng.dao.microservices.report.entity.TransactionEntity;
 import com.bbng.dao.microservices.report.repository.TransactionRepository;
+import com.bbng.dao.microservices.report.service.SettlementService;
 import com.bbng.dao.microservices.report.service.TransactionService;
 import com.bbng.dao.util.response.ResponseDto;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,16 +25,88 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 
 @Service
 public class TransactionImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final ConfigService configService;
+    private final SettlementService settlementService;
 
-    public TransactionImpl(TransactionRepository transactionRepository) {
+
+    public TransactionImpl(TransactionRepository transactionRepository, ConfigService configService,
+                           SettlementService settlementService) {
         this.transactionRepository = transactionRepository;
+        this.configService = configService;
+        this.settlementService = settlementService;
     }
+
+
+    @Override
+    @Transactional
+    public ResponseDto<TransactionEntity> createTransaction(TransactionRequestDTO request) {
+
+        TransactionEntity txn = getTransactionEntity(request);
+
+        transactionRepository.save(txn);
+
+        SystemConfigEntity config = configService.getConfig();
+
+        BigDecimal commissionRate = config.getCommissionPercent().divide(BigDecimal.valueOf(100));
+        BigDecimal vatRate = config.getVatPercent().divide(BigDecimal.valueOf(100));
+        BigDecimal commissionCap = config.getCommissionCap();
+
+        BigDecimal commission = request.getAmount().multiply(commissionRate);
+        if (commission.compareTo(commissionCap) > 0) commission = commissionCap;
+
+        BigDecimal adminSplit = commission.multiply(config.getAdminSplitPercent().divide(BigDecimal.valueOf(100)));
+        BigDecimal platformSplit = commission.subtract(adminSplit);
+        BigDecimal vat = request.getAmount().multiply(vatRate);
+
+        // Create Settlements
+
+        settlementService.initiateSettlement(vat, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
+                request.getDestinationAccountNumber(), "SUCCESS", request.getTransactionId(), request.getReference(), "VAT");
+
+        settlementService.initiateSettlement(adminSplit, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
+                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "ADMIN");
+
+        settlementService.initiateSettlement(platformSplit, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
+                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "PLATFORM");
+
+
+        return ResponseDto.<TransactionEntity>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Transactions fetched successfully")
+                .data(txn)
+                .build();
+    }
+
+    private static TransactionEntity getTransactionEntity(TransactionRequestDTO request) {
+        TransactionEntity txn = new TransactionEntity();
+
+        txn.setMerchantName(request.getMerchantName());
+        txn.setTransactionId(request.getTransactionId());
+        txn.setAmount(request.getAmount());
+        txn.setTransactionId(request.getTransactionId());
+        txn.setMerchantOrgId(request.getMerchantOrgId());
+        txn.setVnuban(request.getVnuban());
+        txn.setStatus(request.getStatus());
+        txn.setSessionId(request.getSessionId());
+        txn.setReference(request.getReference());
+        txn.setWebhookStatus("200");
+        txn.setTransactionType(request.getTransactionType());
+        txn.setDestinationAccountNumber(request.getDestinationAccountNumber());
+        txn.setDestinationAccountName(request.getDestinationAccountName());
+        txn.setIpAddress("");
+        txn.setDeviceName("");
+        txn.setProcessingTime(1L);
+        return txn;
+    }
+
 
     @Override
     public ResponseDto<Page<TransactionEntity>>  getTransactions(String search, String merchantOrgId, String status,
@@ -120,7 +198,7 @@ public class TransactionImpl implements TransactionService {
         return ResponseDto.<BigDecimal>builder()
                 .statusCode(200)
                 .status(true)
-                .message("Successful Transaction Volume fetched successfully")
+                .message("Successful TransactionEntity Volume fetched successfully")
                 .data(response)
                 .build();
 

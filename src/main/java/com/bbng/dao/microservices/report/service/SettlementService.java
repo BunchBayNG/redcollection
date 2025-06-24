@@ -19,6 +19,10 @@ public interface SettlementService {
     getSettlements(String search, String merchantOrgId, String status, String sortBy,
                    String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 
+
+    void initiateSettlement(BigDecimal amount, String merchantName, String merchantOrgId,
+                            String  sourceAccount, String destinationAccount, String status,
+                            String  transactionRef, String reference, String settlementRef);
     ResponseDto<AnalyticsCountSummaryDTO> getSettlementCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<BigDecimal> getSuccessfulSettlementVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<Double> getSuccessfulSettlementRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);

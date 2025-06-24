@@ -84,10 +84,7 @@ public class UserServiceImpl implements UserService {
     private final AuditLogService auditLogService;
     private final OrgStaffRepository orgStaffRepository;
 
-    public static String generateRandomDigits() {
-        int randomDigits = 1000 + new SecureRandom().nextInt(9000);
-        return String.valueOf(randomDigits);
-    }
+
 
     @Override
     public ResponseDto<MfaDto> login(LoginDto loginDto) {

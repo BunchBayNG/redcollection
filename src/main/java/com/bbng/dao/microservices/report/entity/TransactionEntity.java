@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
@@ -26,7 +27,7 @@ public class TransactionEntity {
     private String merchantName;
     private String merchantOrgId;
     private String vnuban;
-    private Double amount;
+    private BigDecimal amount;
     private String status;
     private String sessionId;
     private String reference;

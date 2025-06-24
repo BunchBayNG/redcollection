@@ -265,12 +265,12 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         verificationTokenRepository.save(token);
         UserEntity user = userRepository.save(userEntity);
 
-        systemConfigRepository.save(SystemConfigEntity.builder()
-                .is2FA(false)
-                .isEmailSetUp(true)
-                .isSmsSetUp(false)
-                .userId(userEntity.getId())
-                .build());
+//        systemConfigRepository.save(SystemConfigEntity.builder()
+//                .is2FA(false)
+//                .isEmailSetUp(true)
+//                .isSmsSetUp(false)
+//                .userId(userEntity.getId())
+//                .build());
 
         return ResponseDto.<String>builder()
                 .statusCode(200)

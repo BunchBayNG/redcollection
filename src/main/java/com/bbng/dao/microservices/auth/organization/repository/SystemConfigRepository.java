@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface SystemConfigRepository extends JpaRepository<SystemConfigEntity, Long> {
-    @Query("Select s from SystemConfigEntity s where s.userId = ?1")
-    Optional<SystemConfigEntity> findByUserId(String userId);
+
+//    @Query("Select s from SystemConfigEntity s where s.userId = ?1")
+//    Optional<SystemConfigEntity> findByUserId(String userId);
 }

@@ -3,6 +3,7 @@ package com.bbng.dao.microservices.report.service;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
 import com.bbng.dao.microservices.report.dto.TopMerchantDTO;
+import com.bbng.dao.microservices.report.dto.TransactionRequestDTO;
 import com.bbng.dao.microservices.report.entity.TransactionEntity;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public interface TransactionService {
     ResponseDto<Page<TransactionEntity>>
     getTransactions(String search, String merchantOrgId, String status, String sortBy,
                     String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
+
+    ResponseDto<TransactionEntity> createTransaction(TransactionRequestDTO requestDTO);
 
 
     ResponseDto<Long> getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate);
