@@ -1,8 +1,15 @@
 package com.bbng.dao.microservices.auth.passport.config;
 
 
+import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
+import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
+import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
+import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
+import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
+import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
+import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,7 +57,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JWTService jwtService;
     private PassportUserDetailsService userDetailsService;
     private TokenRepository tokenRepository;
-    private APIKeyRepository apiKeyRepository;
+    private final HttpServletRequest httpRequest;
+    private final UserRepository userRepository;
+    private final APIKeyRepository apiKeyRepository;
+    private final OrganizationRepository organizationRepository;
 
     @Override
     protected void doFilterInternal(
@@ -76,6 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             boolean isTestKey = apiKeyRepository.existsByTestKey(token);
             boolean isLiveKey = apiKeyRepository.existsByLiveKey(token);
 
+
             if (!(isLiveKey || isTestKey)) {
                 log.warn("Invalid API Key: {}", token);
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid API Key");
@@ -84,6 +95,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("filtering request");
             filterChain.doFilter(request, response);
             log.info("done with apiKey");
+
+//            String email = GetUserFromToken.extractUserFromApiKey(httpRequest, apiKeyRepository, userRepository);
+//
+//            UserEntity user = userRepository.findByEmail(email).orElseThrow(() ->
+//                    new UserNotFoundException("Can't find user with the username extracted from token. Is user a paysub user?"));
+//
+//            OrganizationEntity org = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() ->
+//                    new ResourceNotFoundException("Can't find Org with the username extracted from token."));
+//            log.info("org :" + org.getOrganizationName());
+
+
         } else {
             // Proceed with JWT processing for non-API-key tokens
             log.info("still procceed with jwt");

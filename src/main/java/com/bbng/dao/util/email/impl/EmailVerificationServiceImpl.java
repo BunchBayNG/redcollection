@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.bbng.dao.util.email.utils.Utils.*;
@@ -161,8 +162,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         }
 
         OtpEntity userOtp = otpRepository.findByEmail(toEmail).orElse(new OtpEntity());
-        ///String sixDigitToken = String.format("%06d", new Random().nextInt(999999));
-        String sixDigitToken = "123456";
+        String sixDigitToken = String.format("%06d", new Random().nextInt(999999));
+        ///String sixDigitToken = "123456";
         Instant creationTime = Instant.now();
         Instant expirationTime = creationTime.plusSeconds(600);
 

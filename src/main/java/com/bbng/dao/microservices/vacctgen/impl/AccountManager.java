@@ -3,11 +3,14 @@ package com.bbng.dao.microservices.vacctgen.impl;
 
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
 import com.bbng.dao.microservices.auth.organization.service.ConfigService;
 import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
+import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
 import com.bbng.dao.microservices.vacctgen.config.MerchantSearchFilter;
 import com.bbng.dao.microservices.vacctgen.config.SearchFilter;
 import com.bbng.dao.microservices.vacctgen.dto.request.ActivationOperation;
@@ -25,6 +28,7 @@ import com.bbng.dao.microservices.vacctgen.value.GenerateValue;
 import com.bbng.dao.microservices.vacctgen.value.MerchantProvisionValue;
 import com.bbng.dao.util.exceptions.customExceptions.AccountException;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
+import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import com.bbng.dao.util.gen.GeneratorUtil;
 import com.bbng.dao.util.response.ResponseDto;
 import jakarta.persistence.criteria.Predicate;
@@ -69,6 +73,9 @@ public class AccountManager {
     private final HttpServletRequest httpRequest;
     private final OrganizationRepository organizationRepository;
     private final JWTService jwtService;
+    private final UserRepository userRepository;
+    private final APIKeyRepository apiKeyRepository;
+
 
 
     public AccountManager(
@@ -76,13 +83,15 @@ public class AccountManager {
             AccountRepository accountRepository,
             AccountMetadataRepository accountMetadataRepository, ConfigService configService,
             HttpServletRequest  httpRequest,
-            OrganizationRepository organizationRepository, JWTService jwtService) {
+            OrganizationRepository organizationRepository, JWTService jwtService, UserRepository userRepository, APIKeyRepository apiKeyRepository) {
         this.provisionedAccountRepository = provisionedAccountRepository;
         this.accountRepository = accountRepository;
         this.accountMetadataRepository = accountMetadataRepository;
         this.configService = configService;
         this.httpRequest = httpRequest;
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
+        this.apiKeyRepository = apiKeyRepository;
         secureRandom = new SecureRandom(Instant.now().toString().getBytes(StandardCharsets.UTF_8));
         this.organizationRepository = organizationRepository;
     }
@@ -434,7 +443,17 @@ public class AccountManager {
     @Transactional
     public ResponseDto<ProvisionedAccount> provisionStaticForMerchant(MerchantProvisionValue request) {
 
-        SystemConfigEntity properties = getSystemConfig();
+//        SystemConfigEntity properties;
+//        try {
+//            properties = getSystemConfig();
+//            log.info(properties.getDefaultPrefix());
+//        }  catch (Exception e) {
+//            throw new AccountException(e.getMessage());
+//        }
+
+        log.info("rrfrfr frfrfr " + request.getAccountName());
+        log.info("rrfrfr wallet No " + request.getWalletNo());
+
         //find provisioned account tied to wallet in request, if not provision a new account
         Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByWalletNoAndMode(request.getWalletNo(), ProvisionedAccount.Mode.OPEN);
         if (existingAccount.isPresent()){
@@ -446,18 +465,21 @@ public class AccountManager {
                     .data(existingAccount.get())
                     .build();
         }
+        OrganizationEntity org = getOrgForApiKey();
+
+
         Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
             // populate pool and try again, throw error otherwise
             // The pool will be increased by TODO Complete comment
             updatePool(new GenerateValue(
-                    properties.getDefaultPrefix(), properties.getProvisionSingleUpdatePoolSize()));
+                    org.getProductPrefix(), 1));
             return accountRepository.findFirstByStatus(FREE).orElseThrow(() ->
                     new AccountException(
                             "Attempt to provision account failed. Please retry after some time."));
         });
 
 
-        OrganizationEntity org = getOrgForApiKey();
+
         ProvisionedAccount accountToProvision = ProvisionedAccount.builder()
                 .accountNo(selectedAccount.getValue())
                 .accountName(request.getAccountName())
@@ -577,11 +599,19 @@ public class AccountManager {
         }
     }
 
-    public OrganizationEntity getOrgForApiKey( ) {
+    public OrganizationEntity getOrgForApiKey() {
 
-        String username = GetUserFromToken.extractTokenFromHeader(httpRequest, jwtService);
 
-        return organizationRepository.findByContactEmail(username).orElseThrow(() ->
+      String email =GetUserFromToken.extractTokenFromHeader(httpRequest, jwtService);
+
+      log.info("email: {}", email);
+
+
+        UserEntity user = userRepository.findByUsernameOrEmail(email, email).orElseThrow(() ->
+                new UserNotFoundException("Can't find user with the username extracted from token. Is user a paysub user?"));
+
+
+        return organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() ->
                 new ResourceNotFoundException("Can't find Org with the username extracted from token."));
     }
     

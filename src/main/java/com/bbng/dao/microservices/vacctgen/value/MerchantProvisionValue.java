@@ -1,10 +1,11 @@
 package com.bbng.dao.microservices.vacctgen.value;
 
+import lombok.Data;
 import lombok.Value;
 
 import java.math.BigDecimal;
 
-@Value
+@Data
 public class MerchantProvisionValue {
     private String accountName;
     private String initiatorRef;

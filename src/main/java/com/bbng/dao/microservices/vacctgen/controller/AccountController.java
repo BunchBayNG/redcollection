@@ -17,6 +17,7 @@ import com.bbng.dao.microservices.vacctgen.value.GenerateValue;
 import com.bbng.dao.microservices.vacctgen.value.MerchantProvisionValue;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
