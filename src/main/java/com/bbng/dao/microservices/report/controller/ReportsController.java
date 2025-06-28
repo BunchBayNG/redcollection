@@ -41,7 +41,7 @@ public class ReportsController {
 
     private final String defaultPage = "0";      // default page
     private final String defaultSize = "10";     // default size
-    private final String defaultSortOrder = "ASC";     // default sort order, Ascending or Descending
+    private final String defaultSortOrder = "DESC";     // default sort order, Ascending or Descending
 
 
     @GetMapping("/transactions")
@@ -105,7 +105,7 @@ public class ReportsController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "provisionDate") String sortBy,
             @RequestParam(defaultValue = defaultSortOrder) String sortOrder,
             @RequestParam(defaultValue = defaultPage) int page,
             @RequestParam(defaultValue = defaultSize) int size

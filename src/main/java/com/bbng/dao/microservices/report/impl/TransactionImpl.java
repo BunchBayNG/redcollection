@@ -14,6 +14,8 @@ import com.bbng.dao.microservices.report.service.TransactionService;
 import com.bbng.dao.util.response.ResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,8 @@ public class TransactionImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final ConfigService configService;
     private final SettlementService settlementService;
+
+
 
 
     public TransactionImpl(TransactionRepository transactionRepository, ConfigService configService,
@@ -63,7 +67,7 @@ public class TransactionImpl implements TransactionService {
 
         BigDecimal adminSplit = commission.multiply(config.getAdminSplitPercent().divide(BigDecimal.valueOf(100)));
         BigDecimal platformSplit = commission.subtract(adminSplit);
-        BigDecimal vat = request.getAmount().multiply(vatRate);
+        BigDecimal vat = commission.multiply(vatRate);
 
         // Create Settlements
 
@@ -71,10 +75,10 @@ public class TransactionImpl implements TransactionService {
                 request.getDestinationAccountNumber(), "SUCCESS", request.getTransactionId(), request.getReference(), "VAT");
 
         settlementService.initiateSettlement(adminSplit, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
-                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "ADMIN");
+                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "ADMIN-UBA");
 
         settlementService.initiateSettlement(platformSplit, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
-                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "PLATFORM");
+                String.valueOf(config.getPlatformAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "PLATFORM-REDTECH");
 
 
         return ResponseDto.<TransactionEntity>builder()

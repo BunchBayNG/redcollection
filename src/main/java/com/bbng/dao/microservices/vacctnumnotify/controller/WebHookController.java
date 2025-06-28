@@ -24,8 +24,8 @@ public class WebHookController {
     }
 
 
-    @GetMapping("/va-transaction")
-    public   ResponseEntity<ResponseDto<TransactionEntity>>  getTransactions(@RequestBody @Valid @ModelAttribute TransactionRequestDTO request) {
+    @PostMapping("/va-transaction")
+    public   ResponseEntity<ResponseDto<TransactionEntity>>  getTransactions(@RequestBody @Valid TransactionRequestDTO request) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(transactionService.createTransaction(request));
     }
