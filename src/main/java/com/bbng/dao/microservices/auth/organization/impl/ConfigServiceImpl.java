@@ -71,7 +71,7 @@ public class ConfigServiceImpl implements ConfigService {
 
 
 
-    private static SystemConfigEntity getSystemConfigEntity(ConfigSetupDto req, Long adminAcctNo, Long platformAcctNo, Long vatAcctNo) {
+    private static SystemConfigEntity getSystemConfigEntity(ConfigSetupDto req, String adminAcctNo, String platformAcctNo, String vatAcctNo) {
 
         SystemConfigEntity config = new SystemConfigEntity();
         config.setId(1L);
@@ -88,7 +88,7 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
 
-    private BankAccountEntity createBankAccount(Long bankAccountNumber, BankCategory bankCategory) {
+    private BankAccountEntity createBankAccount(String bankAccountNumber, BankCategory bankCategory) {
 
         BankAccountEntity acct = new BankAccountEntity();
         acct.setBankAccountNumber(bankAccountNumber);

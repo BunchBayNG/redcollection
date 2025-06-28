@@ -5,15 +5,16 @@ import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
+import com.bbng.dao.microservices.auth.organization.service.ConfigService;
+import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
+import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.vacctgen.config.MerchantSearchFilter;
 import com.bbng.dao.microservices.vacctgen.config.SearchFilter;
 import com.bbng.dao.microservices.vacctgen.dto.request.ActivationOperation;
 import com.bbng.dao.microservices.vacctgen.dto.request.MerchantStatusRequest;
-import com.bbng.dao.microservices.vacctgen.dto.request.ProvisionRequest;
 import com.bbng.dao.microservices.vacctgen.dto.request.StatusRequest;
 import com.bbng.dao.microservices.vacctgen.dto.response.ConfirmLookupResult;
 import com.bbng.dao.microservices.vacctgen.dto.response.LookUpResult;
-import com.bbng.dao.microservices.vacctgen.dto.response.ProvisionResult;
 import com.bbng.dao.microservices.vacctgen.entity.Account;
 import com.bbng.dao.microservices.vacctgen.entity.AccountMetadata;
 import com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -52,8 +52,6 @@ import static com.bbng.dao.microservices.vacctgen.entity.Account.Status.PROVISIO
 import static com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount.Status.ACTIVE;
 import static com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount.Status.INACTIVE;
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
-
 
 
 @Component
@@ -66,23 +64,25 @@ public class AccountManager {
     private final ProvisionedAccountRepository provisionedAccountRepository;
     private final AccountRepository accountRepository;
     private final AccountMetadataRepository accountMetadataRepository;
-    private final SystemConfigRepository systemConfigRepository;
+    private final ConfigService configService;
     private final Random secureRandom;
     private final HttpServletRequest httpRequest;
     private final OrganizationRepository organizationRepository;
+    private final JWTService jwtService;
 
 
     public AccountManager(
             ProvisionedAccountRepository provisionedAccountRepository,
             AccountRepository accountRepository,
-            AccountMetadataRepository accountMetadataRepository, SystemConfigRepository systemConfigRepository,
+            AccountMetadataRepository accountMetadataRepository, ConfigService configService,
             HttpServletRequest  httpRequest,
-            OrganizationRepository organizationRepository) {
+            OrganizationRepository organizationRepository, JWTService jwtService) {
         this.provisionedAccountRepository = provisionedAccountRepository;
         this.accountRepository = accountRepository;
         this.accountMetadataRepository = accountMetadataRepository;
-        this.systemConfigRepository = systemConfigRepository;
+        this.configService = configService;
         this.httpRequest = httpRequest;
+        this.jwtService = jwtService;
         secureRandom = new SecureRandom(Instant.now().toString().getBytes(StandardCharsets.UTF_8));
         this.organizationRepository = organizationRepository;
     }
@@ -579,12 +579,14 @@ public class AccountManager {
 
     public OrganizationEntity getOrgForApiKey( ) {
 
-        return organizationRepository.findByContactEmail(httpRequest.getHeader("email")).orElseThrow(() ->
+        String username = GetUserFromToken.extractTokenFromHeader(httpRequest, jwtService);
+
+        return organizationRepository.findByContactEmail(username).orElseThrow(() ->
                 new ResourceNotFoundException("Can't find Org with the username extracted from token."));
-    }  
+    }
     
     public SystemConfigEntity getSystemConfig() {
 
-        return systemConfigRepository.findByIdIs(1L);
+        return  configService.getConfig();
     }
 }

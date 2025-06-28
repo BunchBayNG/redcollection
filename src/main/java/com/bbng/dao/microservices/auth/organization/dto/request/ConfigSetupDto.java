@@ -38,13 +38,13 @@ public class ConfigSetupDto {
     private BigDecimal vatPercent;
 
     @NotNull
-    private Long adminAccountNo;
+    private String adminAccountNo;
 
     @NotNull
-    private Long platformAccountNo;
+    private String platformAccountNo;
 
     @NotNull
-    private Long vatAccountNo;
+    private String vatAccountNo;
 
     @NotNull
     private String configProductPhone;

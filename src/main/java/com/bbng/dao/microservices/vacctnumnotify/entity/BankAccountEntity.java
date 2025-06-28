@@ -19,7 +19,7 @@ public class BankAccountEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String bankAccountName;
-    private Long bankAccountNumber;
+    private String bankAccountNumber;
     private BankCategory bankCategory;
 
     // other fields

@@ -27,11 +27,11 @@ public class SystemConfigEntity extends BaseEntity {
 
     private BigDecimal vatPercent;          // e.g., 7.5
 
-    private Long adminAccountNo;
+    private String adminAccountNo;
 
-    private Long platformAccountNo;
+    private String platformAccountNo;
 
-    private Long vatAccountNo;
+    private String vatAccountNo;
 
 
     private String defaultPrefix = "VNUBAN";
