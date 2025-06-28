@@ -47,7 +47,6 @@ public class AccountController {
     ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(accountManager.provisionForMerchant(request));
-       /// return Response.successful();
     }
 
     @PostMapping("merchant/provision-static")
@@ -58,29 +57,6 @@ public class AccountController {
         return  ResponseEntity.status(HttpStatus.OK).body( accountManager.provisionStaticForMerchant(request));
     }
 
-    @PostMapping("reseller/provision-static")
-    public ResponseEntity<ResponseDto<ProvisionedAccount>> provisionStaticForReseller(
-            @RequestBody MerchantProvisionValue request
-    ) {
-
-        return  ResponseEntity.status(HttpStatus.OK).body(accountManager.provisionStaticForReseller(request));
-    }
-
-    @PostMapping("payments/provision-static")
-    public ResponseEntity<ResponseDto<ProvisionedAccount>> provisionStaticForPayments(
-            @RequestBody MerchantProvisionValue request
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                accountManager.provisionStaticForResellerUniqueInitiatorRef(request));
-    }
-    @GetMapping("status")
-    public ResponseEntity<ResponseDto<ProvisionedAccount>> getStatus(
-            StatusRequest statusRequest) {
-
-        return  ResponseEntity.status(HttpStatus.OK).body(
-                accountManager.getProvisionedAccountStatus(statusRequest));
-    }
-
     @GetMapping("merchant/status")
     public ResponseEntity<ResponseDto<ProvisionedAccount>> getMerchantStatus(
             MerchantStatusRequest statusRequest) {
@@ -88,44 +64,48 @@ public class AccountController {
         return  ResponseEntity.status(HttpStatus.OK).body(accountManager.getProvisionedAccountStatus(statusRequest));
     }
 
-    @GetMapping("search")
-    public ResponseEntity<ResponseDto<List<ProvisionedAccount>>> search(SearchFilter filter, BindingResult bindingResult) {
-        if (bindingResult.hasGlobalErrors()) {
-            log.debug("has global error(s): {}", bindingResult.getGlobalErrors().stream()
-                    .map(ObjectError::toString).collect(Collectors.toList()));
-            /// return Response.failed(bindingResult.getFieldError().getDefaultMessage());
-            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
-        }
-
-        if (bindingResult.hasFieldErrors()) {
-            log.debug("Field error(s): {}", bindingResult.getFieldErrors().stream()
-                    .map(FieldError::toString).collect(Collectors.toList()));
-          ///  return Response.failed(bindingResult.getFieldError().getDefaultMessage());
-            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
-        }
-
-        return  ResponseEntity.status(HttpStatus.OK).body( accountManager.search(filter));
-    }
-
-    @GetMapping("merchant/search")
-    public ResponseEntity<ResponseDto<List<ProvisionedAccount>>> merchantSearch(
-            MerchantSearchFilter filter, BindingResult bindingResult ) {
-        if (bindingResult.hasGlobalErrors()) {
-            log.debug("has global error(s): {}", bindingResult.getGlobalErrors().stream()
-                    .map(ObjectError::toString).collect(Collectors.toList()));
-            /// return Response.failed(bindingResult.getFieldError().getDefaultMessage());
-            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
-        }
-
-        if (bindingResult.hasFieldErrors()) {
-            log.debug("Field error(s): {}", bindingResult.getFieldErrors().stream()
-                    .map(FieldError::toString).collect(Collectors.toList()));
-            /// return Response.failed(bindingResult.getFieldError().getDefaultMessage());
-            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
-        }
-
-        return  ResponseEntity.status(HttpStatus.OK).body(accountManager.search(filter));
-    }
+//
+//    @GetMapping("search")
+//    public ResponseEntity<ResponseDto<List<ProvisionedAccount>>> search(SearchFilter filter, BindingResult bindingResult) {
+//        if (bindingResult.hasGlobalErrors()) {
+//            log.debug("has global error(s): {}", bindingResult.getGlobalErrors().stream()
+//                    .map(ObjectError::toString).collect(Collectors.toList()));
+//            /// return Response.failed(bindingResult.getFieldError().getDefaultMessage());
+//            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
+//        }
+//
+//        if (bindingResult.hasFieldErrors()) {
+//            log.debug("Field error(s): {}", bindingResult.getFieldErrors().stream()
+//                    .map(FieldError::toString).collect(Collectors.toList()));
+//          ///  return Response.failed(bindingResult.getFieldError().getDefaultMessage());
+//            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
+//        }
+//
+//        return  ResponseEntity.status(HttpStatus.OK).body( accountManager.search(filter));
+//    }
+//
+//
+//
+//    @GetMapping("merchant/search")
+//    public ResponseEntity<ResponseDto<List<ProvisionedAccount>>> merchantSearch(
+//            MerchantSearchFilter filter, BindingResult bindingResult ) {
+//        if (bindingResult.hasGlobalErrors()) {
+//            log.debug("has global error(s): {}", bindingResult.getGlobalErrors().stream()
+//                    .map(ObjectError::toString).collect(Collectors.toList()));
+//            /// return Response.failed(bindingResult.getFieldError().getDefaultMessage());
+//            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
+//        }
+//
+//        if (bindingResult.hasFieldErrors()) {
+//            log.debug("Field error(s): {}", bindingResult.getFieldErrors().stream()
+//                    .map(FieldError::toString).collect(Collectors.toList()));
+//            /// return Response.failed(bindingResult.getFieldError().getDefaultMessage());
+//            throw new ResourceNotFoundException(Objects.requireNonNull(bindingResult.getGlobalError()).getDefaultMessage());
+//        }
+//
+//        return  ResponseEntity.status(HttpStatus.OK).body(accountManager.search(filter));
+//    }
+//
 
     @GetMapping("lookup")
     public ResponseEntity<ResponseDto<LookUpResult>> lookup(@RequestParam("accountNo") String accountNo) {
@@ -143,32 +123,6 @@ public class AccountController {
     public ResponseEntity<ResponseDto<ConfirmLookupResult>> doConfirmLookupAllStatus(@RequestParam("accountNo") String accountNo, @RequestParam("amount") String amount) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(accountManager.doConfirmLookupAllStatus(accountNo, amount));
-    }
-
-    @PostMapping("provision-single")
-    public ResponseEntity<ResponseDto<ProvisionResult>> provisionSingle(@RequestBody ProvisionRequest request) {
-        return  ResponseEntity.status(HttpStatus.OK).body(accountManager.provisionSingle( request));
-    }
-
-    @PostMapping("provision-multiple")
-    public ResponseEntity<ResponseDto<List<ProvisionResult>>> provisionMultiple(
-            @RequestBody List<ProvisionRequest> request
-    ) {
-
-        return  ResponseEntity.status(HttpStatus.OK).body( accountManager.provisionMultiple(request));
-
-    }
-
-    @PostMapping("generate")
-    public ResponseEntity<ResponseDto<Integer>> fillInvoicePool(@RequestBody GenerateValue generateValue) {
-        final int size = accountManager.updatePool(generateValue);
-
-        return  ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<Integer>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Added new %d account(s) to pool")
-                .data(size)
-                .build());
     }
 
     @PostMapping("activate")

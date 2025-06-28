@@ -31,6 +31,7 @@ import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,7 @@ public class InvitationServiceImpl implements InvitationService {
     private final EmailVerificationService emailVerificationService;
     private final PermissionRepository permissionRepository;
     private final AuditLogService auditLogService;
+
 
     @Override
     @Transactional
@@ -237,6 +239,8 @@ public class InvitationServiceImpl implements InvitationService {
 
         RoleEntity roleOrganizationAdmin = roleRepository.findByRoleName("ROLE_ORGANIZATION_ADMIN").
                 orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
+
 
 
         UserEntity newSavedUser = userRepository.save(UserEntity.builder()

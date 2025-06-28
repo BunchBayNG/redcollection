@@ -91,7 +91,6 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                 "CAN_INVITE_STAFF",
                 "CAN_GET_STAFF",
                 "CAN_DISABLE_STAFF",
-                "CAN_ONBOARD_ORG",
                 "CAN_REMOVE_PERMISSION",
                 "CAN_CREATE_ROLE",
                 "CAN_ASSIGN_PERMISSIONS",
@@ -114,7 +113,6 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                 "the \"CAN_INVITE_STAFF\" permission grant the permission to invite staff",
                 "the \"CAN_GET_STAFF\" permission grant the permission to get staff",
                 "the \"CAN_DISABLE_STAFF\" permission grant the permission to disable staff",
-                "the \"CAN_ONBOARD_ORG\" permission grant the permission to onboard merchant",
                 "the \"CAN_REMOVE_PERMISSION\" permission grant the permission to remove permission",
                 "the \"CAN_CREATE_ROLE\" permission grant the permission to create role",
                 "the \"CAN_ASSIGN_PERMISSIONS\" permission grant the permission to assign permissions",
@@ -277,17 +275,24 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
                     "ADMIN_DELETE_ACCOUNT_TRANSACTION", "GET-DAILY-REPORTS", "GET-GRAPH-REPORTS", "SUBMIT_DISPUTE",
                     "CHECK_DISPUTE_STATUS", "ADMIN_ATTAIN_TO_DISPUTE", "ADMIN_GET_DISPUTES"
                 ));
-            rolePermissionsMap.put("ROLE_ORGANIZATION_ADMIN", Arrays.asList("CREATE_USER", "READ_USER", "UPDATE_USER"));
+
+            rolePermissionsMap.put("ROLE_ORGANIZATION_ADMIN", Arrays.asList("CREATE_USER", "READ_USER", "UPDATE_USER",
+                    "ADMIN_GET_ACCOUNT_NUMBER", "CREATE_TEST_APIKEY", "CREATE_LIVE_APIKEY", "CAN_INVITE_STAFF",
+                    "CAN_GET_STAFF", "CAN_DISABLE_STAFF", "CAN_REMOVE_PERMISSION", "CAN_CREATE_ROLE", "CAN_ASSIGN_PERMISSIONS",
+                    "UPDATE_BUSINESS_ON_SIGNUP", "UPDATE_COMPANY_DETAILS", "GET_ORGANIZATION_BY_USERID", "GET-ORGANIZATION-NOTIFICATIONS",
+                    "DELETE-ORGANIZATION-NOTIFICATIONS", "MERCHANT_GET_AUDIT_LOGS", "GET-DAILY-REPORTS", "GET-GRAPH-REPORTS",
+                    "SUBMIT_DISPUTE", "CHECK_DISPUTE_STATUS"));
 
             rolePermissionsMap.put("ROLE_REDTECH_STAFF", Arrays.asList( "ADMIN_GET_AUDIT_LOGS", "ADMIN_GET_SENT_EMAILS",
-                    "UPDATE_BUSINESS_ON_SIGNUP", "UPDATE_COMPANY_DETAILS", "ADMIN_SEND_EMAILS_NOTIFICATIONS",
-                    "ADMIN_UPLOAD_EMAILS_HEADER_IMAGE", "DELETE-ORGANIZATION-NOTIFICATIONS",
-                    "ADMIN_SET_UP_USER_CONFIG", "GET_ORGANIZATION_BY_USERID", "GET-ORGANIZATION-NOTIFICATIONS", "SEND_NOTIFICATIONS",
-                    "ADMIN_DELETE_ACCOUNT_TRANSACTION", "GET-DAILY-REPORTS", "GET-GRAPH-REPORTS", "SUBMIT_DISPUTE",
-                    "CHECK_DISPUTE_STATUS", "ADMIN_ATTAIN_TO_DISPUTE", "ADMIN_GET_DISPUTES"));
+                  "ADMIN_SEND_EMAILS_NOTIFICATIONS", "GET_ORGANIZATION_BY_USERID", "GET-ORGANIZATION-NOTIFICATIONS",
+                  "SEND_NOTIFICATIONS", "GET-DAILY-REPORTS", "GET-GRAPH-REPORTS", "SUBMIT_DISPUTE", "CHECK_DISPUTE_STATUS",
+                    "ADMIN_ATTAIN_TO_DISPUTE", "ADMIN_GET_DISPUTES"));
+
+            rolePermissionsMap.put("ROLE_ORGANIZATION_STAFF", Arrays.asList("CREATE_USER", "READ_USER", "UPDATE_USER",
+                    "ADMIN_GET_ACCOUNT_NUMBER", "CAN_INVITE_STAFF", "CAN_GET_STAFF", "GET-ORGANIZATION-NOTIFICATIONS",
+                    "MERCHANT_GET_AUDIT_LOGS", "GET-DAILY-REPORTS", "GET-GRAPH-REPORTS", "SUBMIT_DISPUTE", "CHECK_DISPUTE_STATUS"));
 
 
-            rolePermissionsMap.put("ROLE_ORGANIZATION_STAFF", Arrays.asList("CREATE_USER", "UPDATE_USER", "READ_USER"));
 
             for (Map.Entry<String, List<String>> entry : rolePermissionsMap.entrySet()) {
 
@@ -350,7 +355,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
         } catch (Exception e) {
             // log the exception
             e.printStackTrace();
-            throw new InternalServerException("Error ocurred while trying to create roles and assign permissions");
+            throw new InternalServerException("Error occurred while trying to create roles and assign permissions");
 
         }
 

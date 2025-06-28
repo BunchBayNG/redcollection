@@ -6,7 +6,7 @@ import lombok.Value;
 public class LookUpResult {
     private String accountNo;
     private String accountName;
-    private String clientId;
+    private String merchantOrgId;
     private String walletNo;
 }
 

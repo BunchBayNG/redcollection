@@ -1,7 +1,7 @@
 package com.bbng.dao.microservices.report.service;
 
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
-import com.bbng.dao.microservices.report.entity.VnubanEntity;
+import com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 
@@ -13,7 +13,7 @@ public interface VnubanService {
 
 
 
-    ResponseDto<Page<VnubanEntity>>
+    ResponseDto<Page<ProvisionedAccount>>
     getVnubans(String search, String merchantOrgId, String status, String sortBy,
                String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 

@@ -1,6 +1,7 @@
 package com.bbng.dao.microservices.report.config;
 
-import com.bbng.dao.microservices.report.entity.VnubanEntity;
+
+import com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -12,16 +13,15 @@ public class VnubanSpecification {
 
 
 
-    public static Specification<VnubanEntity> getVnubans(String search, String merchantOrgId, String status, LocalDate startDate, LocalDate endDate) {
+    public static Specification<ProvisionedAccount> getVnubans(String search, String merchantOrgId, String status, LocalDate startDate, LocalDate endDate) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (search != null && !search.isEmpty()) {
-                Predicate byVnubanType = cb.like(cb.lower(root.get("vnubanType")), "%" + search.toLowerCase() + "%");
                 Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + search.toLowerCase() + "%");
                 Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + search.toLowerCase() + "%");
                 Predicate byVNUBAN = cb.like(cb.lower(root.get("vnuban")), "%" + search.toLowerCase() + "%");
-                predicates.add(cb.or(byVnubanType, byMerchantOrgId, byMerchantName, byVNUBAN));
+                predicates.add(cb.or(byMerchantOrgId, byMerchantName, byVNUBAN));
             }
 
             if (merchantOrgId != null && !merchantOrgId.isEmpty()) {

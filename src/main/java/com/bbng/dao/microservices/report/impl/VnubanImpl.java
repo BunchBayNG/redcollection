@@ -2,9 +2,9 @@ package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.report.config.VnubanSpecification;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
-import com.bbng.dao.microservices.report.entity.VnubanEntity;
 import com.bbng.dao.microservices.report.repository.VnubanRepository;
 import com.bbng.dao.microservices.report.service.VnubanService;
+import com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,17 +31,17 @@ public class VnubanImpl implements VnubanService {
 
 
     @Override
-    public ResponseDto<Page<VnubanEntity>>  getVnubans(String search, String merchantOrgId, String status,
-                                                       String sortBy, String sortOrder, LocalDate startDate,
-                                                       LocalDate endDate, int page, int size) {
-        Specification<VnubanEntity> spec =
+    public ResponseDto<Page<ProvisionedAccount>>  getVnubans(String search, String merchantOrgId, String status,
+                                                             String sortBy, String sortOrder, LocalDate startDate,
+                                                             LocalDate endDate, int page, int size) {
+        Specification<ProvisionedAccount> spec =
                 VnubanSpecification.getVnubans(search, merchantOrgId, status, startDate, endDate);
 
         Pageable pageable = getPageable(sortBy, sortOrder, page, size);
 
-        Page<VnubanEntity> response = vnubanRepository.findAll(spec, pageable);
+        Page<ProvisionedAccount> response = vnubanRepository.findAll(spec, pageable);
 
-        return ResponseDto.<Page<VnubanEntity>>builder()
+        return ResponseDto.<Page<ProvisionedAccount>>builder()
                 .statusCode(200)
                 .status(true)
                 .message("vNUBANs fetched successfully")
@@ -79,7 +79,7 @@ public class VnubanImpl implements VnubanService {
 
 
     public ResponseDto<Long>  getTotalStaticVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        Long response = vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "STATIC", startDate, endDate);
+        Long response = vnubanRepository.countByGeneratedAtBetween(merchantOrgId, startDate, endDate);
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)
@@ -90,7 +90,7 @@ public class VnubanImpl implements VnubanService {
     }
 
     public ResponseDto<Long> getTotalDynamicVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        Long response =  vnubanRepository.countByTypeAndGeneratedAtBetween(merchantOrgId, "DYNAMIC", startDate, endDate);
+        Long response =  vnubanRepository.countByGeneratedAtBetween(null, startDate, endDate);
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)

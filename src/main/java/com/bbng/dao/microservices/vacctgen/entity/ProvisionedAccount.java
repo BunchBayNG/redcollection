@@ -21,7 +21,7 @@ import java.util.Date;
                 @Index(name = "idx_wallet_no", columnList = "walletNo"),
                 @Index(name = "idx_account_no", columnList = "accountNo"),
                 @Index(name = "idx_initiator_ref", columnList = "initiatorRef"),
-                @Index(name = "idx_client_Id", columnList = "clientId")
+                @Index(name = "idx_merchant_org_Id", columnList = "merchantOrgId")
         }
 )
 public class ProvisionedAccount {
@@ -31,9 +31,8 @@ public class ProvisionedAccount {
     private Long id;
 
     private String accountNo;
-
-    private String clientId;
-    private String clientName;
+    private String merchantOrgId;
+    private String merchantName;
     private String accountName;
     private String accountMsisdn;
     private String accountEmail;
@@ -53,6 +52,7 @@ public class ProvisionedAccount {
     @Enumerated(EnumType.STRING)
     private Mode mode;
 
+    private String productType;
 
     public enum Status {
         CANCELLED, INACTIVE, ACTIVE
@@ -61,4 +61,5 @@ public class ProvisionedAccount {
     public enum Mode {
         OPEN, CLOSED
     }
+
 }

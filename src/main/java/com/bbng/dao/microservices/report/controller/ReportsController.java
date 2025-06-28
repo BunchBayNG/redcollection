@@ -4,6 +4,7 @@ import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
 import com.bbng.dao.microservices.report.entity.*;
 import com.bbng.dao.microservices.report.service.*;
+import com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -98,7 +99,7 @@ public class ReportsController {
 
 
     @GetMapping("/vnubans")
-    public   ResponseEntity<ResponseDto<Page<VnubanEntity> >>  getVnubans(
+    public   ResponseEntity<ResponseDto<Page<ProvisionedAccount> >>  getVnubans(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String merchantOrgId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,

@@ -5,14 +5,12 @@ import com.bbng.dao.microservices.auth.auditlog.Events;
 import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogRequestDto;
 import com.bbng.dao.microservices.auth.auditlog.service.AuditLogService;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
-import com.bbng.dao.microservices.auth.organization.repository.OrgStaffRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
-import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
 import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
 import com.bbng.dao.microservices.auth.passport.entity.OtpEntity;
 import com.bbng.dao.microservices.auth.passport.entity.TokenEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.enums.UserType;
 import com.bbng.dao.microservices.auth.passport.repository.OTPRepository;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
@@ -23,7 +21,6 @@ import com.bbng.dao.util.email.dto.request.To;
 import com.bbng.dao.util.email.dto.response.EmailResponseDto;
 import com.bbng.dao.util.email.entity.VerificationToken;
 import com.bbng.dao.util.email.repository.VerificationTokenRepository;
-import com.bbng.dao.util.email.service.EmailService;
 import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.email.utils.Utils;
@@ -55,41 +52,35 @@ import static com.bbng.dao.util.email.utils.Utils.*;
 @NoArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
-    private EmailService emailService;
     private VerificationTokenRepository verificationTokenRepository;
 
     private OTPRepository otpRepository;
     private UserRepository userRepository;
     private OrganizationRepository organizationRepository;
     private JavaMailService javaMailService;
-    private SystemConfigRepository systemConfigRepository;
-    private OrgStaffRepository orgStaffRepository;
     private HeaderLogoRepository headerLogoRepository;
 
 
-    @Value("${base.url}")
-    private String baseUrl;
+    @Value("${webAdminUrl}")
+    private String webAdminUrl;
 
-    @Value("${redtech.url}")
-    private String redtechUrl;
+    @Value("${webMerchantUrl}")
+    private String webMerchantUrl;
+
     private TokenRepository tokenRepository;
     private AuditLogService auditLogService;
 
     @Autowired
-    public EmailVerificationServiceImpl(EmailService emailService, VerificationTokenRepository verificationTokenRepository,
+    public EmailVerificationServiceImpl(VerificationTokenRepository verificationTokenRepository,
                                         OTPRepository otpRepository, UserRepository userRepository, AuditLogService auditLogService,
                                         OrganizationRepository organizationRepository, JavaMailService javaMailService,
-                                        SystemConfigRepository systemConfigRepository, OrgStaffRepository orgStaffRepository,
                                         HeaderLogoRepository headerLogoRepository, TokenRepository tokenRepository) {
-        this.emailService = emailService;
         this.verificationTokenRepository = verificationTokenRepository;
         this.otpRepository = otpRepository;
         this.userRepository = userRepository;
         this.organizationRepository = organizationRepository;
         this.javaMailService = javaMailService;
-        this.systemConfigRepository = systemConfigRepository;
         this.headerLogoRepository = headerLogoRepository;
-        this.orgStaffRepository = orgStaffRepository;
         this.tokenRepository = tokenRepository;
         this.auditLogService = auditLogService;
     }
@@ -98,6 +89,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     public EmailResponseDto[] sendVerificationEmail(String toEmail) {
         UserEntity userEntity = userRepository.findByEmail(toEmail)
                 .orElseThrow(() -> new BadRequestException("User with email: " + toEmail + " not found"));
+
 
         if (userEntity != null && userEntity.getIsEnabled()) {
             return new EmailResponseDto[]{EmailResponseDto.builder()
@@ -117,12 +109,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                     .queuedReason(null).build()};
         }
 
+        String  webUrl = userEntity.getUsertype().equals(UserType.REDTECH_STAFF) ? webAdminUrl : webMerchantUrl;
+
+
         VerificationToken token = generateVerificationToken();
         log.info("Generated verification token: {}", token.getVerificationToken());
         token.setEmail(toEmail);
         verificationTokenRepository.save(token);
         //https://app.redtechlimited.com/reset-password?token=d9718062-10ad-4234-a56f-2245d2b92dd5
-        String verificationLink = redtechUrl + "register/verify-email?token=" + token.getVerificationToken() + "&email=" + toEmail;
+        String verificationLink = webUrl + "register/verify-email?token=" + token.getVerificationToken() + "&email=" + toEmail;
 //        EmailRequestDTO emailRequest = buildVerificationEmailRequest(toEmail, verificationLink, userEntity.getFirstName());
         HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
         MailStructure mailStructure = MailStructure.builder()
@@ -211,11 +206,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .orElseThrow(() -> new BadRequestException("User with email: " + toEmail + " not found"));
 
 
+        String  webUrl = userEntity.getUsertype().equals(UserType.REDTECH_STAFF) ? webAdminUrl : webMerchantUrl;
+
         VerificationToken token = generateVerificationToken();
         log.info("verification token: {}", token.getVerificationToken());
         token.setEmail(toEmail);
         verificationTokenRepository.save(token);
-        String verificationLink = redtechUrl + "reset-password?token=" + token.getVerificationToken();
+        String verificationLink =  webUrl + "reset-password?token=" + token.getVerificationToken();
 //        EmailRequestDTO emailRequest = buildEmailRequest(userEntity, fromName, verificationLink);
 //        ResponseEntity<EmailResponseDto[]> responseEntity = null;
         HeaderLogoEntity logo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
@@ -375,11 +372,16 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                     .queuedReason(null).build();
             return;
         }
+
+
+        String  webUrl = userEntity.getUsertype().equals(UserType.REDTECH_STAFF) ? webAdminUrl : webMerchantUrl;
+
+
         VerificationToken token = generateVerificationToken();
         log.info("Generated verification token: {}", token.getVerificationToken());
         token.setEmail(toEmail);
         verificationTokenRepository.save(token);
-        String verificationLink = redtechUrl + "api/v1/verify-email?token=" + token.getVerificationToken();
+        String verificationLink = webUrl + "api/v1/verify-email?token=" + token.getVerificationToken();
 
         MailStructure mailStructure = MailStructure.builder()
                 .subject("Invitation mail")

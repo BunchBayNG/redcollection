@@ -2,10 +2,9 @@ package com.bbng.dao.microservices.vacctgen.impl;
 
 
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
-import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
+import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
-import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
-import com.bbng.dao.microservices.vacctgen.config.ApplicationProperties;
+import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
 import com.bbng.dao.microservices.vacctgen.config.MerchantSearchFilter;
 import com.bbng.dao.microservices.vacctgen.config.SearchFilter;
 import com.bbng.dao.microservices.vacctgen.dto.request.ActivationOperation;
@@ -60,7 +59,6 @@ import static java.util.stream.Collectors.toList;
 @Component
 @Service
 public class AccountManager {
-    private static final String PREFIX = "99";
     private static final Pattern fourIdenticalPattern = Pattern.compile("(\\d)\\1\\1\\1");
 
     private static final Logger log = LoggerFactory.getLogger(AccountManager.class);
@@ -68,27 +66,23 @@ public class AccountManager {
     private final ProvisionedAccountRepository provisionedAccountRepository;
     private final AccountRepository accountRepository;
     private final AccountMetadataRepository accountMetadataRepository;
-    private final ApplicationProperties properties;
+    private final SystemConfigRepository systemConfigRepository;
     private final Random secureRandom;
     private final HttpServletRequest httpRequest;
-    private final UserRepository userRepository;
-    private final APIKeyRepository apiKeyRepository;
     private final OrganizationRepository organizationRepository;
 
 
     public AccountManager(
             ProvisionedAccountRepository provisionedAccountRepository,
             AccountRepository accountRepository,
-            AccountMetadataRepository accountMetadataRepository,
-            ApplicationProperties properties, HttpServletRequest httpRequest, UserRepository userRepository, APIKeyRepository apiKeyRepository,
+            AccountMetadataRepository accountMetadataRepository, SystemConfigRepository systemConfigRepository,
+            HttpServletRequest  httpRequest,
             OrganizationRepository organizationRepository) {
         this.provisionedAccountRepository = provisionedAccountRepository;
         this.accountRepository = accountRepository;
         this.accountMetadataRepository = accountMetadataRepository;
-        this.properties = properties;
+        this.systemConfigRepository = systemConfigRepository;
         this.httpRequest = httpRequest;
-        this.userRepository = userRepository;
-        this.apiKeyRepository = apiKeyRepository;
         secureRandom = new SecureRandom(Instant.now().toString().getBytes(StandardCharsets.UTF_8));
         this.organizationRepository = organizationRepository;
     }
@@ -106,6 +100,7 @@ public class AccountManager {
                 generateValue.toString()
         );
         log.info("Generating virtual account with prefix {}", generateValue.getPrefix());
+        SystemConfigEntity properties = getSystemConfig();
 
         // TODO: validate generate request values
         final Integer size = generateValue.getSize() == null
@@ -265,103 +260,56 @@ public class AccountManager {
     }
 
 
-    @Transactional
-    public ResponseDto<ProvisionResult> provisionSingle( ProvisionRequest request) {
-        Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
-            // populate pool and try again, throw error otherwise
-            // The pool will be increased by
-            updatePool(new GenerateValue(
-                    properties.getDefaultPrefix(), properties.getProvisionSingleUpdatePoolSize()));
-            return accountRepository.findFirstByStatus(FREE).orElseThrow(() ->
-                    new AccountException(
-                            "Attempt to provision account failed. Please retry after some time."));
-        });
-        Date now = new Date();
-
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
-
-
-        ProvisionedAccount accountToProvision = new ProvisionedAccount(
-                null,
-                selectedAccount.getValue(),
-                org.getId(),
-                org.getOrganizationName(),
-                request.getAccountName(),
-                request.getAccountMsisdn(),
-                request.getAccountEmail(),
-                request.getInitiatorRef(),
-                BigDecimal.ZERO,
-                null, null,
-                now,
-                ACTIVE,
-                ProvisionedAccount.Mode.OPEN
-        );
-        accountRepository.markAccountAsProvisioned(selectedAccount.getId(), PROVISIONED);
-        ProvisionedAccount pa = provisionedAccountRepository.save(accountToProvision);
-        ProvisionResult result =  new ProvisionResult(
-                pa.getAccountNo(),
-                pa.getAccountName(),
-                pa.getAccountEmail(),
-                pa.getInitiatorRef());
-
-        return ResponseDto.<ProvisionResult>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Provisioned Account fetched successfully")
-                .data(result)
-                .build();
-
-
-
-    }
-
-    @Transactional
-    public ResponseDto<List<ProvisionResult>> provisionMultiple( List<ProvisionRequest> request) {
-        List<Account> accounts = accountRepository.findAllByStatus(FREE, PageRequest.of(0, request.size()));
-
-        // TODO We can use count to check if we have enough accounts
-        if (accounts.size() != request.size()) {
-            updatePool(new GenerateValue(properties.getDefaultPrefix(), request.size()));
-            accounts = accountRepository.findAllByStatus(FREE, PageRequest.of(0, request.size()));
-        }
-        Date now = new Date();
-        ArrayList<ProvisionedAccount> provisionedAccounts = new ArrayList<>(request.size());
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
-
-        for (int i = 0; i < request.size(); i++) {
-            provisionedAccounts.add(i,
-                    new ProvisionedAccount(null,
-                            accounts.get(i).getValue(),
-                            org.getId(),
-                            org.getOrganizationName(),
-                            request.get(i).getAccountName(),
-                            request.get(i).getAccountMsisdn(),
-                            request.get(i).getAccountEmail(),
-                            request.get(i).getInitiatorRef(),
-                            BigDecimal.ZERO,
-                            null, null,
-                            now,
-                            ACTIVE,
-                            ProvisionedAccount.Mode.OPEN)
-            );
-        }
-        accountRepository.markAllAsProvisioned(accounts, PROVISIONED);
-        List<ProvisionedAccount> paWithUpdatedStatus
-                = provisionedAccountRepository.saveAll(provisionedAccounts);
-        List<ProvisionResult> response =  paWithUpdatedStatus.stream().map(pa -> new ProvisionResult(pa.getAccountNo(),
-                pa.getAccountName(),
-                pa.getAccountEmail(),
-                pa.getInitiatorRef())).collect(toList());
-
-        return ResponseDto.<List<ProvisionResult>>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Provisioned Multiple Account fetched successfully")
-                .data(response)
-                .build();
-
-    }
-
+//    @Transactional
+//    public ResponseDto<ProvisionResult> provisionSingle( ProvisionRequest request) {
+//        SystemConfigEntity properties = getSystemConfig();
+//        Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
+//            // populate pool and try again, throw error otherwise
+//            // The pool will be increased by
+//            updatePool(new GenerateValue(
+//                    properties.getDefaultPrefix(), properties.getProvisionSingleUpdatePoolSize()));
+//            return accountRepository.findFirstByStatus(FREE).orElseThrow(() ->
+//                    new AccountException(
+//                            "Attempt to provision account failed. Please retry after some time."));
+//        });
+//        Date now = new Date();
+//
+//        OrganizationEntity org = getOrgForApiKey();
+//
+//
+//        ProvisionedAccount accountToProvision = new ProvisionedAccount(
+//                null,
+//                selectedAccount.getValue(),
+//                org.getId(),
+//                org.getOrganizationName(),
+//                request.getAccountName(),
+//                request.getAccountMsisdn(),
+//                request.getAccountEmail(),
+//                request.getInitiatorRef(),
+//                BigDecimal.ZERO,
+//                null, null,
+//                now,
+//                ACTIVE,
+//                ProvisionedAccount.Mode.OPEN
+//        );
+//        accountRepository.markAccountAsProvisioned(selectedAccount.getId(), PROVISIONED);
+//        ProvisionedAccount pa = provisionedAccountRepository.save(accountToProvision);
+//        ProvisionResult result =  new ProvisionResult(
+//                pa.getAccountNo(),
+//                pa.getAccountName(),
+//                pa.getAccountEmail(),
+//                pa.getInitiatorRef());
+//
+//        return ResponseDto.<ProvisionResult>builder()
+//                .statusCode(200)
+//                .status(true)
+//                .message("Provisioned Account fetched successfully")
+//                .data(result)
+//                .build();
+//
+//
+//
+//    }
 
     @Transactional
     public ResponseDto<LookUpResult> doLookup(String accountNo) {
@@ -374,7 +322,7 @@ public class AccountManager {
         if (account.getStatus().compareTo(ACTIVE) != 0) {
             throw new AccountException("Account number is not currently active");
         }
-        LookUpResult result =  new LookUpResult(account.getAccountNo(), account.getAccountName(), account.getClientId(), account.getWalletNo());
+        LookUpResult result =  new LookUpResult(account.getAccountNo(), account.getAccountName(), account.getMerchantOrgId(), account.getWalletNo());
 
 
         return ResponseDto.<LookUpResult>builder()
@@ -415,6 +363,7 @@ public class AccountManager {
 
     }
 
+
     @Transactional
     public  ResponseDto<ConfirmLookupResult>  doConfirmLookupAllStatus(String accountNo, String amount) {
         boolean status = false;
@@ -442,6 +391,8 @@ public class AccountManager {
 
     @Transactional
     public ResponseDto<ProvisionedAccount> provisionForMerchant(MerchantProvisionValue request) {
+        SystemConfigEntity properties = getSystemConfig();
+
         Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
             // populate pool and try again, throw error otherwise
             // The pool will be increased by TODO Complete comment
@@ -452,16 +403,17 @@ public class AccountManager {
                             "Attempt to provision account failed. Please retry after some time."));
         });
         
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
+        OrganizationEntity org = getOrgForApiKey();
         
         ProvisionedAccount accountToProvision = ProvisionedAccount.builder()
                 .accountNo(selectedAccount.getValue())
                 .accountName(request.getAccountName())
                 .status(ACTIVE)
-                .clientId(org.getId())
-                .clientName(org.getOrganizationName())
+                .merchantOrgId(org.getId())
+                .merchantName(org.getOrganizationName())
                 .initiatorRef(request.getInitiatorRef())
                 .amount(request.getAmount())
+                .productType(request.getProductType())
                 .walletNo(request.getWalletNo())
                 .mode(ProvisionedAccount.Mode.CLOSED)
                 .provisionDate(new Date())
@@ -481,6 +433,8 @@ public class AccountManager {
 
     @Transactional
     public ResponseDto<ProvisionedAccount> provisionStaticForMerchant(MerchantProvisionValue request) {
+
+        SystemConfigEntity properties = getSystemConfig();
         //find provisioned account tied to wallet in request, if not provision a new account
         Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByWalletNoAndMode(request.getWalletNo(), ProvisionedAccount.Mode.OPEN);
         if (existingAccount.isPresent()){
@@ -503,13 +457,13 @@ public class AccountManager {
         });
 
 
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
+        OrganizationEntity org = getOrgForApiKey();
         ProvisionedAccount accountToProvision = ProvisionedAccount.builder()
                 .accountNo(selectedAccount.getValue())
                 .accountName(request.getAccountName())
                 .status(ACTIVE)
-                .clientId(org.getId())
-                .clientName(org.getOrganizationName())
+                .merchantOrgId(org.getId())
+                .merchantName(org.getOrganizationName())
                 .initiatorRef(request.getInitiatorRef())
                 .amount(request.getAmount())
                 .walletNo(request.getWalletNo())
@@ -528,13 +482,6 @@ public class AccountManager {
                 .build();
     }
 
-    public Optional<ProvisionedAccount> findAccount(String accountNo) {
-        return provisionedAccountRepository.findByAccountNo(accountNo);
-    }
-
-    public Optional<ProvisionedAccount> findAccountByNoAndStatus(String accountNo, ProvisionedAccount.Status status){
-        return provisionedAccountRepository.findByAccountNoAndStatus(accountNo, status);
-    }
 
     @Transactional(readOnly = true)
     public ResponseDto<ProvisionedAccount>  getProvisionedAccountStatus(StatusRequest statusRequest) {
@@ -546,11 +493,11 @@ public class AccountManager {
             initiatorRef = ((MerchantStatusRequest) statusRequest).getInitiatorRef();
         }
 
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
+        OrganizationEntity org = getOrgForApiKey();
         
         ProvisionedAccount account = ProvisionedAccount.builder()
                 .accountNo(statusRequest.getAccountNo())
-                .clientId(org.getId())
+                .merchantOrgId(org.getId())
                 .initiatorRef(initiatorRef)
                 .walletNo(walletNo)
                 .build();
@@ -571,10 +518,10 @@ public class AccountManager {
         String walletNo = filter instanceof MerchantSearchFilter
                 ? ((MerchantSearchFilter) filter).getWalletNo() : null;
 
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
+        OrganizationEntity org = getOrgForApiKey();
         
         ProvisionedAccount account = ProvisionedAccount.builder()
-                .clientId(org.getId())
+                .merchantOrgId(org.getId())
                 .accountNo(filter.getAccountNo())
                 .walletNo(walletNo)
                 .initiatorRef(filter.getInitiatorRef())
@@ -609,13 +556,6 @@ public class AccountManager {
                     .build();
     }
 
-    public void updateProvisionedAccountStatus(ProvisionedAccount provisionedAccount, ProvisionedAccount.Status status) {
-        if (provisionedAccount.getMode().equals(ProvisionedAccount.Mode.CLOSED)) {
-            provisionedAccount.setStatus(status);
-            provisionedAccountRepository.save(provisionedAccount);
-            log.info("account is set to inactive - {}", provisionedAccount);
-        }
-    }
 
     @Transactional
     @Scheduled(cron = "0 0 23 * * ?")
@@ -637,104 +577,14 @@ public class AccountManager {
         }
     }
 
-    @Transactional
-    public ResponseDto<ProvisionedAccount> provisionStaticForReseller(MerchantProvisionValue request) {
-        //find provisioned account tied to wallet in request, if not provision a new account
-//        Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByWalletNoAndMode(request.getWalletNo(), ProvisionedAccount.Mode.OPEN);
-//        if (existingAccount.isPresent()){
-//            return existingAccount.get();
-//        }
-        Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
-            // populate pool and try again, throw error otherwise
-            // The pool will be increased by TODO Complete comment
-            updatePool(new GenerateValue(
-                    properties.getDefaultPrefix(), properties.getProvisionSingleUpdatePoolSize()));
-            return accountRepository.findFirstByStatus(FREE).orElseThrow(() ->
-                    new AccountException(
-                            "Attempt to provision account failed. Please retry after some time."));
-        });
+    public OrganizationEntity getOrgForApiKey( ) {
 
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
-        
-        ProvisionedAccount accountToProvision = ProvisionedAccount.builder()
-                .accountNo(selectedAccount.getValue())
-                .accountName(request.getAccountName())
-                .status(ACTIVE)
-                .clientId(org.getId())
-                .clientName(org.getOrganizationName())
-                .initiatorRef(request.getInitiatorRef())
-                .amount(request.getAmount())
-                .walletNo(request.getWalletNo())
-                .mode(ProvisionedAccount.Mode.OPEN)
-                .provisionDate(new Date())
-                .build();
-
-        accountRepository.markAccountAsProvisioned(selectedAccount.getId(), PROVISIONED);
-        ProvisionedAccount provisionedAccount = provisionedAccountRepository.save(accountToProvision);
-
-        return ResponseDto.<ProvisionedAccount>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Provisioned Account fetched successfully")
-                .data(provisionedAccount)
-                .build();
-    }
-
-    @Transactional
-    public  ResponseDto<ProvisionedAccount>  provisionStaticForResellerUniqueInitiatorRef(MerchantProvisionValue request) {
-        //find provisioned account tied to initiator ref in request, if not provision a new account
-        Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByInitiatorRefAndMode(request.getInitiatorRef(), ProvisionedAccount.Mode.OPEN);
-        if (existingAccount.isPresent()){
-            return ResponseDto.<ProvisionedAccount>builder()
-                    .statusCode(200)
-                    .status(true)
-                    .message("Provisioned Account fetched successfully")
-                    .data(existingAccount.get())
-                    .build();
-        }
-        Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
-            // populate pool and try again, throw error otherwise
-            // The pool will be increased by TODO Complete comment
-            updatePool(new GenerateValue(
-                    properties.getDefaultPrefix(), properties.getProvisionSingleUpdatePoolSize()));
-            return accountRepository.findFirstByStatus(FREE).orElseThrow(() ->
-                    new AccountException(
-                            "Attempt to provision account failed. Please retry after some time."));
-        });
-
-        OrganizationEntity org = getOrgForApiKey(httpRequest);
-
-        ProvisionedAccount accountToProvision = ProvisionedAccount.builder()
-                .accountNo(selectedAccount.getValue())
-                .accountName(request.getAccountName())
-                .status(ACTIVE)
-                .clientId(org.getId())
-                .clientName(org.getOrganizationName())
-                .initiatorRef(request.getInitiatorRef())
-                .amount(request.getAmount())
-                .walletNo(request.getWalletNo())
-                .mode(ProvisionedAccount.Mode.OPEN)
-                .provisionDate(new Date())
-                .build();
-
-        accountRepository.markAccountAsProvisioned(selectedAccount.getId(), PROVISIONED);
-        ProvisionedAccount provisionedAccount = provisionedAccountRepository.save(accountToProvision);
-
-        return ResponseDto.<ProvisionedAccount>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Provisioned Account fetched successfully")
-                .data(provisionedAccount)
-                .build();
-    }
-
-
-    public OrganizationEntity getOrgForApiKey(HttpServletRequest request) {
-
-
-      //  String email = GetUserFromToken.extractUserFromApiKey(request, apiKeyRepository, userRepository);
-
-        return organizationRepository.findByContactEmail("email").orElseThrow(() ->
+        return organizationRepository.findByContactEmail(httpRequest.getHeader("email")).orElseThrow(() ->
                 new ResourceNotFoundException("Can't find Org with the username extracted from token."));
+    }  
+    
+    public SystemConfigEntity getSystemConfig() {
+
+        return systemConfigRepository.findByIdIs(1L);
     }
 }

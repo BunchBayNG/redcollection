@@ -9,5 +9,6 @@ public class MerchantProvisionValue {
     private String accountName;
     private String initiatorRef;
     private String walletNo;
+    private String productType;
     private BigDecimal amount;
 }

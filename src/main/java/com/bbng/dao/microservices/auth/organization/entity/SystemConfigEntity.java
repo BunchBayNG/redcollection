@@ -34,6 +34,12 @@ public class SystemConfigEntity extends BaseEntity {
     private Long vatAccountNo;
 
 
+    private String defaultPrefix = "VNUBAN";
+    
+    private Integer maxPoolSize = 1;
+
+    private Integer provisionSingleUpdatePoolSize = 1;
+
     private String configProductPhone;
 
 

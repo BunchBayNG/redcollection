@@ -10,4 +10,7 @@ public interface SystemConfigRepository extends JpaRepository<SystemConfigEntity
 
 //    @Query("Select s from SystemConfigEntity s where s.userId = ?1")
 //    Optional<SystemConfigEntity> findByUserId(String userId);
+
+    SystemConfigEntity findByIdIs(Long Id );
+
 }

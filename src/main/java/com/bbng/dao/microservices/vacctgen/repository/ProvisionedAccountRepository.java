@@ -16,33 +16,33 @@ import java.util.Optional;
 @Repository
 public interface ProvisionedAccountRepository extends JpaRepository<ProvisionedAccount, Long>, JpaSpecificationExecutor<ProvisionedAccount> {
 
-    @Query("select COUNT(a) from ProvisionedAccount a where a.clientId =?1")
+    @Query("select COUNT(a) from ProvisionedAccount a where a.merchantOrgId =?1")
     int countBatchGroupable(String partnerId, String batchRef);
 
 //    boolean exi(String batchRef, String partnerId);
 
 
 //    @Modifying
-//    @Query("update ProvisionedAccount a set a.status = ?3 where a.clientId = ?2")
+//    @Query("update ProvisionedAccount a set a.status = ?3 where a.merchantOrgId = ?2")
 //    int activateByBatchRef(String batchRef, String partnerId, ProvisionedAccount.Status status);
 //
 
     @Modifying
     @Transactional
-    @Query("update ProvisionedAccount a set a.status = ?3 where a.batchRef = ?1 and a.clientId = ?2")
+    @Query("update ProvisionedAccount a set a.status = ?3 where a.batchRef = ?1 and a.merchantOrgId = ?2")
     int activateByBatchRef(String batchRef, String partnerId, ProvisionedAccount.Status status);
 
     boolean existsAllByAccountNoIn(List<String> accountNumbers);
 
     @Modifying
-    @Query("update ProvisionedAccount a set a.status = ?3 where a.accountNo in ?1 and a.clientId = ?2")
+    @Query("update ProvisionedAccount a set a.status = ?3 where a.accountNo in ?1 and a.merchantOrgId = ?2")
     int activateByAccountNumbers(List<String> accountNumbers, String partnerId,
                                  ProvisionedAccount.Status status);
 
     boolean existsAllByAccountNo(String accountNumber);
 
     @Modifying
-    @Query("update ProvisionedAccount a set a.status = ?3 where a.accountNo = ?1 and a.clientId = ?2")
+    @Query("update ProvisionedAccount a set a.status = ?3 where a.accountNo = ?1 and a.merchantOrgId = ?2")
     void activateByAccountNumber(String accountNumber, String partnerId,
                                 ProvisionedAccount.Status status);
 
@@ -60,9 +60,6 @@ public interface ProvisionedAccountRepository extends JpaRepository<ProvisionedA
     @Query("select pa from ProvisionedAccount pa where pa.initiatorRef = ?1 and pa.mode = ?2")
     Optional<ProvisionedAccount> findByInitiatorRefAndMode(String initiatorRef, ProvisionedAccount.Mode mode);
 
-
-    @Query("select pa from ProvisionedAccount pa where pa.walletNo = ?1 and pa.accountNo = ?2")
-    Optional<ProvisionedAccount> findByWalletNoAndAccountNo(String walletNo, String accountNo);
 
 
     @Modifying

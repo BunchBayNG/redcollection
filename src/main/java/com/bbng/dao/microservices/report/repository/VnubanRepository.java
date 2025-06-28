@@ -1,6 +1,6 @@
 package com.bbng.dao.microservices.report.repository;
 
-import com.bbng.dao.microservices.report.entity.VnubanEntity;
+import com.bbng.dao.microservices.vacctgen.entity.ProvisionedAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public interface VnubanRepository extends JpaRepository<VnubanEntity, Long>, JpaSpecificationExecutor<VnubanEntity> {
+public interface VnubanRepository extends JpaRepository<ProvisionedAccount, Long>, JpaSpecificationExecutor<ProvisionedAccount> {
 
 
     @Query("""
-        SELECT COUNT(v) FROM VnubanEntity v
+        SELECT COUNT(v) FROM ProvisionedAccount v
         WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
-        AND v.createdAt BETWEEN :startDate AND :endDate
+        AND v.provisionDate BETWEEN :startDate AND :endDate
     """)
     long countByGeneratedAtBetween(
             @Param("merchantOrgId") String merchantOrgId,
@@ -24,18 +24,16 @@ public interface VnubanRepository extends JpaRepository<VnubanEntity, Long>, Jpa
             @Param("endDate") LocalDateTime endDate
     );
 
-    @Query("""
-        SELECT COUNT(v) FROM VnubanEntity v
-        WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
-        AND v.vnubanType = :type
-        AND v.createdAt BETWEEN :startDate AND :endDate
-    """)
-    long countByTypeAndGeneratedAtBetween(
-            @Param("merchantOrgId") String merchantOrgId,
-            @Param("vnubanType") String vnubanType,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate
-    );
+//    @Query("""
+//        SELECT COUNT(v) FROM ProvisionedAccount v
+//        WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
+//        AND v.provisionDate BETWEEN :startDate AND :endDate
+//    """)
+//    long countByTypeAndGeneratedAtBetween(
+//            @Param("merchantOrgId") String merchantOrgId,
+//            @Param("startDate") LocalDateTime startDate,
+//            @Param("endDate") LocalDateTime endDate
+//    );
 
     @Query(value = """
     SELECT DATE_FORMAT(v.created_at, :pattern) AS period,
