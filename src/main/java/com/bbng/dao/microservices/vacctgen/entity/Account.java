@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -23,9 +25,8 @@ public class Account {
     private String value;
 
     @NonNull
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm:ss a")
-    private Date dateCreated;
+    @CreationTimestamp
+    private LocalDateTime dateCreated;
 
     @Enumerated(EnumType.STRING)
     @Basic(optional = false)

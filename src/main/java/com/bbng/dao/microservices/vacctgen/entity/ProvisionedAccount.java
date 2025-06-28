@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -42,9 +44,9 @@ public class ProvisionedAccount {
     private String walletNo;
     private String batchRef;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm:ss a")
-    private Date provisionDate;
+
+    @CreationTimestamp
+    private LocalDateTime provisionDate;
 
     @Enumerated(EnumType.STRING)
     private Status status;
