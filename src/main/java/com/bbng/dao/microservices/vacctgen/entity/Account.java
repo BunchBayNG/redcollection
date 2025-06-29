@@ -24,7 +24,6 @@ public class Account {
     @NonNull
     private String value;
 
-    @NonNull
     @CreationTimestamp
     private LocalDateTime dateCreated;
 
@@ -32,6 +31,10 @@ public class Account {
     @Basic(optional = false)
     @Column(nullable = false)
     private Status status;
+
+    public Account(Object o, String formedVirtualAccount, Status status) {
+
+    }
 
     public enum Status {
         PROVISIONED, RESERVED, FREE, SUSPENDED
