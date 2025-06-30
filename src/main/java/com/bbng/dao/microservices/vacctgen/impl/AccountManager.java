@@ -48,6 +48,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -120,7 +121,6 @@ public class AccountManager {
                     "%d is too large. You can only generate at most %d new accounts.",
                     size, properties.getMaxPoolSize()));
         }
-        final Date createdDate = new Date();
         int collisions = 0;
         int suffixLength = 10 - generateValue.getPrefix().length();
         int generated = 0;
@@ -131,7 +131,7 @@ public class AccountManager {
             final String formedVirtualAccount = generateValue.getPrefix() + paddedSuffix;
             if (!fourIdenticalPattern.matcher(formedVirtualAccount).find()) {
                 Account va = new Account(
-                        null, formedVirtualAccount, createdDate, FREE);
+                        null, formedVirtualAccount, FREE);
                 try {
                     accountRepository.save(va);
                 } catch (DataIntegrityViolationException e) {
@@ -143,12 +143,10 @@ public class AccountManager {
         }
 
         final AccountMetadata metadata = new AccountMetadata(
-                generateValue.getPrefix(), createdDate, generated, collisions);
+                generateValue.getPrefix(), generated, collisions);
         accountMetadataRepository.save(metadata);
-        log.info(
-                "Virtual account generation report for prefix {}: Generated: {}, Collisions: {}, " +
-                        "on: {}",
-                generateValue.getPrefix(), generated, collisions, createdDate
+        log.info("Virtual account generation report for prefix {}: Generated: {}, Collisions: {}",
+                generateValue.getPrefix(), generated, collisions
         );
         return generated;
     }
@@ -425,7 +423,6 @@ public class AccountManager {
                 .productType(request.getProductType())
                 .walletNo(request.getWalletNo())
                 .mode(ProvisionedAccount.Mode.CLOSED)
-                .provisionDate(new Date())
                 .build();
 
         accountRepository.markAccountAsProvisioned(selectedAccount.getId(), PROVISIONED);
@@ -490,7 +487,6 @@ public class AccountManager {
                 .amount(request.getAmount())
                 .walletNo(request.getWalletNo())
                 .mode(ProvisionedAccount.Mode.OPEN)
-                .provisionDate(new Date())
                 .build();
 
         accountRepository.markAccountAsProvisioned(selectedAccount.getId(), PROVISIONED);

@@ -7,7 +7,9 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -20,10 +22,13 @@ public class AccountMetadata {
     @Id
     private String prefix;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    @CreationTimestamp
+    private LocalDateTime dateCreated;
 
     private Integer quantity;
 
     private Integer reportedCollision;
+
+    public AccountMetadata(String prefix, int generated, int collisions) {
+    }
 }
