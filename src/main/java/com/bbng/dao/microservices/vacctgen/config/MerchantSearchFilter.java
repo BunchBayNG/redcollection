@@ -5,6 +5,7 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Value
@@ -17,8 +18,8 @@ public class MerchantSearchFilter extends SearchFilter {
                                 String initiatorRef,
                                 BigDecimal amount,
                                 String accountName,
-                                Date fromDate,
-                                Date toDate,
+                                LocalDateTime fromDate,
+                                LocalDateTime toDate,
                                 String walletNo) {
         super(accountNo, initiatorRef, amount, accountName, fromDate, toDate);
         this.walletNo = walletNo;
