@@ -17,7 +17,7 @@ public class ApiLogController {
     @Autowired
     private ApiLogRepository apiLogRepository;
 
-    @PostMapping("/search")
+    @PostMapping("/fetch")
     public ResponseEntity<Page<ApiLogEntity>> searchApiLogs(@RequestBody ApiLogFilterRequest request) {
         Specification<ApiLogEntity> spec = ApiLogSpecification.getLogs(request);
         Pageable pageable = getPageable(request);

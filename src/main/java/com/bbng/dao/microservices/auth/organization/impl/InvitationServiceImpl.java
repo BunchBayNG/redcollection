@@ -10,6 +10,7 @@ import com.bbng.dao.microservices.auth.organization.dto.request.OnboardOrgDto;
 import com.bbng.dao.microservices.auth.organization.entity.OrgStaffEntity;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.enums.InvitationStatus;
+import com.bbng.dao.microservices.auth.organization.enums.OrgStatus;
 import com.bbng.dao.microservices.auth.organization.repository.OrgStaffRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.service.InvitationService;
@@ -264,7 +265,9 @@ public class InvitationServiceImpl implements InvitationService {
         newOrgEntity.setMerchantAdminId(newSavedUser.getId());
         newOrgEntity.setOrganizationName(onboardOrgDto.getOrganizationName());
         newOrgEntity.setProductPrefix(onboardOrgDto.getProductPrefix());
+        newOrgEntity.setOrgStatus(OrgStatus.ACTIVE);
         newOrgEntity.setBusinessLogoUrl(onboardOrgDto.getBusinessLogoUrl());
+
 
         ///  todo: make a call to UBA to get this data
         newOrgEntity.setRegisteredBVN(onboardOrgDto.getRegisteredBVN());

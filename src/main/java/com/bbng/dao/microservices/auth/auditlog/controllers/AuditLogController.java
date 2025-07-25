@@ -32,7 +32,7 @@ public class AuditLogController {
         this.httpRequest = httpRequest;
     }
 
-    @PostMapping("/search")
+    @PostMapping("/fetch")
     public ResponseEntity<Page<AuditLogEntity>> searchAuditLogs(@RequestBody AuditLogFilterRequest request) {
 
 
@@ -47,7 +47,7 @@ public class AuditLogController {
     }
 
 
-    @PostMapping("/merchant/search")
+    @PostMapping("/merchant/fetch")
     public ResponseEntity<Page<AuditLogEntity>> searchMerchantAuditLogs(@RequestBody AuditLogFilterRequest request) {
 
         permissionService.checkPermission(httpRequest, "MERCHANT_GET_AUDIT_LOGS", jwtService);
