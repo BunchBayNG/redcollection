@@ -18,6 +18,7 @@ import com.bbng.dao.microservices.auth.passport.dto.response.UserResponseDto;
 import com.bbng.dao.microservices.auth.passport.entity.PermissionEntity;
 import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.enums.AcctStatus;
 import com.bbng.dao.microservices.auth.passport.enums.UserType;
 import com.bbng.dao.microservices.auth.passport.impl.setupImpl.DataInitializerServiceImpl;
 import com.bbng.dao.microservices.auth.passport.repository.PermissionRepository;
@@ -251,6 +252,7 @@ public class InvitationServiceImpl implements InvitationService {
                 .userName(onboardOrgDto.getContactFirstName().toUpperCase() + " " + onboardOrgDto.getContactLastName())
                 .password(passwordEncoder.encode(password))
                 .usertype(UserType.ORGANIZATION_ADMIN)
+                .acctStatus(AcctStatus.ACTIVE)
                 .roleEntities(Set.of(roleOrganizationAdmin))
                 .isEnabled(false)
                 .isInvitedUser(true)

@@ -40,7 +40,8 @@ public class SecurityConfig {
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(
                 Arrays.asList(
-                        "https://app.redtechlimited.com",
+                        "https://rednuban-merchant.vercel.app",
+                        "https://rednuban-admin.vercel.app",
                         "http://localhost:5000"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Content-Type",
                 "Accept", "Authorization", "X-Requested-With",
@@ -69,6 +70,8 @@ public class SecurityConfig {
                                 requestMatchers(
                                         "/api/v1/general-mgt/**",
                                         "/api/v1/auth/**",
+                                        "/api/v1/webhook/receive/**",
+                                        "/api/v1/virtual-account/**",
                                         "/api/v1/email/sendMail",
                                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
                                         "/webjars/**",
