@@ -9,5 +9,7 @@ public interface AuditLogService {
 
     void registerLogToAudit(AuditLogRequestDto auditLogRequestDto);
 
-    PagedResponseDto<AuditLogResponseDto> findAllLogs(String id, String merchantName, String merchantId, String userId, String userName, String event, String userType, String dateBegin, String dateEnd, int pageNo, int pageSize);
+  ///  PagedResponseDto<AuditLogResponseDto> findAllLogs(String id, String merchantName, String merchantId, String userId, String userName, String event, String userType, String dateBegin, String dateEnd, int pageNo, int pageSize);
+
+
 }

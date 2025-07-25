@@ -1,14 +1,12 @@
 package com.bbng.dao.microservices.auth.passport.impl.setupImpl;
 
 
-import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.passport.dto.request.SignUpDto;
 import com.bbng.dao.microservices.auth.passport.entity.PermissionEntity;
 import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.enums.AcctStatus;
 import com.bbng.dao.microservices.auth.passport.enums.UserType;
-import com.bbng.dao.microservices.auth.passport.repository.PermissionRepository;
 import com.bbng.dao.microservices.auth.passport.repository.RoleRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
 import com.bbng.dao.util.exceptions.customExceptions.InternalServerException;
@@ -27,26 +25,22 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 public class DataInitializerServiceImpl implements CommandLineRunner {
+
     private final RoleRepository roleRepository;
-    private final PermissionRepository permissionRepository;
     private final UserRepository userRepository;
     private final PermissionService permissionService;
-    private final OrganizationRepository organizationRepository;
     private final PasswordEncoder passwordEncoder;
 
 
     private Map<String, List<String>> rolePermissionsMap;
 
 
-    public DataInitializerServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository,
+    public DataInitializerServiceImpl(RoleRepository roleRepository,
                                       PermissionService permissionService, PasswordEncoder passwordEncoder,
-                                      UserRepository userRepository, OrganizationRepository organizationRepository) {
+                                      UserRepository userRepository) {
         this.roleRepository = roleRepository;
-
-        this.permissionRepository = permissionRepository;
         this.permissionService = permissionService;
         this.userRepository = userRepository;
-        this.organizationRepository = organizationRepository;
         this.passwordEncoder = passwordEncoder;
 
     }
@@ -130,7 +124,7 @@ public class DataInitializerServiceImpl implements CommandLineRunner {
         ));
         Set<PermissionEntity> permissionEntitySet = permissionService.createListOfPermissionIfNotFound(names, descriptions);
         List<PermissionEntity> permissionEntityList = new ArrayList<>(permissionEntitySet);
-        log.info("creating permissions for organization admin");
+        log.info("creating permissions for merchant admin");
         assignPermissionsToUserType(permissionEntityList);
 
     }

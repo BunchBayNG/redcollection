@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class JWTService {
+
     private final DataInitializerServiceImpl initializerService;
+
     public final long refreshExpiration = SecurityConstants.REFRESH_TOKEN_EXPIRATION;
 
     public JWTService(DataInitializerServiceImpl initializerService) {
@@ -36,6 +38,25 @@ public class JWTService {
                 .getBody();
 
 
+    }
+
+
+    public String getMerchantPrefix(String token) {
+        try {
+            Claims claims = extractClaims(token);
+            return claims.get("merchantPrefix", String.class); // Or adjust to match actual claim name
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token.replace("Bearer ", ""))
+                .getBody();
     }
 
     public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {

@@ -13,13 +13,12 @@ import java.time.Instant;
 public class AuditLogResponseDto {
 
     private String id;
-    private String event;
-    private String userId;
     private String userName;
-    private String merchantId;
+    private String email;
+    private String userRole;
+    private String userIpAddress;
     private String merchantName;
-    private String userType;
-    private Instant dateTimeStamp;
-    private boolean isDeleted;
-    private boolean succeeded;
+    private String event;
+    private String description;
+
 }

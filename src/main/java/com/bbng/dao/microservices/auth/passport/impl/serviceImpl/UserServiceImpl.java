@@ -35,6 +35,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +53,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -60,6 +62,12 @@ import java.util.regex.Pattern;
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class UserServiceImpl implements UserService {
+
+    @Value("${organizationName}")
+    private String organizationName;
+    @Value("${orgId}")
+    private String organizationId;
+
     private final static String WRONG_PASSWORD_FORMAT = """
                         Please pass at least one digit.
                         At least one lowercase letter.
@@ -152,9 +160,6 @@ public class UserServiceImpl implements UserService {
 //                .merchantName(null)
 //                .userType(String.valueOf(user.getUsertype()))
 //                .event(Events.LOGIN.name())
-//                .dateTimeStamp(Instant.now())
-//                .isDeleted(false)
-//                .succeeded(true)
 //                .build());
 //
 //        return ResponseDto.<LoginResponseDto>builder()
@@ -249,9 +254,6 @@ public class UserServiceImpl implements UserService {
                 .merchantName(null)
                 .userType(String.valueOf(user.getUsertype()))
                 .event(Events.CHANGE_PASSWORD.name())
-                .dateTimeStamp(Instant.now())
-                .isDeleted(false)
-                .succeeded(true)
                 .build());
 
         return ResponseDto.<String>builder()
@@ -291,9 +293,6 @@ public class UserServiceImpl implements UserService {
                 .merchantName(null)
                 .userType(String.valueOf(user.getUsertype()))
                 .event(Events.RESET_PASSWORD.name())
-                .dateTimeStamp(Instant.now())
-                .isDeleted(false)
-                .succeeded(true)
                 .build());
 
         return ResponseDto.<String>builder()
@@ -333,16 +332,34 @@ public class UserServiceImpl implements UserService {
         List<String> userPermissions = user.getRoleEntities().stream().flatMap(roleEntity -> roleEntity.getPermissions().stream()).map(PermissionEntity::getName).toList();
 
         //OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
-        OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElse( new OrganizationEntity());
+        Optional<OrganizationEntity> organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId());
+
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userRoles);
-        claims.put("userName", user.getUserName());
-        claims.put("userType", String.valueOf(user.getUsertype()));
-        claims.put("organization", organizationEntity.getOrganizationName());
-        claims.put("organizationId", organizationEntity.getId());
-        claims.put("permissions", userPermissions);
-        claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+
+        if(organizationEntity.isPresent()) {
+            claims.put("roles", userRoles);
+            claims.put("userName", user.getUserName());
+            claims.put("userType", String.valueOf(user.getUsertype()));
+            claims.put("merchantPrefix", organizationEntity.get().getProductPrefix());
+            claims.put("organization", organizationEntity.get().getOrganizationName());
+            claims.put("organizationId", organizationEntity.get().getId());
+            claims.put("permissions", userPermissions);
+            claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+
+        } else{
+
+            // Assuming that this is the superadmin org returns the email
+            claims.put("userName", user.getUserName());
+            claims.put("userType", String.valueOf(user.getUsertype()));
+            claims.put("merchantPrefix", organizationId);
+            claims.put("organization", organizationName);
+            claims.put("organizationId", organizationId);
+            claims.put("permissions", userPermissions);
+            claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+
+        }
+
         return claims;
     }
 

@@ -327,9 +327,6 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .merchantName(null)
                 .userType(String.valueOf(user.getUsertype()))
                 .event(Events.LOGIN.name())
-                .dateTimeStamp(Instant.now())
-                .isDeleted(false)
-                .succeeded(true)
                 .build());
 
         return ResponseDto.<LoginResponseDto>builder()
