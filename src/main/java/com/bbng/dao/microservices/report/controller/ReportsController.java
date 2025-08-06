@@ -134,22 +134,22 @@ public class ReportsController {
                 .getAllOrg(search,status, sortBy, sortOrder, startDate, endDate, page, size  ));
     }
 
-    @GetMapping("/organization-customers")
-    public   ResponseEntity<ResponseDto<Page<CustomerEntity> >>  getOrgCustomers(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String merchantOrgId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
-            @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = defaultSortOrder) String sortOrder,
-            @RequestParam(defaultValue = defaultPage) int page,
-            @RequestParam(defaultValue = defaultSize) int size
-    ) {
-
-        return  ResponseEntity.status(HttpStatus.OK).body(customerService
-                .getOrgCustomers(search, merchantOrgId,status, sortBy, sortOrder, startDate, endDate, page, size ));
-    }
+//    @GetMapping("/organization-customers")
+//    public   ResponseEntity<ResponseDto<Page<CustomerEntity> >>  getOrgCustomers(
+//            @RequestParam(required = false) String search,
+//            @RequestParam(required = false) String merchantOrgId,
+//            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+//            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
+//            @RequestParam(required = false) String status,
+//            @RequestParam(defaultValue = "createdAt") String sortBy,
+//            @RequestParam(defaultValue = defaultSortOrder) String sortOrder,
+//            @RequestParam(defaultValue = defaultPage) int page,
+//            @RequestParam(defaultValue = defaultSize) int size
+//    ) {
+//
+//        return  ResponseEntity.status(HttpStatus.OK).body(customerService
+//                .getOrgCustomers(search, merchantOrgId,status, sortBy, sortOrder, startDate, endDate, page, size ));
+//    }
 
 
 }

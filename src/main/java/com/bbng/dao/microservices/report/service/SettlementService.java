@@ -19,6 +19,10 @@ public interface SettlementService {
     getSettlements(String search, String merchantOrgId, String status, String sortBy,
                    String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 
+    byte[] exportToExcel(String merchantOrgId, LocalDate startDate, LocalDate endDate) throws Exception;
+    byte[] exportToPdf(String merchantOrgId, LocalDate startDate, LocalDate endDate) throws Exception;
+    byte[] exportToCsv(String merchantOrgId, LocalDate startDate, LocalDate endDate);
+
 
     void initiateSettlement(BigDecimal amount, String merchantName, String merchantOrgId,
                             String  sourceAccount, String destinationAccount, String status,

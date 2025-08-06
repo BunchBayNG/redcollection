@@ -25,17 +25,22 @@ public class PayoutEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
     private BigDecimal amount;
+    private String merchantName;
     private String merchantOrgId;
-    private String lastName;
-    private String vnuban;
+    private String sourceAccount;
+    private String destinationAccount;
     private String status;
+    private String transactionRef;
+    private String reference;
+    private String payoutRef;
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    // Getters and Setters
 
     // Getters and Setters
 }

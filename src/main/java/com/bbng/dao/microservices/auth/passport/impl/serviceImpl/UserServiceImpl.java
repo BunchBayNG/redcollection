@@ -63,7 +63,7 @@ import java.util.regex.Pattern;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class UserServiceImpl implements UserService {
 
-    @Value("${organizationName}")
+    @Value("${orgName}")
     private String organizationName;
     @Value("${orgId}")
     private String organizationId;

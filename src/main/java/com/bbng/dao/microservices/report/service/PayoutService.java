@@ -19,6 +19,11 @@ public interface PayoutService {
     getPayouts(String search, String merchantOrgId, String status, String sortBy,
                String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
 
+
+    byte[] exportToExcel(String merchantOrgId, LocalDate startDate, LocalDate endDate) throws Exception;
+    byte[] exportToPdf(String merchantOrgId, LocalDate startDate, LocalDate endDate) throws Exception;
+    byte[] exportToCsv(String merchantOrgId, LocalDate startDate, LocalDate endDate);
+
     ResponseDto<AnalyticsCountSummaryDTO> getPayoutCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<BigDecimal> getSuccessfulPayoutVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<Double> getSuccessfulPayoutRate(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);

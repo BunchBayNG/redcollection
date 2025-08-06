@@ -37,7 +37,7 @@ public class TransactionEntity {
     private String destinationAccountName;
     private String destinationBankName;
     private String ipAddress;
-    private String deviceName;
+//    private String deviceName;
     private Long processingTime;
 
     @CreationTimestamp

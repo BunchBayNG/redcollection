@@ -20,7 +20,7 @@ public class VnubanSpecification {
             if (search != null && !search.isEmpty()) {
                 Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + search.toLowerCase() + "%");
                 Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + search.toLowerCase() + "%");
-                Predicate byVNUBAN = cb.like(cb.lower(root.get("vnuban")), "%" + search.toLowerCase() + "%");
+                Predicate byVNUBAN = cb.like(cb.lower(root.get("accountNo")), "%" + search.toLowerCase() + "%");
                 predicates.add(cb.or(byMerchantOrgId, byMerchantName, byVNUBAN));
             }
 

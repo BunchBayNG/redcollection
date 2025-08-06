@@ -16,7 +16,7 @@ public class OrganizationSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (search != null && !search.isEmpty()) {
-                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + search.toLowerCase() + "%");
+                Predicate byMerchantName = cb.like(cb.lower(root.get("organizationName")), "%" + search.toLowerCase() + "%");
                 predicates.add(cb.or( byMerchantName));
             }
 /*
