@@ -71,12 +71,13 @@ public class SettlementAnalyticsController {
                 .getSuccessfulSettlementCountChart(merchantOrgId, pattern, startDate, endDate));
     }
 
-    private String resolvePattern(String period) {
-        return switch (period.toLowerCase()) {
-            case "daily" -> "%Y-%m-%d";
-            case "monthly" -> "%Y-%m";
-            case "yearly" -> "%Y";
-            default -> throw new IllegalArgumentException("Invalid period: " + period);
-        };
-    }
+   private String resolvePattern(String period) {
+    return switch (period.toLowerCase()) {
+        case "daily" -> "%Y-%m-%d";
+        case "weekly" -> "%Y-%u"; // year + week number
+        case "monthly" -> "%Y-%m";
+        case "yearly" -> "%Y";
+        default -> throw new IllegalArgumentException("Invalid period: " + period);
+    };
+}
 }
