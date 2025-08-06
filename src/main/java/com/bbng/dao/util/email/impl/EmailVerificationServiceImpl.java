@@ -323,8 +323,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
                 .userId(user.getId())
                 .userName(user.getUserName())
-                .merchantId(null)
-                .merchantName(null)
+                .merchantId(org.getId())
+                .merchantName(org.getOrganizationName())
                 .userType(String.valueOf(user.getUsertype()))
                 .event(Events.LOGIN.name())
                 .build());

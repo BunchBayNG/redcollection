@@ -199,6 +199,8 @@ public class InvitationServiceImpl implements InvitationService {
     public ResponseDto<String> disableStaff(String merchantAdminId, String staffId) {
         //get the user
         UserEntity userEntity = userRepository.findById(merchantAdminId).orElseThrow(() -> new UserNotFoundException("No user Found in the system with the provided merchantAdminId: " + merchantAdminId));
+        OrganizationEntity org = organizationRepository.findOrganizationByMerchantAdminId(merchantAdminId).orElseThrow(() -> new ResourceNotFoundException("Can't find the organization By the merchantAdmin Id. " +
+                "make sure its the admin of this organization has this email"));
         boolean isOrganisationAdmin = userEntity.getUsertype().equals(UserType.ORGANIZATION_ADMIN);
         if (isOrganisationAdmin) {
             // get organization staff by the staff id
@@ -216,8 +218,8 @@ public class InvitationServiceImpl implements InvitationService {
                 .event(Events.DISABLE_STAFF.name())
                 .isDeleted(false)
                 .description("Staff has been disabled")
-                .merchantName(userEntity.getFirstName() + " " + userEntity.getLastName())
-                .merchantId(userEntity.getId())
+                .merchantName(org.getOrganizationName())
+                .merchantId(org.getId())
                 .build());
         return ResponseDto.<String>builder()
                 .status(true)
@@ -339,6 +341,10 @@ public class InvitationServiceImpl implements InvitationService {
         String staffEmail = assignRoleRequestDto.getEmail();
         UserEntity staff = userRepository.findByEmail(staffEmail).orElseThrow(() -> new ResourceNotFoundException("Can't find a staff with the provided email: " + staffEmail));
 
+        OrganizationEntity org = organizationRepository.findOrganizationByMerchantAdminId(assignRoleRequestDto.getAdminId()).orElseThrow(() -> new ResourceNotFoundException("Can't find the organization By the merchantAdmin Id. " +
+                "make sure its the admin of this organization has this email"));
+
+
         if (admin.getUsertype().equals(UserType.ORGANIZATION_ADMIN)) {
             /// log.info("making sure this staff belongs to this organization");
             //make sure this staff belongs to his organization
@@ -348,9 +354,10 @@ public class InvitationServiceImpl implements InvitationService {
             }
         }
 
+
         String roleId = assignRoleRequestDto.getRoleId();
 
-        log.info("proceeding with assigning role to th staff");
+        log.info("proceeding with assigning role to the staff");
         RoleEntity role = roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("No Role found with the given RoleId: " + roleId));
         List<PermissionEntity> permissionEntityList = new ArrayList<>();
         //set the permissions if it's not empty
@@ -370,8 +377,8 @@ public class InvitationServiceImpl implements InvitationService {
                 .event(Events.ASSIGN_PERMISSION.name())
                 .isDeleted(false)
                 .description("Permission has been assigned to a staff")
-                .merchantName(admin.getFirstName() + " " + admin.getLastName())
-                .merchantId(adminId)
+                .merchantName(org.getOrganizationName())
+                .merchantId(org.getId())
                 .build());
 
         return ResponseDto.<String>builder()
@@ -421,6 +428,8 @@ public class InvitationServiceImpl implements InvitationService {
             throw new ForbiddenException("Only User with userType Organization Admin can perform this operation");
         }
         UserEntity staff = userRepository.findById(merchantAdminId).orElseThrow(() -> new UserNotFoundException("No user found with the given merchantId"));
+        OrganizationEntity org = organizationRepository.findOrganizationByMerchantAdminId(merchantAdminId).orElseThrow(() -> new ResourceNotFoundException("Can't find the organization By the merchantAdmin Id. " +
+                "make sure its the admin of this organization has this email"));
 
         if (authUser.getUsertype().equals(UserType.ORGANIZATION_ADMIN)) {
             // make sure it's only staff from his organization he can disable
@@ -450,8 +459,8 @@ public class InvitationServiceImpl implements InvitationService {
                 .event(Events.DISABLE_PERMISSION.name())
                 .isDeleted(false)
                 .description("Permission has been disabled for a staff")
-                .merchantName(authUser.getUserName())
-                .merchantId(authUser.getId())
+                .merchantName(org.getOrganizationName())
+                .merchantId(org.getId())
                 .build());
         return ResponseDto.<String>builder()
                 .message("permission disabled SuccessFully")

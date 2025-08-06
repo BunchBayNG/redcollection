@@ -54,6 +54,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
            throw new BadCredentialsException("Password is incorrect!!!: "+ testApiKeyRequestDto.getPassword());
        }
 
+        OrganizationEntity org = orgRepo.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Can't find the organization By the merchantAdmin Id. " +
+                "make sure its the admin of this organization has this email"));
+
        //retrieve all the api keys that belong to this user id and delete it
       apiKeyRepository.deleteAll(apiKeyRepository.findByUserId(user.getId()));
         //if correct, we will create a new test key with his username, password, and today'sDate
@@ -77,8 +80,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .event(Events.CREATED_TEST_KEY.name())
                 .isDeleted(false)
                 .description("Created a new test api key")
-                .merchantName(username)
-                .merchantId(user.getId())
+                .merchantName(org.getOrganizationName())
+                .merchantId(org.getId())
                 .build());
         return ResponseDto.<String>builder()
                 .statusCode(201)
@@ -130,8 +133,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .event(Events.CREATED_LIVE_KEY.name())
                 .isDeleted(false)
                 .description("Created a new live api key")
-                .merchantName(username)
-                .merchantId(user.getId())
+                .merchantName(org.getOrganizationName())
+                .merchantId(org.getId())
                 .build());
 
         assert apiKey != null;
