@@ -327,7 +327,7 @@ public class AccountManager {
         if (account.getStatus().compareTo(ACTIVE) != 0) {
             throw new AccountException("Account number is not currently active");
         }
-        LookUpResult result =  new LookUpResult(account.getAccountNo(), account.getAccountName(), account.getMerchantOrgId(), account.getWalletNo());
+        LookUpResult result =  new LookUpResult(account.getAccountNo(), account.getAccountName(), account.getMerchantOrgId());
 
 
         return ResponseDto.<LookUpResult>builder()
@@ -357,7 +357,7 @@ public class AccountManager {
         if (account.getMode() == ProvisionedAccount.Mode.OPEN) {
             status = true;
         }
-        ConfirmLookupResult result = new ConfirmLookupResult(account.getAccountNo(), account.getAccountName(), account.getWalletNo(), status);
+        ConfirmLookupResult result = new ConfirmLookupResult(account.getAccountNo(), account.getAccountName(), status);
 
         return ResponseDto.<ConfirmLookupResult>builder()
                 .statusCode(200)
@@ -384,7 +384,7 @@ public class AccountManager {
         if (account.getMode() == ProvisionedAccount.Mode.OPEN) {
             status = true;
         }
-        ConfirmLookupResult result = new ConfirmLookupResult(account.getAccountNo(), account.getAccountName(), account.getWalletNo(), status);
+        ConfirmLookupResult result = new ConfirmLookupResult(account.getAccountNo(), account.getAccountName(), status);
 
         return ResponseDto.<ConfirmLookupResult>builder()
                 .statusCode(200)
@@ -419,7 +419,6 @@ public class AccountManager {
                 .initiatorRef(request.getInitiatorRef())
                 .amount(request.getAmount())
                 .productType(request.getProductType())
-                .walletNo(request.getWalletNo())
                 .mode(ProvisionedAccount.Mode.CLOSED)
                 .build();
 
@@ -447,10 +446,9 @@ public class AccountManager {
 //        }
 
         log.info("rrfrfr frfrfr " + request.getAccountName());
-        log.info("rrfrfr wallet No " + request.getWalletNo());
 
         //find provisioned account tied to wallet in request, if not provision a new account
-        Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByWalletNoAndMode(request.getWalletNo(), ProvisionedAccount.Mode.OPEN);
+        Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByMode( ProvisionedAccount.Mode.OPEN);
         if (existingAccount.isPresent()){
 
             return ResponseDto.<ProvisionedAccount>builder()
@@ -483,7 +481,6 @@ public class AccountManager {
                 .merchantName(org.getOrganizationName())
                 .initiatorRef(request.getInitiatorRef())
                 .amount(request.getAmount())
-                .walletNo(request.getWalletNo())
                 .mode(ProvisionedAccount.Mode.OPEN)
                 .build();
 
@@ -502,10 +499,8 @@ public class AccountManager {
     @Transactional(readOnly = true)
     public ResponseDto<ProvisionedAccount>  getProvisionedAccountStatus(StatusRequest statusRequest) {
 
-        String walletNo = null;
         String initiatorRef = null;
         if (statusRequest instanceof MerchantStatusRequest) {
-            walletNo = ((MerchantStatusRequest) statusRequest).getWalletNo();
             initiatorRef = ((MerchantStatusRequest) statusRequest).getInitiatorRef();
         }
 
@@ -515,7 +510,6 @@ public class AccountManager {
                 .accountNo(statusRequest.getAccountNo())
                 .merchantOrgId(org.getId())
                 .initiatorRef(initiatorRef)
-                .walletNo(walletNo)
                 .build();
 
         ProvisionedAccount provisionedAccount =  provisionedAccountRepository.findOne(Example.of(account))
@@ -531,15 +525,13 @@ public class AccountManager {
     }
 
     public ResponseDto<List<ProvisionedAccount>> search(SearchFilter filter) {
-        String walletNo = filter instanceof MerchantSearchFilter
-                ? ((MerchantSearchFilter) filter).getWalletNo() : null;
+
 
         OrganizationEntity org = getOrgForApiKey();
         
         ProvisionedAccount account = ProvisionedAccount.builder()
                 .merchantOrgId(org.getId())
                 .accountNo(filter.getAccountNo())
-                .walletNo(walletNo)
                 .initiatorRef(filter.getInitiatorRef())
                 .accountName(filter.getAccountName())
                 .build();

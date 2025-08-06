@@ -20,7 +20,6 @@ import java.util.Date;
 @Builder
 @Table(
         indexes = {
-                @Index(name = "idx_wallet_no", columnList = "walletNo"),
                 @Index(name = "idx_account_no", columnList = "accountNo"),
                 @Index(name = "idx_initiator_ref", columnList = "initiatorRef"),
                 @Index(name = "idx_merchant_org_Id", columnList = "merchantOrgId")
@@ -39,9 +38,7 @@ public class ProvisionedAccount {
     private String accountMsisdn;
     private String accountEmail;
     private String initiatorRef;
-
     private BigDecimal amount;
-    private String walletNo;
     private String batchRef;
 
 

@@ -54,8 +54,8 @@ public interface ProvisionedAccountRepository extends JpaRepository<ProvisionedA
     Optional<ProvisionedAccount> findByAccountNoAndStatus(String accountNo, ProvisionedAccount.Status status);
 
 
-    @Query("select pa from ProvisionedAccount pa where pa.walletNo = ?1 and pa.mode = ?2")
-    Optional<ProvisionedAccount> findByWalletNoAndMode(String walletNo, ProvisionedAccount.Mode mode);
+    @Query("select pa from ProvisionedAccount pa where pa.mode = ?1 ")
+    Optional<ProvisionedAccount> findByMode(ProvisionedAccount.Mode mode);
 
     @Query("select pa from ProvisionedAccount pa where pa.initiatorRef = ?1 and pa.mode = ?2")
     Optional<ProvisionedAccount> findByInitiatorRefAndMode(String initiatorRef, ProvisionedAccount.Mode mode);

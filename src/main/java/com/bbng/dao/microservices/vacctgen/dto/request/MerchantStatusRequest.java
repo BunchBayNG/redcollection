@@ -9,11 +9,9 @@ import lombok.Value;
 @EqualsAndHashCode(callSuper = true)
 public class MerchantStatusRequest extends StatusRequest {
     private String initiatorRef;
-    private String walletNo;
 
-    public MerchantStatusRequest(String accountNo, String initiatorRef, String walletNo) {
+    public MerchantStatusRequest(String accountNo, String initiatorRef) {
         super(accountNo);
         this.initiatorRef = initiatorRef;
-        this.walletNo = walletNo;
     }
 }

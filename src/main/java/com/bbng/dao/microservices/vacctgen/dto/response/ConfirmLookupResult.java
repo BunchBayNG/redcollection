@@ -6,6 +6,5 @@ import lombok.Value;
 public class ConfirmLookupResult {
     private String accountNo;
     private String accountName;
-    private String walletNo;
     private boolean success;
 }

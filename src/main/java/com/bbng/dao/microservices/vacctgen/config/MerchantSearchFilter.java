@@ -12,16 +12,13 @@ import java.util.Date;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class MerchantSearchFilter extends SearchFilter {
-    private String walletNo;
 
     public MerchantSearchFilter(String accountNo,
                                 String initiatorRef,
                                 BigDecimal amount,
                                 String accountName,
                                 LocalDateTime fromDate,
-                                LocalDateTime toDate,
-                                String walletNo) {
+                                LocalDateTime toDate) {
         super(accountNo, initiatorRef, amount, accountName, fromDate, toDate);
-        this.walletNo = walletNo;
     }
 }

@@ -7,7 +7,6 @@ public class LookUpResult {
     private String accountNo;
     private String accountName;
     private String merchantOrgId;
-    private String walletNo;
 }
 
 
