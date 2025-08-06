@@ -350,6 +350,7 @@ public class UserServiceImpl implements UserService {
         } else{
 
             // Assuming that this is the superadmin org returns the email
+            claims.put("roles", userRoles);
             claims.put("userName", user.getUserName());
             claims.put("userType", String.valueOf(user.getUsertype()));
             claims.put("merchantPrefix", organizationId);
