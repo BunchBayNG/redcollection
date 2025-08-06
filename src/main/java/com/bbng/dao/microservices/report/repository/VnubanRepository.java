@@ -14,11 +14,36 @@ public interface VnubanRepository extends JpaRepository<ProvisionedAccount, Long
 
 
     @Query("""
-        SELECT COUNT(v) FROM ProvisionedAccount v
-        WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
-        AND v.provisionDate BETWEEN :startDate AND :endDate
-    """)
-    long countByGeneratedAtBetween(
+    SELECT COUNT(v) FROM ProvisionedAccount v
+    WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
+    AND v.provisionDate BETWEEN :startDate AND :endDate
+    AND v.mode = 'OPEN'
+""")
+    long countByGeneratedAtBetweenForOpen(
+            @Param("merchantOrgId") String merchantOrgId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+
+    @Query("""
+    SELECT COUNT(v) FROM ProvisionedAccount v
+    WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
+    AND v.provisionDate BETWEEN :startDate AND :endDate
+    AND v.mode = 'CLOSED'
+""")
+    long countByGeneratedAtBetweenForClosed(
+            @Param("merchantOrgId") String merchantOrgId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("""
+    SELECT COUNT(v) FROM ProvisionedAccount v
+           WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
+           AND v.provisionDate BETWEEN :startDate AND :endDate
+""")
+    long countByProvisionDate(
             @Param("merchantOrgId") String merchantOrgId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

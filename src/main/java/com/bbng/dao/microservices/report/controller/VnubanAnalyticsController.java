@@ -26,12 +26,22 @@ public class VnubanAnalyticsController {
 
     @GetMapping("/total")
     public ResponseEntity<ResponseDto<Long>>  getTotalVnubans(
+//            @RequestParam(required = false) String merchantOrgId,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        return  ResponseEntity.status(HttpStatus.OK).body(vnubanService
+                .getTotalVnubans());
+    }
+
+    @GetMapping("/total-distinctive")
+    public ResponseEntity<ResponseDto<Long>>  getTotalDistinctiveVnubans(
             @RequestParam(required = false) String merchantOrgId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         return  ResponseEntity.status(HttpStatus.OK).body(vnubanService
-                .getTotalVnubans(merchantOrgId, startDate, endDate));
+                .getTotalDistinctiveVnubans(merchantOrgId, startDate, endDate));
     }
 
     @GetMapping("/total-static")

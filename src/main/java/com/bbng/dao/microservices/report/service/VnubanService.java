@@ -21,7 +21,8 @@ public interface VnubanService {
     byte[] exportToPdf(String merchantOrgId, LocalDate startDate, LocalDate endDate) throws Exception;
     byte[] exportToCsv(String merchantOrgId, LocalDate startDate, LocalDate endDate);
 
-    ResponseDto<Long>  getTotalVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Long>  getTotalVnubans();
+    ResponseDto<Long>  getTotalDistinctiveVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<Long>  getTotalStaticVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<Long> getTotalDynamicVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<List<ChartPointDTO>>  getGeneratedVnubansChart(String merchantOrgId, String pattern, LocalDateTime startDate, LocalDateTime endDate);

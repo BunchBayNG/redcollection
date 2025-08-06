@@ -210,8 +210,8 @@ public class VnubanImpl implements VnubanService {
     }
 
 
-    public ResponseDto<Long>  getTotalVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        Long response =  vnubanRepository.countByGeneratedAtBetween(merchantOrgId, startDate, endDate);
+    public ResponseDto<Long>  getTotalVnubans() {
+        Long response =  vnubanRepository.count();
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)
@@ -222,8 +222,22 @@ public class VnubanImpl implements VnubanService {
     }
 
 
+    public ResponseDto<Long>  getTotalDistinctiveVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
+        Long response =  vnubanRepository.countByProvisionDate(merchantOrgId, startDate, endDate);
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total Distinctive vNUBANs fetched successfully")
+                .data(response)
+                .build();
+    }
+
+
+
+
     public ResponseDto<Long>  getTotalStaticVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        Long response = vnubanRepository.countByGeneratedAtBetween(merchantOrgId, startDate, endDate);
+        Long response = vnubanRepository.countByGeneratedAtBetweenForOpen(merchantOrgId, startDate, endDate);
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)
@@ -234,7 +248,7 @@ public class VnubanImpl implements VnubanService {
     }
 
     public ResponseDto<Long> getTotalDynamicVnubans(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate) {
-        Long response =  vnubanRepository.countByGeneratedAtBetween(null, startDate, endDate);
+        Long response =  vnubanRepository.countByGeneratedAtBetweenForClosed(merchantOrgId, startDate, endDate);
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)
