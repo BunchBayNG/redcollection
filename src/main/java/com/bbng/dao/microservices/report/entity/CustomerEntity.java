@@ -1,7 +1,6 @@
 package com.bbng.dao.microservices.report.entity;
 
 
-import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 
-public class CustomerEntity extends BaseEntity {
+public class CustomerEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +32,13 @@ public class CustomerEntity extends BaseEntity {
     private String status;
     private String transactionRef;
     private String paymentReference;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+
+
 
 }
