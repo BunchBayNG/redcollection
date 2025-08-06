@@ -12,15 +12,19 @@ import java.time.Instant;
 @Setter
 public class AuditLogRequestDto {
 
-    private String event;
     private String userId;
     private String userName;
     private String email;
     private String userRole;
     private String userIpAddress;
-    private String userType;
     private String merchantName;
     private String merchantId;
+    private String merchantOrganization;
+    private String merchantOrgId;
+    private String event;
+    private String userType;
     private String description;
     private Boolean isDeleted;
+
+
 }

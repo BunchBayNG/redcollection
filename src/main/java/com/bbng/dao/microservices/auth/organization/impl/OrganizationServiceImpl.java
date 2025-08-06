@@ -3,13 +3,21 @@ package com.bbng.dao.microservices.auth.organization.impl;
 
 import com.bbng.dao.microservices.auth.organization.dto.request.UpdateOrgDto;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
+import com.bbng.dao.microservices.auth.organization.enums.OrgStatus;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
 import com.bbng.dao.microservices.report.config.OrganizationSpecification;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +25,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -303,6 +314,150 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .data(organizationRepository.findByOrganizationId(orgId).orElseThrow(() -> new ResourceNotFoundException("No Organization found for this user with the userId: " + orgId)))
                 .build();
     }
+
+
+    @Override
+    public byte[] exportToCsv( LocalDate startDate, LocalDate endDate) {
+
+
+        Specification<OrganizationEntity> spec = OrganizationSpecification.getOrganizations("",  "", startDate, endDate);
+
+
+        List<OrganizationEntity> organizations = organizationRepository.findAll(spec);
+        StringBuilder csv = new StringBuilder();
+
+        // Header row
+        csv.append( "Organization Name,Contact First Name,Contact Last Name,Contact Email Address,Contact Phone Number, Registered BVN,Organization Status,Product Prefix,Settlement Acct Name,Settlement Acct No, Settlement Bank Name,Settlement Acct Status,Timestamp\n");
+
+
+
+        // Data rows
+        for (OrganizationEntity org : organizations) {
+            csv.append(org.getOrganizationName()).append(",");
+            csv.append(org.getContactFirstName()).append(",");
+            csv.append(org.getContactLastName()).append(",");
+            csv.append(org.getContactEmail()).append(",");
+            csv.append(org.getContactPhoneNumber()).append(",");
+            csv.append(org.getRegisteredBVN()).append(",");
+            csv.append(org.getBusinessLogoUrl()).append(",");
+            csv.append(org.getProductPrefix()).append(",");
+            csv.append(org.getSettlementAccountName()).append(",");
+            csv.append(org.getSettlementAccountNumber()).append(",");
+            csv.append(org.getSettlementBankName()).append(",");
+            csv.append(org.getSettlementAccountStatus()).append(",");
+            csv.append(org.getOrgStatus().name()).append(",");
+            csv.append(org.getCreatedAt()).append("\n");
+
+        }
+
+        return csv.toString().getBytes();
+    }
+
+    @Override
+    public byte[] exportToPdf( LocalDate startDate,LocalDate endDate) throws Exception {
+
+        Specification<OrganizationEntity> spec = OrganizationSpecification.getOrganizations("",  "", startDate, endDate);
+
+
+        List<OrganizationEntity> organizations = organizationRepository.findAll(spec);
+
+        Document document = new Document(PageSize.A4);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, out);
+        document.open();
+
+        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+        Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA);
+
+        document.add(new Paragraph("Organizations Report", headerFont));
+        document.add(new Paragraph(" "));
+
+        PdfPTable table = new PdfPTable(5);
+        table.setWidthPercentage(100);
+        table.setWidths(new int[]{3, 4, 2, 2, 4});
+
+        // Headers
+        Stream.of("Organization Name", "Contact First Name", "Contact Last Name", "Contact Email Address", "Contact Phone Number",
+                        "Registered BVN","Organization Status","Product Prefix","Settlement Acct Name", "Settlement Acct No",
+                        "Settlement Bank Name","Settlement Acct Status","Timestamp")
+                .forEach(title -> {
+                    PdfPCell header = new PdfPCell();
+                    header.setPhrase(new Phrase(title, headerFont));
+                    header.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    table.addCell(header);
+                });
+
+        // Data rows
+        for (OrganizationEntity org : organizations) {
+            table.addCell(new PdfPCell(new Phrase(org.getOrganizationName(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getContactFirstName(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getContactLastName(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getContactEmail(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getContactPhoneNumber(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getRegisteredBVN(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getBusinessLogoUrl(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getProductPrefix(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getSettlementAccountName(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getSettlementAccountNumber(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getSettlementBankName(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getSettlementAccountStatus(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getOrgStatus().name(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(org.getCreatedAt().toString(), bodyFont)));
+        }
+
+
+        document.add(table);
+        document.close();
+        return out.toByteArray();
+    }
+
+
+    @Override
+    public byte[] exportToExcel( LocalDate startDate, LocalDate endDate) throws Exception {
+
+        Specification<OrganizationEntity> spec = OrganizationSpecification.getOrganizations("",  "", startDate, endDate);
+
+
+        List<OrganizationEntity> organizations = organizationRepository.findAll(spec);
+
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Organizations");
+
+        org.apache.poi.ss.usermodel.Row header = sheet.createRow(0);
+        String[] headers = {"Organization Name", "Contact First Name", "Contact Last Name", "Contact Email Address", "Contact Phone Number",
+                "Registered BVN","Organization Status","Product Prefix","Settlement Acct Name", "Settlement Acct No",
+                "Settlement Bank Name","Settlement Acct Status","Timestamp"};
+        for (int i = 0; i < headers.length; i++) {
+            header.createCell(i).setCellValue(headers[i]);
+        }
+
+        int rowIdx = 1;
+        for (OrganizationEntity org : organizations) {
+            org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(org.getOrganizationName());
+            row.createCell(1).setCellValue(org.getContactFirstName());
+            row.createCell(2).setCellValue(org.getContactLastName());
+            row.createCell(3).setCellValue(org.getContactEmail());
+            row.createCell(4).setCellValue(org.getContactPhoneNumber());
+            row.createCell(5).setCellValue(org.getRegisteredBVN());
+            row.createCell(6).setCellValue(org.getOrgStatus().name());
+            row.createCell(7).setCellValue(org.getProductPrefix());
+            row.createCell(8).setCellValue(org.getSettlementAccountName());
+            row.createCell(9).setCellValue(org.getSettlementAccountNumber());
+            row.createCell(10).setCellValue(org.getSettlementBankName());
+            row.createCell(11).setCellValue(org.getSettlementAccountStatus());
+            row.createCell(12).setCellValue(org.getCreatedAt().toString());
+
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return out.toByteArray();
+    }
+
 
 
 }

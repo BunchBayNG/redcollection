@@ -1,5 +1,9 @@
 package com.bbng.dao.microservices.report.controller;
 
+import com.bbng.dao.microservices.auth.apilog.impl.ApiLogImpl;
+import com.bbng.dao.microservices.auth.auditlog.service.AuditLogService;
+import com.bbng.dao.microservices.auth.organization.impl.OrganizationServiceImpl;
+import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
 import com.bbng.dao.microservices.report.service.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +20,19 @@ import java.time.LocalDate;
 public class ExportController {
 
     private final TransactionService transactionService;
+    private final AuditLogService auditLogService;
+    private final ApiLogImpl apiLogService;
+    private final OrganizationServiceImpl organizationService;
     private final PayoutService payoutService;
     private final SettlementService settlementService;
     private final VnubanService vnubanService;
 
-    public ExportController(TransactionService transactionService, PayoutService payoutService,
-                             SettlementService settlementService, VnubanService vnubanService) {
+    public ExportController(TransactionService transactionService, AuditLogService auditLogService, ApiLogImpl apiLogService, OrganizationServiceImpl organizationService, PayoutService payoutService,
+                            SettlementService settlementService, VnubanService vnubanService) {
         this.transactionService = transactionService;
+        this.auditLogService = auditLogService;
+        this.apiLogService = apiLogService;
+        this.organizationService = organizationService;
         this.payoutService = payoutService;
         this.settlementService = settlementService;
         this.vnubanService = vnubanService;
@@ -62,7 +72,7 @@ public class ExportController {
             @RequestParam(required = false) String merchantOrgId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
-    ) throws Exception {
+    ) {
 
         byte[] data = transactionService.exportToCsv(merchantOrgId, startDate, endDate);
         return ResponseEntity.ok()
@@ -109,7 +119,7 @@ public class ExportController {
             @RequestParam(required = false) String merchantOrgId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
-    ) throws Exception {
+    ) {
 
         byte[] data = vnubanService.exportToCsv(merchantOrgId, startDate, endDate);
         return ResponseEntity.ok()
@@ -164,7 +174,7 @@ public class ExportController {
             @RequestParam(required = false) String merchantOrgId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
-    ) throws Exception {
+    ) {
 
         byte[] data = settlementService.exportToCsv(merchantOrgId, startDate, endDate);
         return ResponseEntity.ok()
@@ -174,19 +184,7 @@ public class ExportController {
     }
 
 
-
-
-
-
-
-
     ///#########################################################################
-
-
-
-
-
-
 
 
 
@@ -223,11 +221,146 @@ public class ExportController {
             @RequestParam(required = false) String merchantOrgId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
-    ) throws Exception {
+    ) {
 
         byte[] data = payoutService.exportToCsv(merchantOrgId, startDate, endDate);
         return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=payouts.csv")
+                .header("Content-Type", "text/csv")
+                .body(data);
+    }
+
+
+    ///#########################################################################
+
+
+
+    @GetMapping("/api-logs/excel")
+    public ResponseEntity<byte[]> exportApiLogsToExcel(
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) throws Exception {
+
+        byte[] data = apiLogService.exportToExcel(merchantOrgId, startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=api-logs.xlsx")
+                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(data);
+    }
+
+    @GetMapping("/api-logs/pdf")
+    public ResponseEntity<byte[]> exportApiLogsToPdf(
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) throws Exception {
+
+        byte[] data = apiLogService.exportToPdf(merchantOrgId, startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=api-logs.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(data);
+    }
+
+    @GetMapping("/api-logs/csv")
+    public ResponseEntity<byte[]> exportApiLogsToCSV(
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) {
+
+        byte[] data = apiLogService.exportToCsv(merchantOrgId, startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=api-logs.csv")
+                .header("Content-Type", "text/csv")
+                .body(data);
+    }
+
+    ///#########################################################################
+
+
+    @GetMapping("/audit-logs/excel")
+    public ResponseEntity<byte[]> exportAuditLogsToExcel(
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) throws Exception {
+
+        byte[] data = auditLogService.exportToExcel(merchantOrgId, startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=audit-logs.xlsx")
+                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(data);
+    }
+
+    @GetMapping("/audit-logs/pdf")
+    public ResponseEntity<byte[]> exportAuditLogsToPdf(
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) throws Exception {
+
+        byte[] data = auditLogService.exportToPdf(merchantOrgId, startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=audit-logs.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(data);
+    }
+
+    @GetMapping("/audit-logs/csv")
+    public ResponseEntity<byte[]> exportAuditLogsToCSV(
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) {
+
+        byte[] data = auditLogService.exportToCsv(merchantOrgId, startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=audit-logs.csv")
+                .header("Content-Type", "text/csv")
+                .body(data);
+    }
+
+
+
+    ///#########################################################################
+
+    @GetMapping("/merchants/excel")
+    public ResponseEntity<byte[]> exportOrganizationsToExcel(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) throws Exception {
+
+        byte[] data = organizationService.exportToExcel( startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=merchants.xlsx")
+                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(data);
+    }
+
+    @GetMapping("/merchants/pdf")
+    public ResponseEntity<byte[]> exportOrganizationsToPdf(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) throws Exception {
+
+        byte[] data = organizationService.exportToPdf( startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=merchants.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(data);
+    }
+
+    @GetMapping("/merchants/csv")
+    public ResponseEntity<byte[]> exportOrganizationsToCSV(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) {
+
+        byte[] data = organizationService.exportToCsv( startDate, endDate);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=merchants.csv")
                 .header("Content-Type", "text/csv")
                 .body(data);
     }

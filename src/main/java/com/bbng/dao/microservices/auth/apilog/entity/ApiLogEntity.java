@@ -4,6 +4,7 @@ import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 

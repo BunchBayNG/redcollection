@@ -1,38 +1,50 @@
 package com.bbng.dao.microservices.auth.apilog.controller;
 
-import com.bbng.dao.microservices.auth.apilog.dto.request.ApiLogFilterRequest;
 import com.bbng.dao.microservices.auth.apilog.entity.ApiLogEntity;
-import com.bbng.dao.microservices.auth.apilog.impl.ApiLogSpecification;
+import com.bbng.dao.microservices.auth.apilog.impl.ApiLogImpl;
 import com.bbng.dao.microservices.auth.apilog.repository.ApiLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("${apiVersion}" + "/api-logs")
+
 public class ApiLogController {
 
-    @Autowired
-    private ApiLogRepository apiLogRepository;
+    private final ApiLogImpl apiLogImpl;
 
-    @PostMapping("/fetch")
-    public ResponseEntity<Page<ApiLogEntity>> searchApiLogs(@RequestBody ApiLogFilterRequest request) {
-        Specification<ApiLogEntity> spec = ApiLogSpecification.getLogs(request);
-        Pageable pageable = getPageable(request);
-        Page<ApiLogEntity> page = apiLogRepository.findAll(spec, pageable);
-        return ResponseEntity.ok(page);
+
+
+    private final String defaultPage = "0";      // default page
+    private final String defaultSize = "10";     // default size
+    private final String defaultSortOrder = "DESC";     // default sort order, Ascending or Descending
+
+
+    public ApiLogController(ApiLogImpl apiLogImpl) {
+        this.apiLogImpl = apiLogImpl;
     }
 
-    private Pageable getPageable(ApiLogFilterRequest request) {
-        String sortBy = request.getSortBy() != null ? request.getSortBy() : "timestamp";
-        String sortOrder = request.getSortOrder() != null ? request.getSortOrder().toUpperCase() : "DESC";
 
-        Sort sort = sortOrder.equals("ASC") ?
-                Sort.by(Sort.Direction.ASC, sortBy) :
-                Sort.by(Sort.Direction.DESC, sortBy);
+    @GetMapping("/fetch")
+    public ResponseEntity<ResponseDto<Page<ApiLogEntity>>> searchApiLogs(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String merchantOrgId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = defaultSortOrder) String sortOrder,
+            @RequestParam(defaultValue = defaultPage) int page,
+            @RequestParam(defaultValue = defaultSize) int size
+    ) {
 
-        return PageRequest.of(request.getPage(), request.getSize(), sort);
+        return  ResponseEntity.status(HttpStatus.OK).body(apiLogImpl
+                .getApiLogs(search, merchantOrgId,status, sortBy, sortOrder, startDate, endDate, page, size ));
     }
 }

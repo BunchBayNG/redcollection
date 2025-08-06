@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,9 +28,12 @@ public class AuditLogEntity  extends BaseEntity {
     private String userRole;
     private String userIpAddress;
     private String merchantName;
+    private String merchantOrganization;
+    private String merchantOrgId;
     private String event;
     private String userType;
     private String description;
+
 
 
     @PrePersist

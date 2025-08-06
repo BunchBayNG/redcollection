@@ -32,6 +32,8 @@ public class OrganizationEntity extends BaseEntity {
     private String settlementBankName;
     private String settlementAccountStatus;
 
+
+
     @Enumerated(EnumType.STRING)
 
     @PrePersist

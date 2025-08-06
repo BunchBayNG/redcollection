@@ -1,40 +1,41 @@
 package com.bbng.dao.microservices.auth.auditlog.impl;
 
-import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogFilterRequest;
 import com.bbng.dao.microservices.auth.auditlog.entities.AuditLogEntity;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.*;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuditLogSpecification {
 
-    public static Specification<AuditLogEntity> getLogs(AuditLogFilterRequest request) {
+    public static Specification<AuditLogEntity> getLogs(String search, String merchantOrgId, LocalDate startDate, LocalDate endDate) {
         return (Root<AuditLogEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getSearch() != null && !request.getSearch().isEmpty()) {
-                String keyword = "%" + request.getSearch().toLowerCase() + "%";
-                Predicate byUserName = cb.like(cb.lower(root.get("userName")), keyword);
-                Predicate byEmail = cb.like(cb.lower(root.get("email")), keyword);
-                Predicate byMerchant = cb.like(cb.lower(root.get("merchantName")), keyword);
-                predicates.add(cb.or(byUserName, byEmail, byMerchant));
+            if (search != null && !search.isEmpty()) {
+                Predicate byUsername = cb.like(cb.lower(root.get("userName")), "%" + search.toLowerCase() + "%");
+                Predicate byMerchantOrgId = cb.like(cb.lower(root.get("merchantOrgId")), "%" + search.toLowerCase() + "%");
+                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantName")), "%" + search.toLowerCase() + "%");
+                Predicate byMerchantOrganization = cb.like(cb.lower(root.get("merchantOrganization")), "%" + search.toLowerCase() + "%");
+                Predicate byEvent = cb.like(cb.lower(root.get("event")), "%" + search.toLowerCase() + "%");
+                predicates.add(cb.or(byUsername, byMerchantOrgId,byMerchantOrganization, byMerchantName, byEvent));
             }
 
-            if (request.getUserRole() != null && !request.getUserRole().isEmpty()) {
-                predicates.add(cb.equal(cb.lower(root.get("userRole")), request.getUserRole().toLowerCase()));
+            if (merchantOrgId != null && !merchantOrgId.isEmpty()) {
+                Predicate byMerchantName = cb.like(cb.lower(root.get("merchantOrgId")), "%" + merchantOrgId.toLowerCase() + "%");
+                predicates.add(cb.or( byMerchantName));
             }
 
-            if (request.getEvent() != null && !request.getEvent().name().isEmpty()) {
-                predicates.add(cb.equal(cb.lower(root.get("event")), request.getEvent().toString().toLowerCase()));
-            }
 
-            if (request.getStartDate() != null && request.getEndDate() != null) {
-                LocalDateTime from = request.getStartDate().atStartOfDay();
-                LocalDateTime to = request.getEndDate().atTime(23, 59, 59);
-                predicates.add(cb.between(root.get("time"), from, to));
+            if (startDate != null &&endDate != null) {
+                predicates.add(cb.between(root.get("createdAt"), startDate.atStartOfDay(),endDate.atTime(23, 59, 59)));
             }
+//
+//            if (status != null && !status.isEmpty()) {
+//                predicates.add(cb.equal(cb.lower(root.get("status")), status.toLowerCase()));
+//            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };

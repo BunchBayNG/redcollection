@@ -64,24 +64,24 @@ public class PayoutImpl implements PayoutService {
         Specification<PayoutEntity> spec = PayoutSpecification.getPayouts("", merchantOrgId, "", startDate, endDate);
 
 
-        List<PayoutEntity> settlements = payoutRepository.findAll(spec);
+        List<PayoutEntity> payouts = payoutRepository.findAll(spec);
         StringBuilder csv = new StringBuilder();
 
         // Header row
         csv.append("Merchant ID,Merchant Name,Amount,Payout Ref,Transaction Ref,Reference,Source Acct,Destination Acct,Status,Timestamp\n");
 
         // Data rows
-        for (PayoutEntity stm : settlements) {
-            csv.append(stm.getMerchantOrgId()).append(",");
-            csv.append(stm.getMerchantName()).append(",");
-            csv.append(stm.getAmount()).append(",");
-            csv.append(stm.getPayoutRef()).append(",");
-            csv.append(stm.getTransactionRef()).append(",");
-            csv.append(stm.getReference()).append(",");
-            csv.append(stm.getSourceAccount()).append(",");
-            csv.append(stm.getDestinationAccount()).append(",");
-            csv.append(stm.getStatus()).append(",");
-            csv.append(stm.getCreatedAt()).append("\n");
+        for (PayoutEntity pt : payouts) {
+            csv.append(pt.getMerchantOrgId()).append(",");
+            csv.append(pt.getMerchantName()).append(",");
+            csv.append(pt.getAmount()).append(",");
+            csv.append(pt.getPayoutRef()).append(",");
+            csv.append(pt.getTransactionRef()).append(",");
+            csv.append(pt.getReference()).append(",");
+            csv.append(pt.getSourceAccount()).append(",");
+            csv.append(pt.getDestinationAccount()).append(",");
+            csv.append(pt.getStatus()).append(",");
+            csv.append(pt.getCreatedAt()).append("\n");
         }
 
         return csv.toString().getBytes();
@@ -93,7 +93,7 @@ public class PayoutImpl implements PayoutService {
         Specification<PayoutEntity> spec = PayoutSpecification.getPayouts("", merchantOrgId, "", startDate, endDate);
 
 
-        List<PayoutEntity> settlements = payoutRepository.findAll(spec);
+        List<PayoutEntity> payouts = payoutRepository.findAll(spec);
 
         Document document = new Document(PageSize.A4);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -121,17 +121,17 @@ public class PayoutImpl implements PayoutService {
                 });
 
         // Data rows
-        for (PayoutEntity stm : settlements) {
-            table.addCell(new PdfPCell(new Phrase(stm.getMerchantOrgId(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getMerchantName(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getAmount().toString(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getPayoutRef(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getTransactionRef(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getReference(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getSourceAccount(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getDestinationAccount(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getStatus(), bodyFont)));
-            table.addCell(new PdfPCell(new Phrase(stm.getCreatedAt().toString(), bodyFont)));
+        for (PayoutEntity pt : payouts) {
+            table.addCell(new PdfPCell(new Phrase(pt.getMerchantOrgId(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getMerchantName(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getAmount().toString(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getPayoutRef(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getTransactionRef(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getReference(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getSourceAccount(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getDestinationAccount(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getStatus(), bodyFont)));
+            table.addCell(new PdfPCell(new Phrase(pt.getCreatedAt().toString(), bodyFont)));
         }
 
 
@@ -150,7 +150,7 @@ public class PayoutImpl implements PayoutService {
         Specification<PayoutEntity> spec = PayoutSpecification.getPayouts("", merchantOrgId, "", startDate, endDate);
 
 
-        List<PayoutEntity> settlements = payoutRepository.findAll(spec);
+        List<PayoutEntity> payouts = payoutRepository.findAll(spec);
 
 
         Workbook workbook = new XSSFWorkbook();
@@ -164,18 +164,18 @@ public class PayoutImpl implements PayoutService {
         }
 
         int rowIdx = 1;
-        for (PayoutEntity stm : settlements) {
+        for (PayoutEntity pt : payouts) {
             org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(stm.getMerchantOrgId());
-            row.createCell(1).setCellValue(stm.getMerchantName());
-            row.createCell(2).setCellValue(stm.getAmount().doubleValue());
-            row.createCell(3).setCellValue(stm.getPayoutRef());
-            row.createCell(4).setCellValue(stm.getTransactionRef());
-            row.createCell(5).setCellValue(stm.getReference());;
-            row.createCell(6).setCellValue(stm.getSourceAccount());
-            row.createCell(7).setCellValue(stm.getDestinationAccount());
-            row.createCell(8).setCellValue(stm.getStatus());
-            row.createCell(9).setCellValue(stm.getCreatedAt().toString());
+            row.createCell(0).setCellValue(pt.getMerchantOrgId());
+            row.createCell(1).setCellValue(pt.getMerchantName());
+            row.createCell(2).setCellValue(pt.getAmount().doubleValue());
+            row.createCell(3).setCellValue(pt.getPayoutRef());
+            row.createCell(4).setCellValue(pt.getTransactionRef());
+            row.createCell(5).setCellValue(pt.getReference());;
+            row.createCell(6).setCellValue(pt.getSourceAccount());
+            row.createCell(7).setCellValue(pt.getDestinationAccount());
+            row.createCell(8).setCellValue(pt.getStatus());
+            row.createCell(9).setCellValue(pt.getCreatedAt().toString());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

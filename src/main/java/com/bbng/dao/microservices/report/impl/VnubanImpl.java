@@ -68,7 +68,7 @@ public class VnubanImpl implements VnubanService {
         StringBuilder csv = new StringBuilder();
 
         // Header row
-        csv.append("Merchant Org ID,Merchant Name,Amount,BatchRef,Initiator Ref,Acct Nam, Acct No,Acct Email,Acct MSISDN,Product Type,Mode,Status,Timestamp\n");
+        csv.append("Merchant Org ID,Merchant Name,Amount,BatchRef,Initiator Ref,Acct Name,Acct No,Acct Email,Acct MSISDN,Product Type,Mode,Status,Timestamp\n");
 
    
         // Data rows
@@ -116,7 +116,7 @@ public class VnubanImpl implements VnubanService {
         table.setWidths(new int[]{3, 4, 2, 2, 4});
 
         // Headers
-        Stream.of("Merchant Org ID", "Merchant Name","Amount","BatchRef","Initiator Ref","Acct Nam", "Acct No","Acct Email","Acct MSISDN","Product Type","Mode","Status","Timestamp")
+        Stream.of("Merchant Org ID", "Merchant Name","Amount","BatchRef","Initiator Ref","Acct Name", "Acct No","Acct Email","Acct MSISDN","Product Type","Mode","Status","Timestamp")
                 .forEach(title -> {
                     PdfPCell header = new PdfPCell();
                     header.setPhrase(new Phrase(title, headerFont));
@@ -162,7 +162,7 @@ public class VnubanImpl implements VnubanService {
         Sheet sheet = workbook.createSheet("Virtual Account Numbers");
 
         org.apache.poi.ss.usermodel.Row header = sheet.createRow(0);
-        String[] headers = {"Merchant Org ID", "Merchant Name","Amount","BatchRef","Initiator Ref","Acct Nam", "Acct No","Acct Email","Acct MSISDN","Product Type","Mode","Status","Timestamp"};
+        String[] headers = {"Merchant Org ID", "Merchant Name","Amount","BatchRef","Initiator Ref","Acct Name", "Acct No","Acct Email","Acct MSISDN","Product Type","Mode","Status","Timestamp"};
         for (int i = 0; i < headers.length; i++) {
             header.createCell(i).setCellValue(headers[i]);
         }

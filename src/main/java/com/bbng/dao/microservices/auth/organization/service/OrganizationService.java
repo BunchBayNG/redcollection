@@ -20,4 +20,11 @@ public interface OrganizationService {
 
     ResponseDto<Long> getNewMerchantCount(LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<Long> getTotalMerchantCount();
+
+
+
+    byte[] exportToExcel( LocalDate startDate, LocalDate endDate) throws Exception;
+    byte[] exportToPdf( LocalDate startDate, LocalDate endDate) throws Exception;
+    byte[] exportToCsv( LocalDate startDate, LocalDate endDate);
+
 }
