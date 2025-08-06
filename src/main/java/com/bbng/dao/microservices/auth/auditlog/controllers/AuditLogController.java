@@ -43,7 +43,7 @@ public class AuditLogController {
         this.httpRequest = httpRequest;
     }
 
-    @PostMapping("/fetch")
+    @GetMapping("/fetch")
     public ResponseEntity<ResponseDto<Page<AuditLogEntity>>> searchAuditLogs(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String merchantOrgId,
@@ -65,7 +65,7 @@ public class AuditLogController {
     }
 
 
-    @PostMapping("/merchant/fetch")
+    @GetMapping("/merchant/fetch")
     public ResponseEntity<ResponseDto<Page<AuditLogEntity>>>  searchMerchantAuditLogs(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String merchantOrgId,
