@@ -1,11 +1,10 @@
-package com.bbng.dao.microservices.auth.organization.impl;
+package com.bbng.dao.microservices.auth.config.impl;
 
 
-import com.bbng.dao.microservices.auth.organization.dto.request.ConfigSetupDto;
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
-import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
-import com.bbng.dao.microservices.auth.organization.service.ConfigService;
-import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
+import com.bbng.dao.microservices.auth.config.dto.request.ConfigSetupDto;
+import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.config.repository.SystemConfigRepository;
+import com.bbng.dao.microservices.auth.config.service.ConfigService;
 import com.bbng.dao.microservices.vacctnumnotify.entity.BankAccountEntity;
 import com.bbng.dao.microservices.vacctnumnotify.entity.BankCategory;
 import com.bbng.dao.microservices.vacctnumnotify.repository.BankAccountRepository;

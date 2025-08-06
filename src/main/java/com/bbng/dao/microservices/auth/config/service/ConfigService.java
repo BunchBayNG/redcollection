@@ -1,8 +1,8 @@
-package com.bbng.dao.microservices.auth.organization.service;
+package com.bbng.dao.microservices.auth.config.service;
 
 
-import com.bbng.dao.microservices.auth.organization.dto.request.ConfigSetupDto;
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.config.dto.request.ConfigSetupDto;
+import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
 import com.bbng.dao.util.response.ResponseDto;
 
 public interface ConfigService {

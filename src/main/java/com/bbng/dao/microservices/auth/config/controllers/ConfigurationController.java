@@ -1,9 +1,11 @@
-package com.bbng.dao.microservices.auth.organization.controller;
+package com.bbng.dao.microservices.auth.config.controllers;
 
 
-import com.bbng.dao.microservices.auth.organization.dto.request.ConfigSetupDto;
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
-import com.bbng.dao.microservices.auth.organization.service.ConfigService;
+import com.bbng.dao.microservices.auth.config.dto.request.ConfigSetupDto;
+import com.bbng.dao.microservices.auth.config.entity.ServiceConfigEntity;
+import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.config.service.ConfigService;
+import com.bbng.dao.microservices.auth.config.service.ServiceConfigService;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.auth.passport.impl.setupImpl.PermissionService;
 import com.bbng.dao.util.response.ResponseDto;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +28,7 @@ public class ConfigurationController {
     private final JWTService jwtService;
     private final HttpServletRequest request;
     private final ConfigService configService;
+    private final ServiceConfigService serviceConfigService;
 
 //    @PutMapping("setup-user-config")
 //    public ResponseEntity<ResponseDto<String>> updateConfiguration(@RequestBody ConfigSetupDto configSetupDto) {
@@ -42,6 +47,11 @@ public class ConfigurationController {
     @PutMapping("/update")
     public ResponseEntity<ResponseDto<String>> updateConfig(@Valid @RequestBody ConfigSetupDto request) {
         return ResponseEntity.ok(configService.updateUserConfiguration(request));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ServiceConfigEntity>> getAll() {
+        return ResponseEntity.ok(serviceConfigService.getAll());
     }
 
 

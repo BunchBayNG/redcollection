@@ -1,4 +1,4 @@
-package com.bbng.dao.microservices.auth.organization.dto.request;
+package com.bbng.dao.microservices.auth.config.dto.request;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMax;

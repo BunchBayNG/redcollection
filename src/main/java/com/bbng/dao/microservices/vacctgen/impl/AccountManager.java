@@ -2,11 +2,10 @@ package com.bbng.dao.microservices.vacctgen.impl;
 
 
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
 import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
-import com.bbng.dao.microservices.auth.organization.repository.SystemConfigRepository;
-import com.bbng.dao.microservices.auth.organization.service.ConfigService;
+import com.bbng.dao.microservices.auth.config.service.ConfigService;
 import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
@@ -48,7 +47,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 

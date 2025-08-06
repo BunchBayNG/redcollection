@@ -1,7 +1,7 @@
 package com.bbng.dao.microservices.report.impl;
 
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
-import com.bbng.dao.microservices.auth.organization.service.ConfigService;
+import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.config.service.ConfigService;
 import com.bbng.dao.microservices.report.config.TransactionSpecification;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;

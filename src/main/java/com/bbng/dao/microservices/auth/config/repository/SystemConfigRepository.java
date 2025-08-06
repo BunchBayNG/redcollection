@@ -1,6 +1,6 @@
-package com.bbng.dao.microservices.auth.organization.repository;
+package com.bbng.dao.microservices.auth.config.repository;
 
-import com.bbng.dao.microservices.auth.organization.entity.SystemConfigEntity;
+import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
