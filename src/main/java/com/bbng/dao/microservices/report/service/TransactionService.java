@@ -26,7 +26,7 @@ public interface TransactionService {
     ResponseDto<TransactionEntity> createTransaction(TransactionRequestDTO requestDTO);
 
 
-    ResponseDto<Long> getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate);
+
     ResponseDto<List<TopMerchantDTO>> getTopMerchantsByVolume(LocalDateTime startDate, LocalDateTime endDate, int topN);
     ResponseDto<AnalyticsCountSummaryDTO> getTransactionCountSummary(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);
     ResponseDto<BigDecimal> getSuccessfulTransactionVolume(String merchantOrgId, LocalDateTime startDate, LocalDateTime endDate);

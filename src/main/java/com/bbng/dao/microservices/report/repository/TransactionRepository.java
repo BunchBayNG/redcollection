@@ -14,15 +14,15 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long>, JpaSpecificationExecutor<TransactionEntity> {
 
 
-    // Total merchants count (distinct merchantOrgId)
-    @Query("""
-        SELECT COUNT(DISTINCT t.merchantOrgId) FROM TransactionEntity t
-        WHERE t.createdAt BETWEEN :startDate AND :endDate
-    """)
-    long countDistinctMerchantOrgId(
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate
-    );
+//    // Total merchants count (distinct merchantOrgId)
+//    @Query("""
+//        SELECT COUNT(DISTINCT t.merchantOrgId) FROM TransactionEntity t
+//        WHERE t.createdAt BETWEEN :startDate AND :endDate
+//    """)
+//    long countDistinctMerchantOrgId(
+//            @Param("startDate") LocalDateTime startDate,
+//            @Param("endDate") LocalDateTime endDate
+//    );
 
     // Top merchants by volume
 //    @Query("""

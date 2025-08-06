@@ -7,6 +7,7 @@ import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface OrganizationService {
     ResponseDto<String> updateBusinessDetails(UpdateOrgDto updateRequestDto);
@@ -16,4 +17,7 @@ public interface OrganizationService {
     ResponseDto<Page<OrganizationEntity>>
     getAllOrg(String search, String status, String sortBy,
               String sortOrder, LocalDate startDate, LocalDate endDate, int page, int size);
+
+    ResponseDto<Long> getNewMerchantCount(LocalDateTime startDate, LocalDateTime endDate);
+    ResponseDto<Long> getTotalMerchantCount();
 }

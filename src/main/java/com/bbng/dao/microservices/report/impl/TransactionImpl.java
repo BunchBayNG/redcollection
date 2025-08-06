@@ -154,16 +154,6 @@ public class TransactionImpl implements TransactionService {
     }
 
 
-    public ResponseDto<Long> getTotalMerchantCount(LocalDateTime startDate, LocalDateTime endDate) {
-        Long response =  transactionRepository.countDistinctMerchantOrgId(startDate, endDate);
-
-        return ResponseDto.<Long>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Total Merchants fetched successfully")
-                .data(response)
-                .build();
-    }
 
     public  ResponseDto< List<TopMerchantDTO> > getTopMerchantsByVolume(LocalDateTime startDate, LocalDateTime endDate, int topN) {
 

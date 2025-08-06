@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -73,6 +74,31 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .data(response)
                 .build();
     }
+
+    @Override
+    public ResponseDto<Long> getNewMerchantCount(LocalDateTime startDate, LocalDateTime endDate) {
+        Long response =  organizationRepository.countDistinctMerchantOrgId(startDate, endDate);
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total Merchants fetched successfully")
+                .data(response)
+                .build();
+    }
+
+    @Override
+    public ResponseDto<Long> getTotalMerchantCount() {
+        Long response =  organizationRepository.count();
+
+        return ResponseDto.<Long>builder()
+                .statusCode(200)
+                .status(true)
+                .message("Total Merchants fetched successfully")
+                .data(response)
+                .build();
+    }
+
 
 
     private Pageable getPageable(String sortBy, String sortOrder, int page, int size) {

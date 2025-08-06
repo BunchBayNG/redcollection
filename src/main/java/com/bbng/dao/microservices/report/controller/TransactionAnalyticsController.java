@@ -28,15 +28,6 @@ public class TransactionAnalyticsController {
     private final TransactionService transactionService;
 
 
-    @GetMapping("/total-merchants")
-    public ResponseEntity<ResponseDto<Long>> getTotalMerchantCount(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
-    ) {
-
-        return  ResponseEntity.status(HttpStatus.OK).body(transactionService.getTotalMerchantCount(startDate, endDate));
-    }
-
     @GetMapping("/top-merchants")
     public ResponseEntity<ResponseDto<List<TopMerchantDTO>>>  getTopMerchantsByVolume(
             @RequestParam(defaultValue = "5") int topN,
