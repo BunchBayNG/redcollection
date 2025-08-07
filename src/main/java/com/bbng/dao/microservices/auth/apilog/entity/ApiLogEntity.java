@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class ApiLogEntity extends BaseEntity {
+public class ApiLogEntity {
 
 
     @Id
@@ -26,12 +26,15 @@ public class ApiLogEntity extends BaseEntity {
 
     private int responseStatus;
 
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
 
     @PrePersist
     protected void onPrePersist() {
         if (this.id == null) {
             ULID ulid = new ULID();
-            this.id = "APILOG-" + ulid.nextULID().substring(9);
+            this.id = "API-" + ulid.nextULID().substring(9);
         }
     }
 

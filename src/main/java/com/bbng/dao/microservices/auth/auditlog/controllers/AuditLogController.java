@@ -57,7 +57,7 @@ public class AuditLogController {
     ) {
 
 
-        permissionService.checkPermission(httpRequest, "ADMIN_GET_AUDIT_LOGS", jwtService);
+      ///  permissionService.checkPermission(httpRequest, "ADMIN_GET_AUDIT_LOGS", jwtService);
 
 
         return  ResponseEntity.status(HttpStatus.OK).body(auditLogService
@@ -78,7 +78,7 @@ public class AuditLogController {
             @RequestParam(defaultValue = defaultSize) int size
     ) {
 
-        permissionService.checkPermission(httpRequest, "MERCHANT_GET_AUDIT_LOGS", jwtService);
+       /// permissionService.checkPermission(httpRequest, "MERCHANT_GET_AUDIT_LOGS", jwtService);
 
 
         return  ResponseEntity.status(HttpStatus.OK).body(auditLogService

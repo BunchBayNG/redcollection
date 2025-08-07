@@ -140,8 +140,10 @@ public class AccountManager {
             }
         }
 
-        final AccountMetadata metadata = new AccountMetadata(
-                generateValue.getPrefix(), generated, collisions);
+        final AccountMetadata metadata = new AccountMetadata();
+        metadata.setPrefix(  generateValue.getPrefix());
+        metadata.setQuantity(  generated);
+        metadata.setReportedCollision( collisions);
         accountMetadataRepository.save(metadata);
         log.info("Virtual account generation report for prefix {}: Generated: {}, Collisions: {}",
                 generateValue.getPrefix(), generated, collisions
@@ -446,6 +448,8 @@ public class AccountManager {
 //        }
 
         log.info("rrfrfr frfrfr " + request.getAccountName());
+        OrganizationEntity org = getOrgForApiKey();
+
 
         //find provisioned account tied to wallet in request, if not provision a new account
         Optional<ProvisionedAccount> existingAccount = provisionedAccountRepository.findByMode( ProvisionedAccount.Mode.OPEN);
@@ -458,7 +462,7 @@ public class AccountManager {
                     .data(existingAccount.get())
                     .build();
         }
-        OrganizationEntity org = getOrgForApiKey();
+
 
 
         Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
@@ -597,7 +601,7 @@ public class AccountManager {
                 new UserNotFoundException("Can't find user with the username extracted from token. Is user a paysub user?"));
 
 
-        return organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() ->
+        return organizationRepository.findByContactEmail(user.getId()).orElseThrow(() ->
                 new ResourceNotFoundException("Can't find Org with the username extracted from token."));
     }
     

@@ -28,7 +28,4 @@ public class AccountMetadata {
     private Integer quantity;
 
     private Integer reportedCollision;
-
-    public AccountMetadata(String prefix, int generated, int collisions) {
-    }
 }
