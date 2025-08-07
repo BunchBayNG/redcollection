@@ -50,4 +50,5 @@ public class GetUserFromToken {
         return user.getEmail();
     }
 
+
 }

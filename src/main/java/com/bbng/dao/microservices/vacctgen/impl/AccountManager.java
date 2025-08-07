@@ -71,7 +71,6 @@ public class AccountManager {
     private final Random secureRandom;
     private final HttpServletRequest httpRequest;
     private final OrganizationRepository organizationRepository;
-    private final JWTService jwtService;
     private final UserRepository userRepository;
     private final APIKeyRepository apiKeyRepository;
 
@@ -88,7 +87,6 @@ public class AccountManager {
         this.accountMetadataRepository = accountMetadataRepository;
         this.configService = configService;
         this.httpRequest = httpRequest;
-        this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.apiKeyRepository = apiKeyRepository;
         secureRandom = new SecureRandom(Instant.now().toString().getBytes(StandardCharsets.UTF_8));
@@ -399,19 +397,20 @@ public class AccountManager {
 
     @Transactional
     public ResponseDto<ProvisionedAccount> provisionForMerchant(MerchantProvisionValue request) {
-        SystemConfigEntity properties = getSystemConfig();
+         SystemConfigEntity properties = getSystemConfig();
+
+        OrganizationEntity org = getOrgForApiKey();
 
         Account selectedAccount = accountRepository.findFirstByStatus(FREE).orElseGet(() -> {
             // populate pool and try again, throw error otherwise
             // The pool will be increased by TODO Complete comment
             updatePool(new GenerateValue(
-                    properties.getDefaultPrefix(), properties.getProvisionSingleUpdatePoolSize()));
+                    org.getProductPrefix(), properties.getProvisionSingleUpdatePoolSize()));
             return accountRepository.findFirstByStatus(FREE).orElseThrow(() ->
                     new AccountException(
                             "Attempt to provision account failed. Please retry after some time."));
         });
-        
-        OrganizationEntity org = getOrgForApiKey();
+
         
         ProvisionedAccount accountToProvision = ProvisionedAccount.builder()
                 .accountNo(selectedAccount.getValue())
@@ -605,7 +604,7 @@ public class AccountManager {
         return organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() ->
                 new ResourceNotFoundException("Can't find Org with the username extracted from token."));
     }
-    
+
     public SystemConfigEntity getSystemConfig() {
 
         return  configService.getConfig();

@@ -68,6 +68,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Value("${webMerchantUrl}")
     private String webMerchantUrl;
 
+
+    @Value("${orgName}")
+    private String organizationName;
+    @Value("${orgId}")
+    private String organizationId;
+
+
     private TokenRepository tokenRepository;
     private AuditLogService auditLogService;
 
@@ -286,23 +293,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         if (verificationToken == null) {
             throw new BadRequestException("Invalid verification token");
         }
-//        OtpEntity oTPToken = otpRepository.findByOtpAndExpired(verificationToken, false)
-//                .orElseThrow(() -> new BadRequestException("Token expired"));
+
 
         OtpEntity oTPToken = otpRepository.findByOtp(verificationToken)
                 .orElseThrow(() -> new BadRequestException("Token expired"));
 
-        log.info("OTP Token: {}", oTPToken.getOtp());
-        log.info("OTP Token: {}", oTPToken.getExpirationTime());
-        log.info("OTP Token: {}", oTPToken.getEmail());
-
-//        if (isTokenExpired(oTPToken.getOtp(), oTPToken.getExpirationTime())) {
-//            oTPToken.setExpired(true);
-//            throw new BadRequestException("Token expired. Resend email");
-//        }
-//
-//        oTPToken.setExpired(true);
-//        otpRepository.save(oTPToken);
 
         Optional<UserEntity> userEntity = userRepository.findByEmail(oTPToken.getEmail());
 //
@@ -315,34 +310,66 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         log.info("User: {}", user.getEmail());
         log.info("User: {}", user.getEmail());
 
-        OrganizationEntity org = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElse( new OrganizationEntity());
+        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());
 
 
         TokenEntity tokenEntity = tokenRepository.findByUserEntityAndExpiredFalseAndRevokedFalse(user).get();
 
-        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
-                .userId(user.getId())
-                .userName(user.getUserName())
-                .merchantId(org.getId())
-                .merchantName(org.getOrganizationName())
-                .userType(String.valueOf(user.getUsertype()))
-                .event(Events.LOGIN.name())
-                .build());
 
-        return ResponseDto.<LoginResponseDto>builder()
-                .statusCode(200)
-                .status(true)
-                .message("Login successful")
-                .data(LoginResponseDto
-                        .builder()
-                        .accessToken(tokenEntity.getToken())
-                        .refreshToken("")
-                        .acctStatus(user.getAcctStatus().name())
-                        .userId(user.getId())
-                        .organizationId(org.getId())
-                        .isEmailVerified(user.getIsEnabled())
-                        .build())
-                .build();
+
+
+        if (org.isPresent()){
+
+            auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                    .userId(user.getId())
+                    .userName(user.getUserName())
+                    .merchantId(org.get().getId())
+                    .merchantName(org.get().getOrganizationName())
+                    .userType(String.valueOf(user.getUsertype()))
+                    .event(Events.LOGIN.name())
+                    .build());
+
+
+            return ResponseDto.<LoginResponseDto>builder()
+                    .statusCode(200)
+                    .status(true)
+                    .message("Login successful")
+                    .data(LoginResponseDto
+                            .builder()
+                            .accessToken(tokenEntity.getToken())
+                            .refreshToken("")
+                            .acctStatus(user.getAcctStatus().name())
+                            .userId(user.getId())
+                            .organizationId(org.get().getId())
+                            .isEmailVerified(user.getIsEnabled())
+                            .build())
+                    .build();
+        } else{
+
+            auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                    .userId(user.getId())
+                    .userName(user.getUserName())
+                    .merchantId(organizationId)
+                    .merchantName(organizationName)
+                    .userType(String.valueOf(user.getUsertype()))
+                    .event(Events.LOGIN.name())
+                    .build());
+
+            return ResponseDto.<LoginResponseDto>builder()
+                    .statusCode(200)
+                    .status(true)
+                    .message("Login successful")
+                    .data(LoginResponseDto
+                            .builder()
+                            .accessToken(tokenEntity.getToken())
+                            .refreshToken("")
+                            .acctStatus(user.getAcctStatus().name())
+                            .userId(user.getId())
+                            .organizationId(organizationId)
+                            .isEmailVerified(user.getIsEnabled())
+                            .build())
+                    .build();
+        }
     }
 
 

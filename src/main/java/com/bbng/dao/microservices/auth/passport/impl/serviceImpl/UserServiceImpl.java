@@ -143,39 +143,6 @@ public class UserServiceImpl implements UserService {
                         .isLogin(true).token(t.getToken())
                         .build())
                 .build();
-
-
-//       OrganizationEntity organizationEntity = organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElse(organizationRepository.findByOrganizationId(orgStaffRepository.findOrganizationIdByUserId(user.getId()).get()).get());
-//
-//       if (organizationEntity == null){
-//           throw new ForbiddenException("User is not linked with any organization");
-//       }
-//        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());  // current user
-//
-//
-//        auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
-//                .userId(user.getId())
-//                .userName(user.getUserName())
-//                .merchantId(null)
-//                .merchantName(null)
-//                .userType(String.valueOf(user.getUsertype()))
-//                .event(Events.LOGIN.name())
-//                .build());
-//
-//        return ResponseDto.<LoginResponseDto>builder()
-//                .statusCode(200)
-//                .status(true)
-//                .message("Login successful")
-//                .data(LoginResponseDto
-//                        .builder()
-//                        .accessToken(token)
-//                        .refreshToken(refreshToken)
-//                        .acctStatus(user.getAcctStatus().name())
-//                        .userId(user.getId())
-//                        .organizationId(org.get().getId())
-//                        .isEmailVerified(user.getIsEnabled())
-//                        .build())
-//                .build();
     }
 
     @Override

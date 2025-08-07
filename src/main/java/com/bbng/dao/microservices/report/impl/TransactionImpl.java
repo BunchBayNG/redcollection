@@ -2,6 +2,12 @@ package com.bbng.dao.microservices.report.impl;
 
 import com.bbng.dao.microservices.auth.config.entity.SystemConfigEntity;
 import com.bbng.dao.microservices.auth.config.service.ConfigService;
+import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
+import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
+import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
+import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
+import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
+import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
 import com.bbng.dao.microservices.report.config.TransactionSpecification;
 import com.bbng.dao.microservices.report.dto.AnalyticsCountSummaryDTO;
 import com.bbng.dao.microservices.report.dto.ChartPointDTO;
@@ -11,8 +17,12 @@ import com.bbng.dao.microservices.report.entity.TransactionEntity;
 import com.bbng.dao.microservices.report.repository.TransactionRepository;
 import com.bbng.dao.microservices.report.service.SettlementService;
 import com.bbng.dao.microservices.report.service.TransactionService;
+import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
+import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
 import com.lowagie.text.Font;
+import de.huxhorn.sulky.ulid.ULID;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.data.domain.Page;
@@ -41,15 +51,22 @@ public class TransactionImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final ConfigService configService;
     private final SettlementService settlementService;
-
+    private final HttpServletRequest httpRequest;
+    private final OrganizationRepository organizationRepository;
+    private final UserRepository userRepository;
+    private final APIKeyRepository apiKeyRepository;
 
 
 
     public TransactionImpl(TransactionRepository transactionRepository, ConfigService configService,
-                           SettlementService settlementService) {
+                           SettlementService settlementService, HttpServletRequest httpRequest, OrganizationRepository organizationRepository, UserRepository userRepository, APIKeyRepository apiKeyRepository) {
         this.transactionRepository = transactionRepository;
         this.configService = configService;
         this.settlementService = settlementService;
+        this.httpRequest = httpRequest;
+        this.organizationRepository = organizationRepository;
+        this.userRepository = userRepository;
+        this.apiKeyRepository = apiKeyRepository;
     }
 
 
@@ -76,14 +93,14 @@ public class TransactionImpl implements TransactionService {
 
         // Create Settlements
 
-        settlementService.initiateSettlement(vat, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
-                request.getDestinationAccountNumber(), "SUCCESS", request.getTransactionId(), request.getReference(), "VAT");
+        settlementService.initiateSettlement(vat, txn.getMerchantName(), txn.getMerchantOrgId(), request.getVnuban(),
+                request.getDestinationAccountNumber(), "SUCCESS", txn.getTransactionId(), request.getReference(), "VAT");
 
-        settlementService.initiateSettlement(adminSplit, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
-                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "ADMIN-UBA");
+        settlementService.initiateSettlement(adminSplit, txn.getMerchantName(), txn.getMerchantOrgId(), request.getVnuban(),
+                String.valueOf(config.getAdminAccountNo()), "SUCCESS",  txn.getTransactionId(),  request.getReference(), "ADMIN-UBA");
 
-        settlementService.initiateSettlement(platformSplit, request.getMerchantName(), request.getMerchantOrgId(), request.getVnuban(),
-                String.valueOf(config.getPlatformAccountNo()), "SUCCESS",  request.getTransactionId(),  request.getReference(), "PLATFORM-REDTECH");
+        settlementService.initiateSettlement(platformSplit, txn.getMerchantName(), txn.getMerchantOrgId(), request.getVnuban(),
+                String.valueOf(config.getPlatformAccountNo()), "SUCCESS",  txn.getTransactionId(),  request.getReference(), "PLATFORM-REDTECH");
 
 
         return ResponseDto.<TransactionEntity>builder()
@@ -94,14 +111,18 @@ public class TransactionImpl implements TransactionService {
                 .build();
     }
 
-    private static TransactionEntity getTransactionEntity(TransactionRequestDTO request) {
+    @Transactional
+    public TransactionEntity getTransactionEntity(TransactionRequestDTO request) {
+
+        String transactionId = new ULID().nextULID().substring(20);
+
+        OrganizationEntity org = getOrgForApiKey();
         TransactionEntity txn = new TransactionEntity();
 
-        txn.setMerchantName(request.getMerchantName());
-        txn.setTransactionId(request.getTransactionId());
+        txn.setMerchantName(org.getOrganizationName());
+        txn.setTransactionId(transactionId);
         txn.setAmount(request.getAmount());
-        txn.setTransactionId(request.getTransactionId());
-        txn.setMerchantOrgId(request.getMerchantOrgId());
+        txn.setMerchantOrgId(org.getId());
         txn.setVnuban(request.getVnuban());
         txn.setStatus(request.getStatus());
         txn.setSessionId(request.getSessionId());
@@ -110,11 +131,27 @@ public class TransactionImpl implements TransactionService {
         txn.setTransactionType(request.getTransactionType());
         txn.setDestinationAccountNumber(request.getDestinationAccountNumber());
         txn.setDestinationAccountName(request.getDestinationAccountName());
+        txn.setDestinationBankName(request.getDestinationBankName());
         txn.setIpAddress("");
         txn.setProcessingTime(1L);
         return txn;
     }
 
+    public OrganizationEntity getOrgForApiKey() {
+
+
+        String email = GetUserFromToken.extractUserFromApiKey(httpRequest,apiKeyRepository, userRepository);
+
+        ///log.info("email: {}", email);
+
+
+        UserEntity user = userRepository.findByUsernameOrEmail(email, email).orElseThrow(() ->
+                new UserNotFoundException("Can't find user with the username extracted from token. Is user a paysub user?"));
+
+
+        return organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Can't find Org with the username extracted from token."));
+    }
 
     @Override
     public ResponseDto<Page<TransactionEntity>>  getTransactions(String search, String merchantOrgId, String status,
@@ -394,6 +431,8 @@ public class TransactionImpl implements TransactionService {
 
         return out.toByteArray();
     }
+
+
 
 
 }

@@ -7,15 +7,12 @@ import java.math.BigDecimal;
 
 @Data
 public class TransactionRequestDTO {
-
-    @NotNull
-    private String transactionId;
-
-    @NotNull
-    private String merchantName;
-
-    @NotNull
-    private String merchantOrgId;
+//
+//    @NotNull
+//    private String merchantName;
+//
+//    @NotNull
+//    private String merchantOrgId;
 
     @NotNull
     private String vnuban;
@@ -44,15 +41,4 @@ public class TransactionRequestDTO {
     @NotNull
     private String destinationBankName;
 
-//    @NotNull
-//    private String webhookStatus;
-//
-//    @NotNull
-//    private String ipAddress;
-//
-//    @NotNull
-//    private String deviceName;
-//
-//    @NotNull
-//    private Long processingTime;
 }
