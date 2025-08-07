@@ -60,15 +60,15 @@ public interface VnubanRepository extends JpaRepository<ProvisionedAccount, Long
 //            @Param("endDate") LocalDateTime endDate
 //    );
 
-    @Query(value = """
-    SELECT DATE_FORMAT(v.created_at, :pattern) AS period,
-           COUNT(v.id) AS value
-    FROM vnuban_entity v
-    WHERE (:merchantOrgId IS NULL OR v.merchant_org_id = :merchantOrgId)
-      AND v.created_at BETWEEN :startDate AND :endDate
-    GROUP BY DATE_FORMAT(v.created_at, :pattern)
-    ORDER BY DATE_FORMAT(v.created_at, :pattern)
-""", nativeQuery = true)
+
+    @Query("""
+    SELECT DATE_FORMAT(v.provisionDate, :pattern) AS period,
+           COUNT(v.id) AS value FROM ProvisionedAccount v
+           WHERE (:merchantOrgId IS NULL OR v.merchantOrgId = :merchantOrgId)
+          AND v.provisionDate BETWEEN :startDate AND :endDate
+          GROUP BY DATE_FORMAT(v.provisionDate, :pattern)
+    ORDER BY DATE_FORMAT(v.provisionDate, :pattern)
+""" )
     List<Object[]> groupGeneratedVnubansByPeriod(
             @Param("merchantOrgId") String merchantOrgId,
             @Param("pattern") String pattern,
