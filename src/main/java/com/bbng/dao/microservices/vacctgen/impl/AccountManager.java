@@ -128,8 +128,9 @@ public class AccountManager {
             String paddedSuffix = GeneratorUtil.ensureLength(Integer.toString(suffix), suffixLength, '0');
             final String formedVirtualAccount = generateValue.getPrefix() + paddedSuffix;
             if (!fourIdenticalPattern.matcher(formedVirtualAccount).find()) {
-                Account va = new Account(
-                        null, formedVirtualAccount, FREE);
+                Account va = new Account();
+                va.setValue(formedVirtualAccount);
+                va.setStatus(FREE);
                 try {
                     accountRepository.save(va);
                 } catch (DataIntegrityViolationException e) {
@@ -592,7 +593,7 @@ public class AccountManager {
     public OrganizationEntity getOrgForApiKey() {
 
 
-      String email =GetUserFromToken.extractTokenFromHeader(httpRequest, jwtService);
+      String email =GetUserFromToken.extractUserFromApiKey(httpRequest,apiKeyRepository, userRepository);
 
       log.info("email: {}", email);
 
@@ -601,7 +602,7 @@ public class AccountManager {
                 new UserNotFoundException("Can't find user with the username extracted from token. Is user a paysub user?"));
 
 
-        return organizationRepository.findByContactEmail(user.getId()).orElseThrow(() ->
+        return organizationRepository.findOrganizationByMerchantAdminId(user.getId()).orElseThrow(() ->
                 new ResourceNotFoundException("Can't find Org with the username extracted from token."));
     }
     

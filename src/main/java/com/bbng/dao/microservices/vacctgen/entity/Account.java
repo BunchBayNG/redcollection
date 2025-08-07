@@ -17,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,9 +33,6 @@ public class Account {
     @Column(nullable = false)
     private Status status;
 
-    public Account(Object o, String formedVirtualAccount, Status status) {
-
-    }
 
     public enum Status {
         PROVISIONED, RESERVED, FREE, SUSPENDED
