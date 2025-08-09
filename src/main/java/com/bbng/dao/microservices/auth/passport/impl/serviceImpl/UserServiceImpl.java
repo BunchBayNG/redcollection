@@ -19,6 +19,7 @@ import com.bbng.dao.microservices.auth.passport.entity.RoleEntity;
 import com.bbng.dao.microservices.auth.passport.entity.TokenEntity;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.enums.TokenType;
+import com.bbng.dao.microservices.auth.passport.enums.UserType;
 import com.bbng.dao.microservices.auth.passport.repository.RoleRepository;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
@@ -29,6 +30,7 @@ import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.exceptions.customExceptions.BadRequestException;
 import com.bbng.dao.util.exceptions.customExceptions.ForbiddenException;
+import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -304,17 +306,8 @@ public class UserServiceImpl implements UserService {
 
         Map<String, Object> claims = new HashMap<>();
 
-        if(organizationEntity.isPresent()) {
-            claims.put("roles", userRoles);
-            claims.put("userName", user.getUserName());
-            claims.put("userType", String.valueOf(user.getUsertype()));
-            claims.put("merchantPrefix", organizationEntity.get().getProductPrefix());
-            claims.put("organization", organizationEntity.get().getOrganizationName());
-            claims.put("organizationId", organizationEntity.get().getId());
-            claims.put("permissions", userPermissions);
-            claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+        if(user.getUsertype().equals(UserType.SUPER_ADMIN) || user.getUsertype().equals(UserType.REDTECH_STAFF)) {
 
-        } else{
 
             // Assuming that this is the superadmin org returns the email
             claims.put("roles", userRoles);
@@ -323,6 +316,20 @@ public class UserServiceImpl implements UserService {
             claims.put("merchantPrefix", organizationId);
             claims.put("organization", organizationName);
             claims.put("organizationId", organizationId);
+            claims.put("permissions", userPermissions);
+            claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
+
+
+
+
+        } else{
+
+            claims.put("roles", userRoles);
+            claims.put("userName", user.getUserName());
+            claims.put("userType", String.valueOf(user.getUsertype()));
+            claims.put("merchantPrefix", organizationEntity.get().getProductPrefix());
+            claims.put("organization", organizationEntity.get().getOrganizationName());
+            claims.put("organizationId", organizationEntity.get().getId());
             claims.put("permissions", userPermissions);
             claims.put("email", user.getEmail()); // Assuming getUsername() returns the email
 

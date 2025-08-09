@@ -4,7 +4,9 @@ package com.bbng.dao.util.email.impl;
 import com.bbng.dao.microservices.auth.auditlog.Events;
 import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogRequestDto;
 import com.bbng.dao.microservices.auth.auditlog.service.AuditLogService;
+import com.bbng.dao.microservices.auth.organization.entity.OrgStaffEntity;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
+import com.bbng.dao.microservices.auth.organization.repository.OrgStaffRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.passport.dto.response.LoginResponseDto;
 import com.bbng.dao.microservices.auth.passport.entity.OtpEntity;
@@ -25,6 +27,7 @@ import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.email.utils.Utils;
 import com.bbng.dao.util.exceptions.customExceptions.BadRequestException;
+import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import com.bbng.dao.util.fileUpload.entity.HeaderLogoEntity;
 import com.bbng.dao.util.fileUpload.repository.HeaderLogoRepository;
 import com.bbng.dao.util.response.ResponseDto;
@@ -58,6 +61,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private OTPRepository otpRepository;
     private UserRepository userRepository;
     private OrganizationRepository organizationRepository;
+    private OrgStaffRepository orgStaffRepository;
     private JavaMailService javaMailService;
     private HeaderLogoRepository headerLogoRepository;
 
@@ -79,7 +83,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private AuditLogService auditLogService;
 
     @Autowired
-    public EmailVerificationServiceImpl(VerificationTokenRepository verificationTokenRepository,
+    public EmailVerificationServiceImpl(VerificationTokenRepository verificationTokenRepository,OrgStaffRepository orgStaffRepository,
                                         OTPRepository otpRepository, UserRepository userRepository, AuditLogService auditLogService,
                                         OrganizationRepository organizationRepository, JavaMailService javaMailService,
                                         HeaderLogoRepository headerLogoRepository, TokenRepository tokenRepository) {
@@ -90,6 +94,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         this.javaMailService = javaMailService;
         this.headerLogoRepository = headerLogoRepository;
         this.tokenRepository = tokenRepository;
+        this.orgStaffRepository = orgStaffRepository;
         this.auditLogService = auditLogService;
     }
 
@@ -310,41 +315,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         log.info("User: {}", user.getEmail());
         log.info("User: {}", user.getEmail());
 
-        Optional<OrganizationEntity> org = organizationRepository.findOrganizationByMerchantAdminId(user.getId());
-
-
         TokenEntity tokenEntity = tokenRepository.findByUserEntityAndExpiredFalseAndRevokedFalse(user).get();
 
 
+        if (user.getUsertype().equals(UserType.SUPER_ADMIN) || user.getUsertype().equals(UserType.REDTECH_STAFF)){
 
-
-        if (org.isPresent()){
-
-            auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
-                    .userId(user.getId())
-                    .userName(user.getUserName())
-                    .merchantId(org.get().getId())
-                    .merchantName(org.get().getOrganizationName())
-                    .userType(String.valueOf(user.getUsertype()))
-                    .event(Events.LOGIN.name())
-                    .build());
-
-
-            return ResponseDto.<LoginResponseDto>builder()
-                    .statusCode(200)
-                    .status(true)
-                    .message("Login successful")
-                    .data(LoginResponseDto
-                            .builder()
-                            .accessToken(tokenEntity.getToken())
-                            .refreshToken("")
-                            .acctStatus(user.getAcctStatus().name())
-                            .userId(user.getId())
-                            .organizationId(org.get().getId())
-                            .isEmailVerified(user.getIsEnabled())
-                            .build())
-                    .build();
-        } else{
 
             auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
                     .userId(user.getId())
@@ -369,6 +344,37 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                             .isEmailVerified(user.getIsEnabled())
                             .build())
                     .build();
+        } else{
+
+
+            OrgStaffEntity orgId = orgStaffRepository.findOrganizationByUserId(user.getId()).orElseThrow(() -> new UserNotFoundException("Can't find staff in the organizationStaff. Does this staff belongs to an organization?"));
+
+            Optional<OrganizationEntity> org = organizationRepository.findByOrganizationId(orgId.getOrganizationId());
+
+            auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
+                    .userId(user.getId())
+                    .userName(user.getUserName())
+                    .merchantId(org.get().getId())
+                    .merchantName(org.get().getOrganizationName())
+                    .userType(String.valueOf(user.getUsertype()))
+                    .event(Events.LOGIN.name())
+                    .build());
+
+            return ResponseDto.<LoginResponseDto>builder()
+                    .statusCode(200)
+                    .status(true)
+                    .message("Login successful")
+                    .data(LoginResponseDto
+                            .builder()
+                            .accessToken(tokenEntity.getToken())
+                            .refreshToken("")
+                            .acctStatus(user.getAcctStatus().name())
+                            .userId(user.getId())
+                            .organizationId(org.get().getId())
+                            .isEmailVerified(user.getIsEnabled())
+                            .build())
+                    .build();
+
         }
     }
 

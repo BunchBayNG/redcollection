@@ -25,4 +25,7 @@ public interface OrgStaffRepository extends JpaRepository<OrgStaffEntity, String
 
     @Query("select o from OrgStaffEntity o where o.userId = ?1")
     Optional<OrgStaffEntity> findByUserId(String userId);
+
+
+    Optional<OrgStaffEntity> find(String userId);
 }
