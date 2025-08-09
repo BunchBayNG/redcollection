@@ -35,11 +35,16 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
 
 
     // Total merchants count (distinct merchantOrgId)
-    @Query("""
-        SELECT COUNT(DISTINCT t.id) FROM OrganizationEntity t
-        WHERE t.createdAt BETWEEN :startDate AND :endDate
-    """)
-    long countDistinctMerchantOrgId(
+//    @Query("""
+//        SELECT COUNT(DISTINCT t.id) FROM OrganizationEntity t
+//        WHERE t.createdAt BETWEEN :startDate AND :endDate
+//    """)
+//    long countDistinctMerchantOrgId(
+//            @Param("startDate") LocalDateTime startDate,
+//            @Param("endDate") LocalDateTime endDate
+//    );
+
+    long countByCreatedAtBetween(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );

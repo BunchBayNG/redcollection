@@ -88,7 +88,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public ResponseDto<Long> getNewMerchantCount(LocalDateTime startDate, LocalDateTime endDate) {
-        Long response =  organizationRepository.countDistinctMerchantOrgId(startDate, endDate);
+        Long response =  organizationRepository.countByCreatedAtBetween(startDate, endDate);
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)
