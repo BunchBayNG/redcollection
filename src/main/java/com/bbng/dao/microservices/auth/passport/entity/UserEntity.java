@@ -22,9 +22,14 @@ public class UserEntity extends BaseEntity {
 
     @Id
     private String id;
-    private String email;
     private String firstName;
+    @Column(unique = true)
     private String userName;
+
+
+    @Column(unique = true)
+    private String email;
+
     private String lastName;
     @Enumerated(EnumType.STRING)
     private UserType usertype;

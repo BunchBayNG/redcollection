@@ -27,6 +27,7 @@ import com.bbng.dao.util.email.service.EmailVerificationService;
 import com.bbng.dao.util.email.service.JavaMailService;
 import com.bbng.dao.util.email.utils.Utils;
 import com.bbng.dao.util.exceptions.customExceptions.BadRequestException;
+import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import com.bbng.dao.util.fileUpload.entity.HeaderLogoEntity;
 import com.bbng.dao.util.fileUpload.repository.HeaderLogoRepository;
@@ -349,13 +350,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
             OrgStaffEntity orgId = orgStaffRepository.findOrganizationByUserId(user.getId()).orElseThrow(() -> new UserNotFoundException("Can't find staff in the organizationStaff. Does this staff belongs to an organization?"));
 
-            Optional<OrganizationEntity> org = organizationRepository.findByOrganizationId(orgId.getOrganizationId());
+            OrganizationEntity org = organizationRepository.findByOrganizationId(orgId.getOrganizationId()).orElseThrow(() -> new ResourceNotFoundException("No Organization found for this user with the userId: " + orgId));
 
             auditLogService.registerLogToAudit(AuditLogRequestDto.builder()
                     .userId(user.getId())
                     .userName(user.getUserName())
-                    .merchantId(org.get().getId())
-                    .merchantName(org.get().getOrganizationName())
+                    .merchantId(org.getId())
+                    .merchantName(org.getOrganizationName())
                     .userType(String.valueOf(user.getUsertype()))
                     .event(Events.LOGIN.name())
                     .build());
@@ -370,7 +371,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                             .refreshToken("")
                             .acctStatus(user.getAcctStatus().name())
                             .userId(user.getId())
-                            .organizationId(org.get().getId())
+                            .organizationId(org.getId())
                             .isEmailVerified(user.getIsEnabled())
                             .build())
                     .build();

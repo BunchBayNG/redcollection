@@ -27,5 +27,4 @@ public interface OrgStaffRepository extends JpaRepository<OrgStaffEntity, String
     Optional<OrgStaffEntity> findByUserId(String userId);
 
 
-    Optional<OrgStaffEntity> find(String userId);
 }
