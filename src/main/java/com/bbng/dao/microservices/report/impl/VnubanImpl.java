@@ -195,7 +195,7 @@ public class VnubanImpl implements VnubanService {
 
 
     private Pageable getPageable(String sortBy, String sortOrder, int page, int size) {
-        String  defaultSortBy = sortBy != null ? sortBy : "createdAt";
+        String  defaultSortBy = sortBy != null ? sortBy : "provisionDate";
         String defaultSortOrder = sortOrder != null ? sortOrder.toUpperCase() : "DESC";
 
         Sort sort = switch (defaultSortOrder) {
@@ -203,7 +203,7 @@ public class VnubanImpl implements VnubanService {
             case "DESC" -> Sort.by(Sort.Direction.DESC, defaultSortBy);
             case "ACTIVE_FIRST" -> Sort.by(Sort.Order.desc("status"));
             case "INACTIVE_FIRST" -> Sort.by(Sort.Order.asc("status"));
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+            default -> Sort.by(Sort.Direction.DESC, "provisionDate");
         };
 
         return PageRequest.of(page, size, sort);
