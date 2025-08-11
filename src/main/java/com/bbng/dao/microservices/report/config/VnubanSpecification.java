@@ -31,7 +31,7 @@ public class VnubanSpecification {
 
 
             if (startDate != null &&endDate != null) {
-                predicates.add(cb.between(root.get("createdAt"), startDate.atStartOfDay(),endDate.atTime(23, 59, 59)));
+                predicates.add(cb.between(root.get("provisionDate"), startDate.atStartOfDay(),endDate.atTime(23, 59, 59)));
             }
 
             if (status != null && !status.isEmpty()) {
