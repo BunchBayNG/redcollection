@@ -17,15 +17,14 @@ import com.bbng.dao.util.response.ResponseDto;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Attachments;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
-import com.sendgrid.helpers.mail.objects.Personalization;
+//import com.sendgrid.Method;
+//import com.sendgrid.Request;
+//import com.sendgrid.Response;
+////import com.sendgrid.SendGrid;
+//import com.sendgrid.helpers.mail.Mail;
+//import com.sendgrid.helpers.mail.objects.Content;
+//import com.sendgrid.helpers.mail.objects.Email;
+//import com.sendgrid.helpers.mail.objects.Personalization;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -174,76 +173,76 @@ public class EmailServiceImpl implements EmailService {
                 .build(); // Original URL
     }
 
-    @Override
-    public ResponseEntity<String> sendGridSimpleEmail(MailStructure mailStructure, List<MultipartFile> attachments) {
-        Email from = new Email(fromEmail);
-        String subject = mailStructure.getSubject();
-
-        //set html content
-        HeaderLogoEntity headerLogo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
-        String logo = headerLogo.getUrl() == null ? "https://res.cloudinary.com/bunchbay/image/upload/v1731115765/redtech_HeaderLogo/byw0qnu5jr1cuzbxabmh.png" : headerLogo.getUrl();
-        String htmlContent = mailStructure.getHtmlContent();
-        htmlContent = Utils.generatePlainHtmlContent(htmlContent, logo);
-        Content content = new Content("text/html", htmlContent);
-
-        // Create the mail object and add the content
-        Mail mail = new Mail();
-        mail.setFrom(from);
-        mail.setSubject(subject);
-        mail.addContent(content);
-
-
-        // Add multiple recipients using Personalization
-        Personalization personalization = new Personalization();
-
-        for (String recipientEmail : mailStructure.getRecipients()) {
-            Email to = new Email(recipientEmail);
-            personalization.addTo(to);
-        }
-        mail.addPersonalization(personalization);
-
-
-        try {
-            if (attachments != null) {
-                for (MultipartFile attachment : attachments) {
-                    Attachments sendGridAttachment = new Attachments();
-                    sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachment.getBytes()));
-                    sendGridAttachment.setType(attachment.getContentType());
-                    sendGridAttachment.setFilename(attachment.getOriginalFilename());
-                    sendGridAttachment.setDisposition("Attachment");
-                    mail.addAttachments(sendGridAttachment);
-                }
-            }
-            // Create a SendGrid client and send the email
-            SendGrid sg = new SendGrid(key);
-            Request request = new Request();
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-
-            Response response = sg.api(request);
-            System.out.println(response.getStatusCode());
-            System.out.println(response.getBody());
-            System.out.println(response.getHeaders());
-
-            // Process response and save to repository if necessary
-            EmailEntity email = EmailEntity.builder()
-                    .message(mailStructure.getMessage())
-                    .htmlContent(mailStructure.getHtmlContent())
-                    .receiver(mailStructure.getRecipients())
-                    .status(String.valueOf(response.getStatusCode()))
-                    .emailId("")
-                    .queuedReason(response.getBody())
-                    .rejectReason("")
-                    .build();
-            emailRepository.save(email);
-
-            return ResponseEntity.ok().body("Email sent Out Successfully");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Override
+//    public ResponseEntity<String> sendGridSimpleEmail(MailStructure mailStructure, List<MultipartFile> attachments) {
+//        Email from = new Email(fromEmail);
+//        String subject = mailStructure.getSubject();
+//
+//        //set html content
+//        HeaderLogoEntity headerLogo = headerLogoRepository.findById(1L).orElse(new HeaderLogoEntity());
+//        String logo = headerLogo.getUrl() == null ? "https://res.cloudinary.com/bunchbay/image/upload/v1731115765/redtech_HeaderLogo/byw0qnu5jr1cuzbxabmh.png" : headerLogo.getUrl();
+//        String htmlContent = mailStructure.getHtmlContent();
+//        htmlContent = Utils.generatePlainHtmlContent(htmlContent, logo);
+//        Content content = new Content("text/html", htmlContent);
+//
+//        // Create the mail object and add the content
+//        Mail mail = new Mail();
+//        mail.setFrom(from);
+//        mail.setSubject(subject);
+//        mail.addContent(content);
+//
+//
+//        // Add multiple recipients using Personalization
+//        Personalization personalization = new Personalization();
+//
+//        for (String recipientEmail : mailStructure.getRecipients()) {
+//            Email to = new Email(recipientEmail);
+//            personalization.addTo(to);
+//        }
+//        mail.addPersonalization(personalization);
+//
+//
+//        try {
+//            if (attachments != null) {
+//                for (MultipartFile attachment : attachments) {
+//                    Attachments sendGridAttachment = new Attachments();
+//                    sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachment.getBytes()));
+//                    sendGridAttachment.setType(attachment.getContentType());
+//                    sendGridAttachment.setFilename(attachment.getOriginalFilename());
+//                    sendGridAttachment.setDisposition("Attachment");
+//                    mail.addAttachments(sendGridAttachment);
+//                }
+//            }
+//            // Create a SendGrid client and send the email
+//            SendGrid sg = new SendGrid(key);
+//            Request request = new Request();
+//            request.setMethod(Method.POST);
+//            request.setEndpoint("mail/send");
+//            request.setBody(mail.build());
+//
+//            Response response = sg.api(request);
+//            System.out.println(response.getStatusCode());
+//            System.out.println(response.getBody());
+//            System.out.println(response.getHeaders());
+//
+//            // Process response and save to repository if necessary
+//            EmailEntity email = EmailEntity.builder()
+//                    .message(mailStructure.getMessage())
+//                    .htmlContent(mailStructure.getHtmlContent())
+//                    .receiver(mailStructure.getRecipients())
+//                    .status(String.valueOf(response.getStatusCode()))
+//                    .emailId("")
+//                    .queuedReason(response.getBody())
+//                    .rejectReason("")
+//                    .build();
+//            emailRepository.save(email);
+//
+//            return ResponseEntity.ok().body("Email sent Out Successfully");
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     public ResponseDto<List<EmailEntity>> getSentOutMails() {
@@ -292,66 +291,66 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-    public ResponseEntity<String> sendGridSimpleMail(EmailRequestDTO emailRequest) throws IOException {
-        Email from = new Email(fromEmail);
-        String subject = emailRequest.getMessage().getSubject();
-
-        //set html content
-
-        Content content = new Content("text/html", emailRequest.getMessage().getHtml());
-
-        // Create the mail object and add the content
-        Mail mail = new Mail();
-        mail.setFrom(from);
-        mail.setSubject(subject);
-        mail.addContent(content);
-
-        // Add multiple recipients using Personalization
-
-        Personalization personalization = new Personalization();
-
-        for (To recipientEmail : emailRequest.getMessage().getTo()) {
-            Email to = new Email(recipientEmail.getEmail());
-            personalization.addTo(to);
-        }
-        mail.addPersonalization(personalization);
-
-        if (emailRequest.getMessage().getAttachments() != null) {
-            for (Attachments attachments : emailRequest.getMessage().getAttachments()) {
-                Attachments sendGridAttachment = new Attachments();
-                sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachments.getContent().getBytes()));
-                sendGridAttachment.setType(attachments.getType());
-                sendGridAttachment.setFilename(attachments.getFilename());
-                sendGridAttachment.setDisposition(attachments.getDisposition());
-                mail.addAttachments(sendGridAttachment);
-            }
-        }
-        // Create a SendGrid client and send the email
-        SendGrid sg = new SendGrid(key);
-        Request request = new Request();
-        request.setMethod(Method.POST);
-        request.setEndpoint("mail/send");
-        request.setBody(mail.build());
-
-        Response response = sg.api(request);
-        System.out.println(response.getStatusCode());
-        System.out.println(response.getBody());
-        System.out.println(response.getHeaders());
-
-        // Process response and save to repository if necessary
-        EmailEntity email = EmailEntity.builder()
-                .emailType(emailRequest.getEmailType())
-                .receiver(emailRequest.getMessage().getTo().stream().map(To::getEmail).toList())
-                .status(String.valueOf(response.getStatusCode()))
-                .emailId("")
-                .queuedReason(response.getBody())
-                .rejectReason("")
-                .build();
-        emailRepository.save(email);
-
-        return ResponseEntity.ok().body("Email sent Out Successfully");
-
-    }
+//    public ResponseEntity<String> sendGridSimpleMail(EmailRequestDTO emailRequest) throws IOException {
+//        Email from = new Email(fromEmail);
+//        String subject = emailRequest.getMessage().getSubject();
+//
+//        //set html content
+//
+//        Content content = new Content("text/html", emailRequest.getMessage().getHtml());
+//
+//        // Create the mail object and add the content
+//        Mail mail = new Mail();
+//        mail.setFrom(from);
+//        mail.setSubject(subject);
+//        mail.addContent(content);
+//
+//        // Add multiple recipients using Personalization
+//
+//        Personalization personalization = new Personalization();
+//
+//        for (To recipientEmail : emailRequest.getMessage().getTo()) {
+//            Email to = new Email(recipientEmail.getEmail());
+//            personalization.addTo(to);
+//        }
+//        mail.addPersonalization(personalization);
+//
+//        if (emailRequest.getMessage().getAttachments() != null) {
+//            for (Attachments attachments : emailRequest.getMessage().getAttachments()) {
+//                Attachments sendGridAttachment = new Attachments();
+//                sendGridAttachment.setContent(Base64.getEncoder().encodeToString(attachments.getContent().getBytes()));
+//                sendGridAttachment.setType(attachments.getType());
+//                sendGridAttachment.setFilename(attachments.getFilename());
+//                sendGridAttachment.setDisposition(attachments.getDisposition());
+//                mail.addAttachments(sendGridAttachment);
+//            }
+//        }
+//        // Create a SendGrid client and send the email
+//        SendGrid sg = new SendGrid(key);
+//        Request request = new Request();
+//        request.setMethod(Method.POST);
+//        request.setEndpoint("mail/send");
+//        request.setBody(mail.build());
+//
+//        Response response = sg.api(request);
+//        System.out.println(response.getStatusCode());
+//        System.out.println(response.getBody());
+//        System.out.println(response.getHeaders());
+//
+//        // Process response and save to repository if necessary
+//        EmailEntity email = EmailEntity.builder()
+//                .emailType(emailRequest.getEmailType())
+//                .receiver(emailRequest.getMessage().getTo().stream().map(To::getEmail).toList())
+//                .status(String.valueOf(response.getStatusCode()))
+//                .emailId("")
+//                .queuedReason(response.getBody())
+//                .rejectReason("")
+//                .build();
+//        emailRepository.save(email);
+//
+//        return ResponseEntity.ok().body("Email sent Out Successfully");
+//
+//    }
 
 
 }

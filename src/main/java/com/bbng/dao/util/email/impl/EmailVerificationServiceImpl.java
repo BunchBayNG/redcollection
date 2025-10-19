@@ -140,7 +140,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
         ResponseEntity<EmailResponseDto[]> responseEntity = null;
         try {
-            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure, null);
+            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -193,7 +193,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
         ResponseEntity<EmailResponseDto[]> responseEntity = null;
         try {
-            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure, null);
+            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure);
 
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -235,7 +235,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .htmlContent(resetPasswordHtmlContent(userEntity.getFirstName(), verificationLink, logo.getUrl()))
                 .build();
         try {
-            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure, null);
+            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -423,7 +423,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         ResponseEntity<EmailResponseDto[]> responseEntity = null;
 
         try {
-            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure, null);
+            javaMailService.sendGridHtmlContent(userEntity.getEmail(), mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -455,7 +455,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -483,7 +483,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
             return new EmailResponseDto[]{EmailResponseDto.builder()
@@ -513,7 +513,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -545,7 +545,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -577,7 +577,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -613,7 +613,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -645,7 +645,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 .build();
 
         try {
-            javaMailService.sendGridHtmlContent(toEmail, mailStructure, null);
+            javaMailService.sendGridHtmlContent(toEmail, mailStructure);
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending mail {}", e.getMessage());
@@ -672,7 +672,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             javaMailService.sendGridHtmlContent(to, MailStructure.builder()
                     .htmlContent(htmlContent)
                     .subject("Welcome Email")
-                    .build(), null);
+                    .build());
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending welcoming Mail {}", e.getMessage());
@@ -690,7 +690,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             javaMailService.sendGridHtmlContent(contactEmail, MailStructure.builder()
                     .htmlContent(htmlContent)
                     .subject("Kyc Verification Request")
-                    .build(), null);
+                    .build());
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending  Kyc Verification Request{}", e.getMessage());
@@ -706,7 +706,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             javaMailService.sendGridHtmlContent(email, MailStructure.builder()
                     .htmlContent(htmlContent)
                     .subject("Kyc Successful verification request")
-                    .build(), null);
+                    .build());
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending  Kyc Successful verification  Request{}", e.getMessage());
@@ -723,7 +723,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             javaMailService.sendGridHtmlContent(email, MailStructure.builder()
                     .htmlContent(htmlContent)
                     .subject("Kyc Successful verification request")
-                    .build(), null);
+                    .build());
 //            responseEntity = emailService.sendSimpleMail(emailRequest);
         } catch (Exception e) {
             log.info("Error sending  Kyc Rejection  Request{}", e.getMessage());

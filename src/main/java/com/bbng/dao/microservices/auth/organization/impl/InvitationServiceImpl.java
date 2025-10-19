@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class InvitationServiceImpl implements InvitationService {
+public class  InvitationServiceImpl implements InvitationService {
 
     private static final SecureRandom secureRandom = new SecureRandom();
     private final UserRepository userRepository;

@@ -2,7 +2,6 @@ package com.bbng.dao.util.email.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sendgrid.helpers.mail.objects.Attachments;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -71,7 +70,7 @@ public class Message {
     private Metadata metadata;
     @JsonProperty("recipient_metadata")
     private Object recipientMetadata;
-    private List<Attachments> attachments;
+//    private List<Attachments> attachments;
     private Object images;
 
 

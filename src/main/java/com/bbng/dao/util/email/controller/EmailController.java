@@ -50,42 +50,42 @@ public class EmailController {
         permissionService.checkPermission(request, "ADMIN_GET_SENT_EMAILS", jwtService);
         return ResponseEntity.status(HttpStatus.OK).body(emailService.getSentOutMails());
     }
+//
+//    @PostMapping("/admin/send-mail")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResponseEntity<String> sendMail(@Valid @RequestBody EmailRequestDTO requestDTO) {
+//        try {
+//            return emailService.sendGridSimpleMail(requestDTO);
+//        } catch (IOException e) {
+//            log.error("An error occurred while sending out emails: {}", e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-    @PostMapping("/admin/send-mail")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> sendMail(@Valid @RequestBody EmailRequestDTO requestDTO) {
-        try {
-            return emailService.sendGridSimpleMail(requestDTO);
-        } catch (IOException e) {
-            log.error("An error occurred while sending out emails: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    @PostMapping(value = "/admin/send-email-Notification", consumes = "multipart/form-data")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> sendEmail(
-            @RequestParam String subject,
-            @RequestParam(required = false) String message,
-            @RequestParam(required = false) String htmlContent,
-            @RequestParam List<String> recipients,
-            @RequestParam(required = false) List<MultipartFile> attachments
-    ) {
-        try {
-            var mailStructure = MailStructure.builder()
-                    .subject(subject)
-                    .htmlContent(htmlContent)
-                    .message(message)
-                    .recipients(recipients).build();
-
-            permissionService.checkPermission(request, "ADMIN_SEND_EMAILS_NOTIFICATIONS", jwtService);
-            return emailService.sendGridSimpleEmail(mailStructure, attachments);
-        } catch (Exception e) {
-            log.error("An error occurred while sending out emails: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
+//
+//    @PostMapping(value = "/admin/send-email-Notification", consumes = "multipart/form-data")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResponseEntity<String> sendEmail(
+//            @RequestParam String subject,
+//            @RequestParam(required = false) String message,
+//            @RequestParam(required = false) String htmlContent,
+//            @RequestParam List<String> recipients,
+//            @RequestParam(required = false) List<MultipartFile> attachments
+//    ) {
+//        try {
+//            var mailStructure = MailStructure.builder()
+//                    .subject(subject)
+//                    .htmlContent(htmlContent)
+//                    .message(message)
+//                    .recipients(recipients).build();
+//
+//            permissionService.checkPermission(request, "ADMIN_SEND_EMAILS_NOTIFICATIONS", jwtService);
+//            return emailService.sendGridSimpleEmail(mailStructure, attachments);
+//        } catch (Exception e) {
+//            log.error("An error occurred while sending out emails: {}", e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     @PostMapping(value = "admin/upload-email-headerLogo", consumes = "multipart/form-data")
