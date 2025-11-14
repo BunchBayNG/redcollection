@@ -2,13 +2,15 @@ package com.bbng.dao.microservices.auth.apilog.controller;
 
 import com.bbng.dao.microservices.auth.apilog.entity.ApiLogEntity;
 import com.bbng.dao.microservices.auth.apilog.impl.ApiLogImpl;
-import com.bbng.dao.microservices.auth.apilog.repository.ApiLogRepository;
 import com.bbng.dao.util.response.ResponseDto;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 

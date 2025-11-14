@@ -1,8 +1,11 @@
 package com.bbng.dao.microservices.auth.auditlog.impl;
 
 import com.bbng.dao.microservices.auth.auditlog.entities.AuditLogEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-import jakarta.persistence.criteria.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

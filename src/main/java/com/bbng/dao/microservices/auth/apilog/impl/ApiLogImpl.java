@@ -2,7 +2,6 @@ package com.bbng.dao.microservices.auth.apilog.impl;
 
 import com.bbng.dao.microservices.auth.apilog.entity.ApiLogEntity;
 import com.bbng.dao.microservices.auth.apilog.repository.ApiLogRepository;
-import com.bbng.dao.microservices.report.config.TransactionSpecification;
 import com.bbng.dao.util.response.ResponseDto;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;

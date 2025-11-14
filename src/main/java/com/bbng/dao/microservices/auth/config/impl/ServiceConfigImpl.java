@@ -5,7 +5,6 @@ import com.bbng.dao.microservices.auth.config.entity.ServiceConfigEntity;
 import com.bbng.dao.microservices.auth.config.enums.ServiceType;
 import com.bbng.dao.microservices.auth.config.repository.ServiceConfigRepository;
 import com.bbng.dao.microservices.auth.config.service.ServiceConfigService;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;

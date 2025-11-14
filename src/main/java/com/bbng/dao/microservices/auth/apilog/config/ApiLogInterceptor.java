@@ -9,7 +9,6 @@ import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
 import com.bbng.dao.microservices.auth.passport.config.JWTService;
 import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
-import com.bbng.dao.microservices.vacctgen.impl.AccountManager;
 import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
 import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 import java.time.LocalDateTime;
 
 @Component

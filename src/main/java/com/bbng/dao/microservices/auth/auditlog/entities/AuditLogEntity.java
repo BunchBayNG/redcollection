@@ -1,15 +1,10 @@
 package com.bbng.dao.microservices.auth.auditlog.entities;
 
-import com.bbng.dao.microservices.auth.auditlog.Events;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

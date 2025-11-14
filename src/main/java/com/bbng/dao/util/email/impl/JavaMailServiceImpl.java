@@ -3,17 +3,15 @@ package com.bbng.dao.util.email.impl;
 
 import com.bbng.dao.util.email.dto.request.MailStructure;
 import com.bbng.dao.util.email.service.JavaMailService;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Properties;
 
 

@@ -2,9 +2,9 @@ package com.bbng.dao.microservices.auth.config.dto.request;
 
 import com.bbng.dao.microservices.auth.config.enums.FeeType;
 import com.bbng.dao.microservices.auth.config.enums.ServiceType;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.math.BigDecimal;
 

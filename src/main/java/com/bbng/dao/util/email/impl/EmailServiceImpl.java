@@ -1,14 +1,11 @@
 package com.bbng.dao.util.email.impl;
 
 
-import com.bbng.dao.util.email.dto.request.EmailRequestDTO;
 import com.bbng.dao.util.email.dto.request.HeaderLogoRequestDto;
-import com.bbng.dao.util.email.dto.request.MailStructure;
 import com.bbng.dao.util.email.dto.request.To;
 import com.bbng.dao.util.email.entity.EmailEntity;
 import com.bbng.dao.util.email.repository.EmailRepository;
 import com.bbng.dao.util.email.service.EmailService;
-import com.bbng.dao.util.email.utils.Utils;
 import com.bbng.dao.util.exceptions.customExceptions.BadRequestException;
 import com.bbng.dao.util.exceptions.customExceptions.InternalServerException;
 import com.bbng.dao.util.fileUpload.entity.HeaderLogoEntity;
@@ -17,23 +14,11 @@ import com.bbng.dao.util.response.ResponseDto;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
-//import com.sendgrid.Method;
-//import com.sendgrid.Request;
-//import com.sendgrid.Response;
-////import com.sendgrid.SendGrid;
-//import com.sendgrid.helpers.mail.Mail;
-//import com.sendgrid.helpers.mail.objects.Content;
-//import com.sendgrid.helpers.mail.objects.Email;
-//import com.sendgrid.helpers.mail.objects.Personalization;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

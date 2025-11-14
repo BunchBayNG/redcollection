@@ -1,3 +1,4 @@
+
 package com.bbng.dao.microservices.auth.organization.impl;
 
 
@@ -33,7 +34,6 @@ import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import com.bbng.dao.util.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +52,8 @@ import java.util.stream.Collectors;
 public class  InvitationServiceImpl implements InvitationService {
 
     private static final SecureRandom secureRandom = new SecureRandom();
+    private static final String LOG_MESSAGE_CREATING_DEFAULT_ROLES = "No existing roles found for user invitation, creating default roles";
+
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;
     private final OrgStaffRepository orgStaffRepository;
@@ -80,6 +82,8 @@ public class  InvitationServiceImpl implements InvitationService {
         ///  this is to invite staff
         UserType userType = userEntity.getUsertype().equals(UserType.ORGANIZATION_ADMIN) ? UserType.ORGANIZATION_STAFF : UserType.REDTECH_STAFF;
         RoleEntity role = userType.equals(UserType.REDTECH_STAFF) ? roleRedtechStaff : roleOrganizationStaff;
+
+        log.info(LOG_MESSAGE_CREATING_DEFAULT_ROLES);
 
         UserEntity newSavedUser = userRepository.save(UserEntity.builder()
                 .email(inviteRequestDto.getEmail())

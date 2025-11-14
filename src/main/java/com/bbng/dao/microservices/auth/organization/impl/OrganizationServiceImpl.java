@@ -3,7 +3,6 @@ package com.bbng.dao.microservices.auth.organization.impl;
 
 import com.bbng.dao.microservices.auth.organization.dto.request.UpdateOrgDto;
 import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
-import com.bbng.dao.microservices.auth.organization.enums.OrgStatus;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
 import com.bbng.dao.microservices.auth.organization.service.OrganizationService;
 import com.bbng.dao.microservices.report.config.OrganizationSpecification;

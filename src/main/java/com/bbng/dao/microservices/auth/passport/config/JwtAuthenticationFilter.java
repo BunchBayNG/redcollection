@@ -1,15 +1,10 @@
 package com.bbng.dao.microservices.auth.passport.config;
 
 
-import com.bbng.dao.microservices.auth.organization.entity.OrganizationEntity;
 import com.bbng.dao.microservices.auth.organization.repository.APIKeyRepository;
 import com.bbng.dao.microservices.auth.organization.repository.OrganizationRepository;
-import com.bbng.dao.microservices.auth.organization.utils.GetUserFromToken;
-import com.bbng.dao.microservices.auth.passport.entity.UserEntity;
 import com.bbng.dao.microservices.auth.passport.repository.TokenRepository;
 import com.bbng.dao.microservices.auth.passport.repository.UserRepository;
-import com.bbng.dao.util.exceptions.customExceptions.ResourceNotFoundException;
-import com.bbng.dao.util.exceptions.customExceptions.UserNotFoundException;
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

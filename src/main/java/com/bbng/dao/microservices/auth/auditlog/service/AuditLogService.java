@@ -2,9 +2,7 @@ package com.bbng.dao.microservices.auth.auditlog.service;
 
 
 import com.bbng.dao.microservices.auth.auditlog.dto.request.AuditLogRequestDto;
-import com.bbng.dao.microservices.auth.auditlog.dto.response.AuditLogResponseDto;
 import com.bbng.dao.microservices.auth.auditlog.entities.AuditLogEntity;
-import com.bbng.dao.util.response.PagedResponseDto;
 import com.bbng.dao.util.response.ResponseDto;
 import org.springframework.data.domain.Page;
 

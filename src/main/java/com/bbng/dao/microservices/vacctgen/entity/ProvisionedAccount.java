@@ -1,6 +1,5 @@
 package com.bbng.dao.microservices.vacctgen.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 
 @Entity

@@ -7,9 +7,6 @@ import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @AllArgsConstructor

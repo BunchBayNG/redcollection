@@ -6,7 +6,6 @@ import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Value
 @ToString(callSuper = true)

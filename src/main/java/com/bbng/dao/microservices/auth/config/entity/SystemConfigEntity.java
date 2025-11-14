@@ -2,7 +2,8 @@ package com.bbng.dao.microservices.auth.config.entity;
 
 
 import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.*;
 
 import java.math.BigDecimal;

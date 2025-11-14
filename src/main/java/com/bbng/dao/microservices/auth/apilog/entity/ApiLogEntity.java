@@ -1,8 +1,9 @@
 package com.bbng.dao.microservices.auth.apilog.entity;
 
-import com.bbng.dao.microservices.auth.auditlog.entities.BaseEntity;
 import de.huxhorn.sulky.ulid.ULID;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 

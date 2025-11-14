@@ -3,8 +3,6 @@ package com.bbng.dao.microservices.auth.auditlog.dto.response;
 
 import lombok.*;
 
-import java.time.Instant;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
