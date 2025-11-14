@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -70,8 +69,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public ResponseDto<Page<OrganizationEntity>>  getAllOrg(String search, String status,
                                                             String sortBy, String sortOrder, LocalDate startDate,
                                                             LocalDate endDate, int page, int size) {
-        Specification<OrganizationEntity> spec =
-                OrganizationSpecification.getOrganizations(search, status, startDate, endDate);
+        Specification<OrganizationEntity> spec = OrganizationSpecification.getOrganizations(search, status, startDate, endDate);
 
         Pageable pageable = getPageable(sortBy, sortOrder, page, size);
 
@@ -86,8 +84,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public ResponseDto<Long> getNewMerchantCount(LocalDateTime startDate, LocalDateTime endDate) {
-        Long response =  organizationRepository.countByCreatedAtBetween(startDate, endDate);
+    public ResponseDto<Long> getNewMerchantCount(LocalDate startDate, LocalDate endDate) {
+
+        Specification<OrganizationEntity> spec = OrganizationSpecification.getOrganizations("", "", startDate, endDate);
+        Long response = (long) organizationRepository.findAll(spec).size();
 
         return ResponseDto.<Long>builder()
                 .statusCode(200)

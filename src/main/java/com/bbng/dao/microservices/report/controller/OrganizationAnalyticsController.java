@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("${apiVersion}" +  "/analytics/merchants")
@@ -23,8 +23,8 @@ public class OrganizationAnalyticsController {
 
     @GetMapping("/total")
     public ResponseEntity<ResponseDto<Long>> getTotalMerchantCount(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
     ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(organizationService.getNewMerchantCount(startDate, endDate));
