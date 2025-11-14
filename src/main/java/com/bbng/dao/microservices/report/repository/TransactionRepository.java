@@ -14,31 +14,6 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long>, JpaSpecificationExecutor<TransactionEntity> {
 
 
-//    // Total merchants count (distinct merchantOrgId)
-//    @Query("""
-//        SELECT COUNT(DISTINCT t.merchantOrgId) FROM TransactionEntity t
-//        WHERE t.createdAt BETWEEN :startDate AND :endDate
-//    """)
-//    long countDistinctMerchantOrgId(
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate
-//    );
-
-    // Top merchants by volume
-//    @Query("""
-//        SELECT new  com.bbng.dao.microservices.report.dto.TopMerchantDTO(t.merchantOrgId, t.merchantName, COALESCE(SUM(t.amount), 0))
-//        FROM TransactionEntity t
-//        WHERE t.createdAt BETWEEN:startDate AND:endDate
-//        GROUP BY t.merchantOrgId
-//        ORDER BY SUM(t.amount) DESC
-//    """)
-//    List<TopMerchantDTO> findTopMerchantsByVolume(
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate,
-//            Pageable pageable
-//    );
-
-
     @Query(value = """
     SELECT t.merchant_org_id AS merchantOrgId,
            SUM(t.amount) AS totalVolume
@@ -53,7 +28,6 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             @Param("endDate") LocalDateTime endDate,
             @Param("topN") int topN
     );
-
 
     // Total transaction count
     @Query("""
@@ -95,57 +69,18 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             @Param("endDate") LocalDateTime endDate
     );
 
-//    // Volume per period
-//    @Query("""
-//        SELECT new com.bbng.dao.microservices.report.dto.ChartPointDTO(
-//            FUNCTION('DATE_FORMAT', t.createdAt, :pattern),
-//            SUM(t.amount)
-//        )
-//        FROM TransactionEntity t
-//        WHERE (:merchantOrgId IS NULL OR t.merchantOrgId = :merchantOrgId)
-//        AND t.status = 'SUCCESS'
-//        AND t.createdAt BETWEEN :startDate AND :endDate
-//        GROUP BY FUNCTION('DATE_FORMAT', t.createdAt, :pattern)
-//        ORDER BY FUNCTION('DATE_FORMAT', t.createdAt, :pattern)
-//    """)
-//    List<ChartPointDTO> groupSuccessfulTransactionVolumeByPeriod(
-//            @Param("merchantOrgId") String merchantOrgId,
-//            @Param("pattern") String pattern,
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate
-//    );
-//
-//    // Count per period
-//    @Query("""
-//        SELECT new com.bbng.dao.microservices.report.dto.ChartPointDTO(
-//            FUNCTION('DATE_FORMAT', t.createdAt, :pattern),
-//            COUNT(t)
-//        )
-//        FROM TransactionEntity t
-//        WHERE (:merchantOrgId IS NULL OR t.merchantOrgId = :merchantOrgId)
-//        AND t.status = 'SUCCESS'
-//        AND t.createdAt BETWEEN :startDate AND :endDate
-//        GROUP BY FUNCTION('DATE_FORMAT', t.createdAt, :pattern)
-//        ORDER BY FUNCTION('DATE_FORMAT', t.createdAt, :pattern)
-//    """)
-//    List<ChartPointDTO> groupSuccessfulTransactionCountByPeriod(
-//            @Param("merchantOrgId") String merchantOrgId,
-//            @Param("pattern") String pattern,
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate
-//    );
+    // Volume per period - Fixed for PostgreSQL
 
-    // Volume per period
 
     @Query(value = """
-    SELECT DATE_FORMAT(t.created_at, :pattern) AS period,
+    SELECT TO_CHAR(t.created_at, :pattern) AS period,
            SUM(t.amount) AS value
     FROM transaction_entity t
     WHERE (:merchantOrgId IS NULL OR t.merchant_org_id = :merchantOrgId)
       AND t.status = 'SUCCESS'
       AND t.created_at BETWEEN :startDate AND :endDate
-    GROUP BY DATE_FORMAT(t.created_at, :pattern)
-    ORDER BY DATE_FORMAT(t.created_at, :pattern)
+    GROUP BY period
+    ORDER BY period
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulTransactionVolumeByPeriod(
             @Param("merchantOrgId") String merchantOrgId,
@@ -154,16 +89,16 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             @Param("endDate") LocalDateTime endDate
     );
 
-
+    // Count per period - Fixed for PostgreSQL
     @Query(value = """
-    SELECT DATE_FORMAT(t.created_at, :pattern) AS period,
+    SELECT TO_CHAR(t.created_at, :pattern) AS period,
            COUNT(t.id) AS value
     FROM transaction_entity t
     WHERE (:merchantOrgId IS NULL OR t.merchant_org_id = :merchantOrgId)
       AND t.status = 'SUCCESS'
       AND t.created_at BETWEEN :startDate AND :endDate
-    GROUP BY DATE_FORMAT(t.created_at, :pattern)
-    ORDER BY DATE_FORMAT(t.created_at, :pattern)
+    GROUP BY TO_CHAR(t.created_at, :pattern)
+    ORDER BY TO_CHAR(t.created_at, :pattern)
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulTransactionCountByPeriod(
             @Param("merchantOrgId") String merchantOrgId,
@@ -171,5 +106,4 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
-
 }

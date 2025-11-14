@@ -23,8 +23,8 @@ public class OrganizationAnalyticsController {
 
     @GetMapping("/total")
     public ResponseEntity<ResponseDto<Long>> getTotalMerchantCount(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
 
         return  ResponseEntity.status(HttpStatus.OK).body(organizationService.getNewMerchantCount(startDate, endDate));

@@ -54,14 +54,14 @@ public interface PayoutRepository extends JpaRepository<PayoutEntity, Long>, Jpa
     );
 
     @Query(value = """
-    SELECT DATE_FORMAT(p.created_at, :pattern) AS period,
-           SUM(p.amount) AS value
-    FROM payout_entity p
-    WHERE (:merchantOrgId IS NULL OR p.merchant_org_id = :merchantOrgId)
-      AND p.status = 'SUCCESS'
-      AND p.created_at BETWEEN :startDate AND :endDate
-    GROUP BY DATE_FORMAT(p.created_at, :pattern)
-    ORDER BY DATE_FORMAT(p.created_at, :pattern)
+    SELECT TO_CHAR(t.created_at, :pattern) AS period,
+           SUM(t.amount) AS value
+    FROM transaction_entity t
+    WHERE (:merchantOrgId IS NULL OR t.merchant_org_id = :merchantOrgId)
+      AND t.status = 'SUCCESS'
+      AND t.created_at BETWEEN :startDate AND :endDate
+    GROUP BY period
+    ORDER BY period
 """, nativeQuery = true)
     List<Object[]> groupSuccessfulPayoutVolumeByPeriod(
             @Param("merchantOrgId") String merchantOrgId,
